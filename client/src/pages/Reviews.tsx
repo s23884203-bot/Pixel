@@ -11,9 +11,13 @@ export default function Reviews() {
   const syncMutation = trpc.reviews.sync.useMutation();
   const [displayReviews, setDisplayReviews] = useState<typeof reviews>([]);
 
-  // Auto-sync reviews on page load
+  // Auto-sync reviews on page load and refetch
   useEffect(() => {
-    syncMutation.mutate();
+    const syncReviews = async () => {
+      await syncMutation.mutateAsync();
+      await refetch();
+    };
+    syncReviews();
   }, []);
 
   // Filter and display reviews
@@ -69,11 +73,7 @@ export default function Reviews() {
       {/* Reviews Grid */}
       <section className="py-16 px-4">
         <div className="max-w-6xl mx-auto">
-          {isLoading ? (
-            <div className="flex justify-center items-center py-20">
-              <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
-            </div>
-          ) : displayReviews && displayReviews.length > 0 ? (
+          {displayReviews && displayReviews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
               {displayReviews.map((review) => (
                 <div

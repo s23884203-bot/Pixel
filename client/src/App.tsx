@@ -38,17 +38,7 @@ function Navigation() {
           >
             Home
           </Button>
-          <Button
-            variant={location === "/overview" ? "default" : "ghost"}
-            onClick={() => setLocation("/overview")}
-            className={`${
-              location === "/overview"
-                ? "bg-blue-600 text-white"
-                : "text-slate-300 hover:text-white hover:bg-slate-800"
-            }`}
-          >
-            Overview
-          </Button>
+
           <Button
             variant={location === "/partners" ? "default" : "ghost"}
             onClick={() => setLocation("/partners")}

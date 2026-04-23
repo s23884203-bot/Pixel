@@ -121,17 +121,6 @@ export default function Home() {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div
-              onClick={() => setLocation("/overview")}
-              className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-blue-500/50 transition-colors cursor-pointer"
-            >
-              <div className="text-4xl mb-4">📖</div>
-              <h3 className="text-xl font-bold text-white mb-3">النبذة</h3>
-              <p className="text-slate-300">
-                تعرف على قصة مجتمع Pixel Design وأهدافنا.
-              </p>
-            </div>
-
-            <div
               onClick={() => setLocation("/partners")}
               className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-purple-500/50 transition-colors cursor-pointer"
             >
