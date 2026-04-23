@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function Home() {
   const [, setLocation] = useLocation();
@@ -56,18 +57,19 @@ export default function Home() {
               </p>
             </div>
 
-            <div className="flex gap-4">
+            <div className="flex gap-4 flex-wrap">
               <Button
-                onClick={() => setLocation("/reviews")}
+                onClick={() => setLocation("/overview")}
                 className="px-8 py-6 bg-white text-slate-900 font-bold text-lg hover:bg-slate-100 transition-colors"
               >
-                View Reviews
+                اكتشف المزيد
               </Button>
               <Button
+                onClick={() => setLocation("/reviews")}
                 variant="outline"
                 className="px-8 py-6 border-white text-white hover:bg-white/10 font-bold text-lg"
               >
-                Join Server
+                التقييمات
               </Button>
             </div>
           </div>
@@ -75,7 +77,7 @@ export default function Home() {
           {/* Logo Image */}
           <div className="flex justify-center">
             <img
-              src="/manus-storage/57ef596dcfc333362fa3037b09dacc48_abaf7e1a.webp"
+              src="/manus-storage/a_59b6606ae6c2e0f0be6a6a02c12c40d1_18fea0bb.webp"
               alt="Pixel Design Logo"
               className="w-full max-w-md drop-shadow-2xl animate-float"
             />
@@ -110,40 +112,51 @@ export default function Home() {
         </div>
       </section>
 
-      {/* About Section */}
+      {/* Quick Links Section */}
       <section className="py-20 px-4">
         <div className="max-w-4xl mx-auto">
           <h2 className="text-4xl font-bold text-white mb-12 text-center">
-            About Pixel Design
+            استكشف المزيد
           </h2>
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-slate-600 transition-colors">
-              <div className="text-4xl mb-4">🎨</div>
-              <h3 className="text-xl font-bold text-white mb-3">Creative Community</h3>
+            <div
+              onClick={() => setLocation("/overview")}
+              className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-blue-500/50 transition-colors cursor-pointer"
+            >
+              <div className="text-4xl mb-4">📖</div>
+              <h3 className="text-xl font-bold text-white mb-3">النبذة</h3>
               <p className="text-slate-300">
-                Connect with talented designers and artists from around the world.
+                تعرف على قصة مجتمع Pixel Design وأهدافنا.
               </p>
             </div>
 
-            <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-slate-600 transition-colors">
-              <div className="text-4xl mb-4">📚</div>
-              <h3 className="text-xl font-bold text-white mb-3">Resources</h3>
+            <div
+              onClick={() => setLocation("/partners")}
+              className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-purple-500/50 transition-colors cursor-pointer"
+            >
+              <div className="text-4xl mb-4">🤝</div>
+              <h3 className="text-xl font-bold text-white mb-3">الشركاء</h3>
               <p className="text-slate-300">
-                Access tutorials, assets, and guides to improve your craft.
+                اكتشف شركاءنا المميزين والمتعاونين معنا.
               </p>
             </div>
 
-            <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-slate-600 transition-colors">
-              <div className="text-4xl mb-4">🚀</div>
-              <h3 className="text-xl font-bold text-white mb-3">Collaboration</h3>
+            <div
+              onClick={() => setLocation("/reviews")}
+              className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 hover:border-pink-500/50 transition-colors cursor-pointer"
+            >
+              <div className="text-4xl mb-4">⭐</div>
+              <h3 className="text-xl font-bold text-white mb-3">التقييمات</h3>
               <p className="text-slate-300">
-                Work together on projects and showcase your best work.
+                اقرأ تقييمات أعضاء المجتمع عن تجربتهم معنا.
               </p>
             </div>
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

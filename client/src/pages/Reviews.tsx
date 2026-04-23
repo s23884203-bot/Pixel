@@ -1,22 +1,33 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { Loader2, Star } from "lucide-react";
+import Footer from "@/components/Footer";
 
 export default function Reviews() {
   const [, setLocation] = useLocation();
   const { data: reviews, isLoading, refetch } = trpc.reviews.list.useQuery();
   const syncMutation = trpc.reviews.sync.useMutation();
+  const [displayReviews, setDisplayReviews] = useState<typeof reviews>([]);
 
   // Auto-sync reviews on page load
   useEffect(() => {
     syncMutation.mutate();
   }, []);
 
+  // Filter and display reviews
+  useEffect(() => {
+    if (reviews && reviews.length > 0) {
+      // Filter reviews with actual content
+      const filtered = reviews.filter(r => r.content && r.content.trim().length > 0);
+      setDisplayReviews(filtered);
+    }
+  }, [reviews]);
+
   const handleSync = async () => {
     await syncMutation.mutateAsync();
-    refetch();
+    await refetch();
   };
 
   return (
@@ -62,9 +73,9 @@ export default function Reviews() {
             <div className="flex justify-center items-center py-20">
               <Loader2 className="w-8 h-8 animate-spin text-blue-400" />
             </div>
-          ) : reviews && reviews.length > 0 ? (
+          ) : displayReviews && displayReviews.length > 0 ? (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              {reviews.map((review) => (
+              {displayReviews.map((review) => (
                 <div
                   key={review.id}
                   className="group p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-slate-700/50 hover:border-blue-500/50 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/10"
@@ -131,6 +142,8 @@ export default function Reviews() {
           )}
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

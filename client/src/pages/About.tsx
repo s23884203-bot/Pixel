@@ -1,5 +1,6 @@
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import Footer from "@/components/Footer";
 
 export default function About() {
   const [, setLocation] = useLocation();
@@ -122,6 +123,8 @@ export default function About() {
           </div>
         </div>
       </section>
+
+      <Footer />
     </div>
   );
 }

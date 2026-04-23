@@ -4,6 +4,8 @@ import NotFound from "@/pages/NotFound";
 import Home from "@/pages/Home";
 import Reviews from "@/pages/Reviews";
 import About from "@/pages/About";
+import Overview from "@/pages/Overview";
+import Partners from "@/pages/Partners";
 import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
@@ -24,7 +26,7 @@ function Navigation() {
           </div>
         </div>
 
-        <div className="flex gap-2">
+        <div className="flex gap-2 flex-wrap">
           <Button
             variant={location === "/" ? "default" : "ghost"}
             onClick={() => setLocation("/")}
@@ -37,15 +39,26 @@ function Navigation() {
             Home
           </Button>
           <Button
-            variant={location === "/about" ? "default" : "ghost"}
-            onClick={() => setLocation("/about")}
+            variant={location === "/overview" ? "default" : "ghost"}
+            onClick={() => setLocation("/overview")}
             className={`${
-              location === "/about"
+              location === "/overview"
                 ? "bg-blue-600 text-white"
                 : "text-slate-300 hover:text-white hover:bg-slate-800"
             }`}
           >
-            About
+            Overview
+          </Button>
+          <Button
+            variant={location === "/partners" ? "default" : "ghost"}
+            onClick={() => setLocation("/partners")}
+            className={`${
+              location === "/partners"
+                ? "bg-blue-600 text-white"
+                : "text-slate-300 hover:text-white hover:bg-slate-800"
+            }`}
+          >
+            Partners
           </Button>
           <Button
             variant={location === "/reviews" ? "default" : "ghost"}
@@ -56,8 +69,16 @@ function Navigation() {
                 : "text-slate-300 hover:text-white hover:bg-slate-800"
             }`}
           >
-            Reviews/Store
+            Reviews
           </Button>
+          <a
+            href="https://discord.gg/pixeldesign"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors font-medium"
+          >
+            Discord
+          </a>
         </div>
       </div>
     </nav>
@@ -68,6 +89,8 @@ function Router() {
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/overview"} component={Overview} />
+      <Route path={"/partners"} component={Partners} />
       <Route path={"/about"} component={About} />
       <Route path={"/reviews"} component={Reviews} />
       <Route path={"/404"} component={NotFound} />
