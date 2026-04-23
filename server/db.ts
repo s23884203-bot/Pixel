@@ -1,6 +1,6 @@
 import { eq } from "drizzle-orm";
 import { drizzle } from "drizzle-orm/mysql2";
-import { InsertUser, users } from "../drizzle/schema";
+import { InsertUser, users, reviews, InsertReview } from "../drizzle/schema";
 import { ENV } from './_core/env';
 
 let _db: ReturnType<typeof drizzle> | null = null;
@@ -89,4 +89,33 @@ export async function getUserByOpenId(openId: string) {
   return result.length > 0 ? result[0] : undefined;
 }
 
-// TODO: add feature queries here as your schema grows.
+export async function getAllReviews() {
+  const db = await getDb();
+  if (!db) return [];
+  return db.select().from(reviews).orderBy((r) => r.timestamp);
+}
+
+export async function getReviewByDiscordId(discordMessageId: string) {
+  const db = await getDb();
+  if (!db) return undefined;
+  const result = await db
+    .select()
+    .from(reviews)
+    .where(eq(reviews.discordMessageId, discordMessageId))
+    .limit(1);
+  return result.length > 0 ? result[0] : undefined;
+}
+
+export async function createReview(review: InsertReview) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db.insert(reviews).values(review);
+}
+
+export async function deleteReview(discordMessageId: string) {
+  const db = await getDb();
+  if (!db) throw new Error("Database not available");
+  await db
+    .delete(reviews)
+    .where(eq(reviews.discordMessageId, discordMessageId));
+}

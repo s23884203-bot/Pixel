@@ -1,16 +1,75 @@
 import { Toaster } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import NotFound from "@/pages/NotFound";
-import { Route, Switch } from "wouter";
+import Home from "@/pages/Home";
+import Reviews from "@/pages/Reviews";
+import About from "@/pages/About";
+import { Route, Switch, useLocation } from "wouter";
 import ErrorBoundary from "./components/ErrorBoundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
-import Home from "./pages/Home";
+import { Button } from "@/components/ui/button";
+
+function Navigation() {
+  const [location, setLocation] = useLocation();
+
+  return (
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800">
+      <div className="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+        <div
+          onClick={() => setLocation("/")}
+          className="flex items-center gap-2 cursor-pointer group"
+        >
+          <div className="text-2xl font-black text-white group-hover:text-blue-400 transition-colors">
+            PIXEL
+          </div>
+        </div>
+
+        <div className="flex gap-2">
+          <Button
+            variant={location === "/" ? "default" : "ghost"}
+            onClick={() => setLocation("/")}
+            className={`${
+              location === "/"
+                ? "bg-blue-600 text-white"
+                : "text-slate-300 hover:text-white hover:bg-slate-800"
+            }`}
+          >
+            Home
+          </Button>
+          <Button
+            variant={location === "/about" ? "default" : "ghost"}
+            onClick={() => setLocation("/about")}
+            className={`${
+              location === "/about"
+                ? "bg-blue-600 text-white"
+                : "text-slate-300 hover:text-white hover:bg-slate-800"
+            }`}
+          >
+            About
+          </Button>
+          <Button
+            variant={location === "/reviews" ? "default" : "ghost"}
+            onClick={() => setLocation("/reviews")}
+            className={`${
+              location === "/reviews"
+                ? "bg-blue-600 text-white"
+                : "text-slate-300 hover:text-white hover:bg-slate-800"
+            }`}
+          >
+            Reviews/Store
+          </Button>
+        </div>
+      </div>
+    </nav>
+  );
+}
 
 function Router() {
-  // make sure to consider if you need authentication for certain routes
   return (
     <Switch>
       <Route path={"/"} component={Home} />
+      <Route path={"/about"} component={About} />
+      <Route path={"/reviews"} component={Reviews} />
       <Route path={"/404"} component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />
@@ -18,21 +77,16 @@ function Router() {
   );
 }
 
-// NOTE: About Theme
-// - First choose a default theme according to your design style (dark or light bg), than change color palette in index.css
-//   to keep consistent foreground/background color across components
-// - If you want to make theme switchable, pass `switchable` ThemeProvider and use `useTheme` hook
-
 function App() {
   return (
     <ErrorBoundary>
-      <ThemeProvider
-        defaultTheme="light"
-        // switchable
-      >
+      <ThemeProvider defaultTheme="dark">
         <TooltipProvider>
           <Toaster />
-          <Router />
+          <Navigation />
+          <div className="pt-16">
+            <Router />
+          </div>
         </TooltipProvider>
       </ThemeProvider>
     </ErrorBoundary>

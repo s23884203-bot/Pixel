@@ -25,4 +25,18 @@ export const users = mysqlTable("users", {
 export type User = typeof users.$inferSelect;
 export type InsertUser = typeof users.$inferInsert;
 
-// TODO: Add your tables here
+export const reviews = mysqlTable("reviews", {
+  id: int("id").autoincrement().primaryKey(),
+  discordMessageId: varchar("discordMessageId", { length: 64 }).notNull().unique(),
+  discordUserId: varchar("discordUserId", { length: 64 }).notNull(),
+  authorName: varchar("authorName", { length: 255 }).notNull(),
+  authorAvatar: text("authorAvatar"),
+  content: text("content").notNull(),
+  rating: int("rating").default(5),
+  timestamp: timestamp("timestamp").notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Review = typeof reviews.$inferSelect;
+export type InsertReview = typeof reviews.$inferInsert;
