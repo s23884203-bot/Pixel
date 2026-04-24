@@ -15,8 +15,9 @@
 - [x] Add Discord link to navigation
 - [x] Fix reviews display filtering
 - [x] Style all components with dark theme matching Pixel Design logo colors
-- [ ] Test responsive design across devices
-- [ ] Push all code to GitHub repository
+- [x] Add featured clients carousel with Discord server icons
+- [x] Test responsive design across devices
+- [x] Push all code to GitHub repository
 
 ## Constraints
 - Server ID: 1195454002284990614

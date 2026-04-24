@@ -124,7 +124,7 @@ export async function fetchDiscordPartners(): Promise<DiscordMessage[]> {
     }
 
     const response = await fetch(
-      `${DISCORD_API_BASE}/channels/${PARTNERS_CHANNEL_ID}/messages?limit=50`,
+      `${DISCORD_API_BASE}/channels/${PARTNERS_CHANNEL_ID}/messages?limit=100`,
       {
         headers: {
           Authorization: token,
@@ -141,6 +141,33 @@ export async function fetchDiscordPartners(): Promise<DiscordMessage[]> {
   } catch (error) {
     console.error("Error fetching Discord partners:", error);
     return [];
+  }
+}
+
+export async function getServerIconFromInvite(inviteCode: string): Promise<string | null> {
+  try {
+    const token = process.env.DISCORD_TOKEN;
+    if (!token) return null;
+
+    const response = await fetch(
+      `${DISCORD_API_BASE}/invites/${inviteCode}?with_counts=true`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    if (!response.ok) return null;
+
+    const data = (await response.json()) as any;
+    if (data.guild && data.guild.icon) {
+      return `https://cdn.discordapp.com/icons/${data.guild.id}/${data.guild.icon}.png`;
+    }
+    return null;
+  } catch (error) {
+    console.error("Error getting server icon:", error);
+    return null;
   }
 }
 

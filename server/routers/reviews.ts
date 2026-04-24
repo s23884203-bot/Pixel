@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
 import { getAllReviews } from "../db";
-import { fetchDiscordReviews, syncReviewsFromDiscord, fetchDiscordPartners } from "../discord";
+import { fetchDiscordReviews, syncReviewsFromDiscord, fetchDiscordPartners, getServerIconFromInvite } from "../discord";
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
@@ -46,5 +46,34 @@ export const reviewsRouter = router({
           : null,
         link: null,
       }));
+  }),
+
+  featuredClients: publicProcedure.query(async () => {
+    const messages = await fetchDiscordPartners();
+    const clients = [];
+
+    for (const msg of messages) {
+      if (msg.content && msg.content.includes("عميلنا المميز")) {
+        // Extract Discord invite code from content
+        const inviteMatch = msg.content.match(/discord\.gg\/([a-zA-Z0-9]+)/);
+        if (inviteMatch) {
+          const inviteCode = inviteMatch[1];
+          const serverIcon = await getServerIconFromInvite(inviteCode);
+          
+          clients.push({
+            id: msg.id,
+            name: msg.author.username,
+            username: msg.author.username,
+            avatar: msg.author.avatar
+              ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
+              : null,
+            serverIcon: serverIcon,
+            inviteLink: `https://discord.gg/${inviteCode}`,
+          });
+        }
+      }
+    }
+
+    return clients;
   }),
 });
