@@ -33,9 +33,10 @@ interface FeaturedClient {
 }
 
 export default function Home() {
-  const { data: reviewsData, isLoading: reviewsLoading } = trpc.reviews.list.useQuery(undefined, {
+  const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = trpc.reviews.list.useQuery(undefined, {
     staleTime: 30000,
-    refetchOnWindowFocus: false
+    refetchOnWindowFocus: false,
+    retry: 1
   });
   const { data: partnerMessages } = trpc.reviews.partners.useQuery();
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
@@ -47,10 +48,14 @@ export default function Home() {
 
   useEffect(() => {
     if (reviewsData) {
+      console.log("Reviews received in Frontend:", reviewsData);
       const filtered = reviewsData.filter(r => (r.content && r.content.trim().length > 0) || r.image);
       setDisplayReviews(filtered);
     }
-  }, [reviewsData]);
+    if (reviewsError) {
+      console.error("TRPC Error fetching reviews:", reviewsError);
+    }
+  }, [reviewsData, reviewsError]);
 
   useEffect(() => {
     if (partnerMessages) setPartners(partnerMessages);
@@ -62,16 +67,31 @@ export default function Home() {
 
   const isLoading = reviewsLoading && displayReviews.length === 0;
 
-  const PlatformIcon = ({ platform }: { platform: 'discord' | 'kick' }) => {
+  const PlatformIcon = ({ platform, icon }: { platform: 'discord' | 'kick', icon?: string | null }) => {
+    const [imgError, setImgError] = useState(false);
+
+    if (icon && !imgError) {
+      return (
+        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/10 shadow-lg bg-black">
+          <img 
+            src={icon} 
+            alt={platform} 
+            className="w-full h-full object-cover" 
+            onError={() => setImgError(true)}
+          />
+        </div>
+      );
+    }
+
     if (platform === 'kick') {
       return (
-        <div className="w-8 h-8 bg-[#53fc18] rounded-full flex items-center justify-center shadow-lg shadow-[#53fc18]/20 border-2 border-black">
-          <span className="text-xs font-black text-black">K</span>
+        <div className="w-10 h-10 bg-[#53fc18] rounded-full flex items-center justify-center shadow-lg shadow-[#53fc18]/20 border-2 border-black">
+          <span className="text-sm font-black text-black">K</span>
         </div>
       );
     }
     return (
-      <div className="w-8 h-8 bg-[#5865F2] rounded-full flex items-center justify-center shadow-lg shadow-[#5865F2]/20 border-2 border-black p-1.5">
+      <div className="w-10 h-10 bg-[#5865F2] rounded-full flex items-center justify-center shadow-lg shadow-[#5865F2]/20 border-2 border-black p-2">
         <svg viewBox="0 0 127.14 96.36" fill="white" className="w-full h-full">
           <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.71,32.65-1.82,56.6.48,80.21a105.73,105.73,0,0,0,32.22,16.15,77.7,77.7,0,0,0,7.34-11.86,68.11,68.11,0,0,1-11.85-5.65c.99-.71,1.96-1.46,2.89-2.22a74.87,74.87,0,0,0,65.35,0c.93.76,1.9,1.51,2.89,2.22a68.4,68.4,0,0,1-11.85,5.65,77,77,0,0,0,7.34,11.86,105.55,105.55,0,0,0,32.25-16.15C129.58,52.13,125.4,28.38,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5.12-12.67,11.45-12.67S54,46,54,53,48.83,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5.12-12.67,11.44-12.67S96.2,46,96.2,53,91.05,65.69,84.69,65.69Z"/>
         </svg>
@@ -139,7 +159,7 @@ export default function Home() {
                     className="flex items-center gap-5 p-5 bg-white/5 border border-white/5 rounded-[1.5rem] hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] transition-all group shadow-lg"
                   >
                     <div className="flex-shrink-0 transform group-hover:rotate-12 transition-transform">
-                      <PlatformIcon platform={client.platform} />
+                      <PlatformIcon platform={client.platform} icon={client.serverIcon} />
                     </div>
                     <div className="flex-1 min-w-0">
                       <h3 className="font-black text-base truncate group-hover:text-white transition-colors uppercase tracking-tighter italic">{client.name}</h3>
@@ -181,7 +201,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Partners Grid (Smaller & Subtle below Logo) */}
+              {/* Partners Grid */}
               <div className="mt-24 w-full max-w-2xl">
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-4 opacity-50 hover:opacity-100 transition-opacity">
                   {partners.slice(0, 6).map(p => (
@@ -195,7 +215,7 @@ export default function Home() {
             </div>
           </div>
 
-          {/* Right Sidebar: Reviews List (Mirrors Left Sidebar) */}
+          {/* Right Sidebar: Reviews List */}
           <aside className="lg:w-[400px] lg:sticky lg:top-24 self-start order-3">
             <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl shadow-black">
               <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
@@ -231,13 +251,14 @@ export default function Home() {
                       <p className="text-[11px] text-white/60 leading-relaxed mb-4 italic">"{r.content}"</p>
                       {r.image && (
                         <div className="rounded-xl overflow-hidden border border-white/10 shadow-inner">
-                          <img src={r.image} className="w-full h-32 object-cover grayscale group-hover:grayscale-0 transition-all" />
+                          <img src={r.image} className="w-full h-auto object-contain grayscale group-hover:grayscale-0 transition-all" />
                         </div>
                       )}
                     </div>
                   ))
                 ) : (
                   <div className="p-12 border border-white/5 border-dashed rounded-[1.5rem] text-center">
+                    <MessageSquare className="w-12 h-12 text-white/10 mx-auto mb-4" />
                     <p className="text-[10px] font-bold text-white/10 uppercase tracking-[0.2em]">No Reviews Yet</p>
                   </div>
                 )}
