@@ -77,6 +77,8 @@ export default function Home() {
   const currentReview = displayReviews[currentReviewIndex];
   const currentClient = featuredClients[currentClientIndex];
 
+  const isLoading = !reviews && !partnerMessages && !featuredClientsData;
+
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black">
       {/* Background Decor */}
@@ -102,6 +104,15 @@ export default function Home() {
             </a>
           </div>
         </nav>
+
+        {isLoading && (
+          <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+            <div className="flex flex-col items-center gap-4">
+              <div className="w-12 h-12 border-4 border-white/10 border-t-white rounded-full animate-spin"></div>
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Loading Pixel Experience</span>
+            </div>
+          </div>
+        )}
 
         {/* Hero Section */}
         <header className="pt-20 pb-16 px-6 text-center max-w-4xl mx-auto">

@@ -61,8 +61,7 @@ export const reviewsRouter = router({
         const hasContent = m.content && m.content.trim().length > 0;
         const hasEmbeds = m.embeds && m.embeds.length > 0;
         // Filter out messages that look like "featured clients" (contain invite links)
-        const hasInvite = /discord\.(gg|com\/invite)\/[a-zA-Z0-9-]+/.test(m.content + JSON.stringify(m.embeds));
-        return (hasContent || hasEmbeds) && !hasInvite;
+        return (hasContent || hasEmbeds);
       })
       .map(m => {
         let description = m.content || "";
