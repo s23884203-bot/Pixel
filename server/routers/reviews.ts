@@ -8,7 +8,12 @@ export const reviewsRouter = router({
     try {
       const messages = await fetchDiscordReviews();
       const discordReviews = messages
-        .filter(m => (m.content && m.content.trim().length > 0) || (m.embeds && m.embeds.length > 0) || (m.attachments && m.attachments.length > 0))
+        .filter(m => {
+          const hasContent = m.content && m.content.trim().length > 0;
+          const hasEmbeds = m.embeds && m.embeds.length > 0;
+          const hasAttachments = m.attachments && m.attachments.length > 0;
+          return hasContent || hasEmbeds || hasAttachments;
+        })
         .map(m => {
           let content = m.content || "";
           if (m.embeds && m.embeds.length > 0) {
@@ -28,7 +33,7 @@ export const reviewsRouter = router({
             authorAvatar: m.author.avatar
               ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
               : null,
-            content: content || "تقييم مصور",
+            content: content.trim() || "تقييم Pixel Design",
             image: image,
             rating: 5,
             timestamp: new Date(m.timestamp),

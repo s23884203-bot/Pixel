@@ -49,7 +49,11 @@ export default function Home() {
   }, []);
 
   useEffect(() => {
-    if (reviews) setDisplayReviews(reviews.filter(r => r.content?.trim() || r.image));
+    if (reviews) {
+      const filtered = reviews.filter(r => r.content?.trim() || r.image);
+      setDisplayReviews(filtered);
+      console.log("Reviews loaded:", filtered.length);
+    }
   }, [reviews]);
 
   useEffect(() => {
@@ -89,7 +93,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black">
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black flex flex-col">
       {/* Background Decor */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div 
@@ -99,10 +103,10 @@ export default function Home() {
         <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
       </div>
 
-      <div className="relative z-10 flex flex-col min-h-screen">
+      <div className="relative z-10 flex flex-col flex-1">
         {/* Nav */}
         <nav className="border-b border-white/5 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
-          <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+          <div className="max-w-[1800px] mx-auto px-6 py-4 flex justify-between items-center">
             <div className="text-xl font-black tracking-tighter uppercase italic">Pixel Design</div>
             <a 
               href="https://discord.gg/wBuqaM6tqm" 
@@ -123,10 +127,11 @@ export default function Home() {
           </div>
         )}
 
-        <div className="max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-start pt-12">
+        {/* Main Layout Container */}
+        <div className="max-w-[1800px] mx-auto px-6 w-full flex flex-col lg:flex-row gap-12 pt-12 flex-1">
           
-          {/* Left Sidebar: Featured Clients (STARTS FROM TOP) */}
-          <aside className="lg:col-span-4 lg:sticky lg:top-24 order-2 lg:order-1">
+          {/* Left Sidebar: Featured Clients (FLUSH LEFT) */}
+          <aside className="lg:w-[400px] lg:sticky lg:top-24 self-start order-2 lg:order-1">
             <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl shadow-black">
               <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
                 <div className="bg-white/10 p-2 rounded-xl">
@@ -166,8 +171,8 @@ export default function Home() {
             </div>
           </aside>
 
-          {/* Right Main Content: Hero + Reviews + Partners */}
-          <div className="lg:col-span-8 space-y-12 order-1 lg:order-2">
+          {/* Right Main Content Area */}
+          <div className="flex-1 space-y-12 order-1 lg:order-2">
             {/* Hero Section */}
             <header className="text-center max-w-4xl mx-auto pb-8">
               <div className="inline-block mb-6 relative group">
@@ -191,7 +196,7 @@ export default function Home() {
               </div>
             </header>
 
-            {/* Grid for Reviews & Partners */}
+            {/* Content Grid for Reviews & Partners */}
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
               <div className="xl:col-span-7 space-y-12">
                 {/* Main Review Spotlight */}
