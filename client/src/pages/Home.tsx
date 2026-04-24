@@ -149,30 +149,41 @@ export default function Home() {
         {/* Content Grid */}
         <main className="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start w-full">
           
-          {/* Left: Featured Clients (TOP LEFT) */}
-          <aside className="lg:col-span-3 lg:order-first order-last">
-            <div className="lg:sticky lg:top-24 bg-white/[0.02] border border-white/5 rounded-3xl p-6">
-              <div className="flex items-center gap-2 mb-6 border-b border-white/5 pb-4">
-                <Award className="w-5 h-5 text-white/60" />
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">عملاء مميزون</h2>
+          {/* Left: Featured Clients (TOP LEFT - ENLARGED) */}
+          <aside className="lg:col-span-4 lg:order-first order-last">
+            <div className="lg:sticky lg:top-24 bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl shadow-black">
+              <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
+                <div className="bg-white/10 p-2 rounded-xl">
+                  <Award className="w-6 h-6 text-white" />
+                </div>
+                <div>
+                  <h2 className="text-lg font-black uppercase tracking-tighter italic text-white">عملاء مميزون</h2>
+                  <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">Premium Clients</p>
+                </div>
               </div>
-              <div className="max-h-[500px] overflow-y-auto pr-2 space-y-3 custom-scrollbar">
+              <div className="max-h-[700px] overflow-y-auto pr-4 space-y-4 custom-scrollbar">
                 {featuredClients.map(client => (
                   <a 
                     key={client.id}
                     href={client.inviteLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="flex items-center gap-4 p-3 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all group"
+                    className="flex items-center gap-5 p-5 bg-white/5 border border-white/5 rounded-[1.5rem] hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] transition-all group shadow-lg"
                   >
-                    <div className="flex-shrink-0">
+                    <div className="flex-shrink-0 transform group-hover:rotate-12 transition-transform">
                       <PlatformIcon platform={client.platform} />
                     </div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-bold text-sm truncate group-hover:text-white transition-colors uppercase tracking-tight">{client.name}</h3>
-                      <p className="text-[9px] text-white/30 uppercase tracking-widest font-bold">Visit Profile</p>
+                      <h3 className="font-black text-base truncate group-hover:text-white transition-colors uppercase tracking-tighter italic">{client.name}</h3>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[9px] text-white/40 uppercase tracking-widest font-black">View Project</span>
+                        <div className="w-1 h-1 bg-white/20 rounded-full"></div>
+                        <span className="text-[9px] text-white/20 uppercase tracking-widest font-bold">{client.platform}</span>
+                      </div>
                     </div>
-                    <ExternalLink className="w-3 h-3 text-white/10 group-hover:text-white transition-colors" />
+                    <div className="bg-white/5 p-2 rounded-lg group-hover:bg-white group-hover:text-black transition-all">
+                      <ExternalLink className="w-4 h-4" />
+                    </div>
                   </a>
                 ))}
               </div>
@@ -180,7 +191,7 @@ export default function Home() {
           </aside>
 
           {/* Center: Main Review Spotlight & Partners */}
-          <section className="lg:col-span-6 space-y-12">
+          <section className="lg:col-span-5 space-y-12">
             {/* Main Review Spotlight */}
             {currentReview && (
               <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group">
@@ -256,7 +267,7 @@ export default function Home() {
           </section>
 
           {/* Right: Recent Reviews List */}
-          <aside className="lg:col-span-3 space-y-12">
+          <aside className="lg:col-span-3 space-y-12 lg:block hidden">
             <section>
               <div className="flex items-center gap-2 mb-6">
                 <Star className="w-5 h-5 text-white/60" />
