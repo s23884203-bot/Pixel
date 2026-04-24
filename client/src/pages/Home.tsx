@@ -96,16 +96,24 @@ export default function Home() {
   const currentClient = featuredClients[currentClientIndex];
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950">
+    <div className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
+      {/* Background Image with Overlay */}
+      <div 
+        className="fixed inset-0 z-0 opacity-40 bg-cover bg-center bg-no-repeat"
+        style={{ backgroundImage: 'url("/bg.webp")' }}
+      />
+      <div className="fixed inset-0 z-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/60 to-[#0a0a0a]" />
+      
+      <div className="relative z-10 min-h-screen flex flex-col">
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800">
+      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/5">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="text-2xl font-black text-white cursor-pointer" onClick={() => window.location.href='/'}>PIXEL DESIGN</div>
           <a
             href="https://discord.gg/wBuqaM6tqm"
             target="_blank"
             rel="noopener noreferrer"
-            className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors font-medium flex items-center gap-2"
+            className="px-4 py-2 bg-white text-black hover:bg-white/90 rounded-md transition-colors font-medium flex items-center gap-2"
           >
             <ExternalLink className="w-4 h-4" />
             Discord
@@ -114,7 +122,7 @@ export default function Home() {
       </nav>
 
       {/* Main Content */}
-      <div className="pt-16 min-h-screen flex flex-col">
+      <div className="pt-16 flex-1 flex flex-col">
         <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-8 p-8 max-w-7xl mx-auto w-full">
           {/* Left Sidebar - Partners */}
           <div className="lg:col-span-1">
@@ -124,7 +132,7 @@ export default function Home() {
                 {partners.map((partner) => (
                   <div
                     key={partner.id}
-                    className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-purple-500/50 transition-colors"
+                    className="p-4 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors"
                   >
                     {partner.image && (
                       <img
@@ -134,7 +142,7 @@ export default function Home() {
                       />
                     )}
                     <h3 className="font-bold text-white text-sm">{partner.name}</h3>
-                    <p className="text-xs text-slate-400 mt-1 line-clamp-2">
+                    <p className="text-xs text-white/40 mt-1 line-clamp-2">
                       {partner.description}
                     </p>
                   </div>
@@ -162,19 +170,17 @@ export default function Home() {
             <h1 className="text-5xl md:text-6xl font-black text-white text-center mb-4">
               Pixel Design
             </h1>
-            <p className="text-xl text-slate-300 text-center mb-12">
-              مجتمع متخصص في فن البكسل والتصميم الرقمي
-            </p>
+
 
             {/* Stats */}
             <div className="grid grid-cols-2 gap-6 mb-12 w-full">
-              <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center">
-                <p className="text-4xl font-black text-blue-400 mb-2">{stats?.memberCount || 2000}+</p>
-                <p className="text-slate-300">members</p>
+              <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
+                <p className="text-4xl font-black text-white mb-2">{stats?.memberCount || 2000}+</p>
+                <p className="text-white/60">members</p>
               </div>
-              <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center">
-                <p className="text-4xl font-black text-purple-400 mb-2">{stats?.totalReviews || 200}+</p>
-                <p className="text-slate-300">reviews</p>
+              <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
+                <p className="text-4xl font-black text-white mb-2">{stats?.totalReviews || 200}+</p>
+                <p className="text-white/60">reviews</p>
               </div>
             </div>
 
@@ -183,7 +189,7 @@ export default function Home() {
               href="https://discord.gg/wBuqaM6tqm"
               target="_blank"
               rel="noopener noreferrer"
-              className="px-8 py-3 bg-gradient-to-r from-purple-600 to-blue-600 hover:from-purple-700 hover:to-blue-700 text-white rounded-lg font-bold text-lg transition-all transform hover:scale-105 flex items-center gap-2"
+              className="px-8 py-3 bg-white text-black hover:bg-white/90 rounded-lg font-bold text-lg transition-all transform hover:scale-105 flex items-center gap-2"
             >
               <ExternalLink className="w-5 h-5" />
               انضم إلى الديسكورد
@@ -193,7 +199,7 @@ export default function Home() {
             {currentClient && (
               <div className="mt-12 w-full max-w-md">
                 <h3 className="text-2xl font-bold text-white mb-6 text-center">عميلنا المميز</h3>
-                <div className="relative p-6 bg-gradient-to-br from-purple-900/30 to-slate-800/50 rounded-xl border border-purple-500/30">
+                <div className="relative p-6 bg-white/5 backdrop-blur-md rounded-xl border border-white/20">
                   {/* Client Info */}
                   <div className="flex items-center gap-4 mb-4">
                     {currentClient.avatar && (
@@ -205,7 +211,7 @@ export default function Home() {
                     )}
                     <div>
                       <h4 className="text-xl font-bold text-white">{currentClient.name}</h4>
-                      <p className="text-sm text-slate-400">@{currentClient.username}</p>
+                      <p className="text-sm text-white/40">@{currentClient.username}</p>
                     </div>
                   </div>
 
@@ -223,7 +229,7 @@ export default function Home() {
                     href={currentClient.inviteLink}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="block w-full px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-lg transition-colors text-sm font-medium text-center mb-4"
+                    className="block w-full px-4 py-2 bg-white text-black hover:bg-white/90 rounded-lg transition-colors text-sm font-medium text-center mb-4"
                   >
                     زيارة السيرفر
                   </a>
@@ -265,7 +271,7 @@ export default function Home() {
             {/* Reviews Carousel */}
             <div className="mt-12 w-full">
               {currentReview ? (
-                <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50">
+                <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
                   <div className="flex items-start gap-4 mb-4">
                     {currentReview.authorAvatar ? (
                       <img
@@ -287,7 +293,7 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
-                  <p className="text-slate-300 mb-4 line-clamp-4">
+                  <p className="text-white/70 mb-4 line-clamp-4">
                     {currentReview.content}
                   </p>
                   <p className="text-sm text-slate-500">
@@ -314,7 +320,7 @@ export default function Home() {
                   </div>
                 </div>
               ) : (
-                <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center text-slate-400">
+                <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center text-white/40">
                   جاري تحميل التقييمات...
                 </div>
               )}
@@ -329,7 +335,7 @@ export default function Home() {
                 {displayReviews.slice(0, 5).map((review) => (
                   <div
                     key={review.id}
-                    className="p-4 bg-slate-800/50 rounded-lg border border-slate-700/50 hover:border-blue-500/50 transition-colors"
+                    className="p-4 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 hover:border-blue-500/50 transition-colors"
                   >
                     <div className="flex items-center gap-2 mb-2">
                       {review.authorAvatar ? (
@@ -345,7 +351,7 @@ export default function Home() {
                       )}
                       <h3 className="font-bold text-white text-sm">{review.authorName}</h3>
                     </div>
-                    <p className="text-xs text-slate-400 line-clamp-2 mb-2">
+                    <p className="text-xs text-white/40 line-clamp-2 mb-2">
                       {review.content}
                     </p>
                     <div className="flex gap-0.5">
@@ -373,7 +379,7 @@ export default function Home() {
                   {displayReviews.map((review, index) => (
                     <div
                       key={review.id}
-                      className="flex-shrink-0 w-80 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-slate-700/50 hover:border-blue-500/50 transition-all"
+                      className="flex-shrink-0 w-80 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-white/10 hover:border-blue-500/50 transition-all"
                       style={{
                         animation: `slideIn 0.5s ease-out ${index * 0.1}s both`,
                       }}
@@ -399,7 +405,7 @@ export default function Home() {
                           </div>
                         </div>
                       </div>
-                      <p className="text-slate-300 text-sm line-clamp-4 mb-4">
+                      <p className="text-white/70 text-sm line-clamp-4 mb-4">
                         {review.content}
                       </p>
                       <p className="text-xs text-slate-500">
@@ -414,7 +420,7 @@ export default function Home() {
                 </div>
               </div>
             ) : (
-              <div className="text-center text-slate-400">
+              <div className="text-center text-white/40">
                 لا توجد تقييمات حالياً
               </div>
             )}

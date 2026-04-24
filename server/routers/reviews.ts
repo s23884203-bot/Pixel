@@ -57,16 +57,22 @@ export const reviewsRouter = router({
   partners: publicProcedure.query(async () => {
     const messages = await fetchDiscordPartners();
     return messages
-      .filter(m => m.content && m.content.trim().length > 0)
-      .map(m => ({
-        id: m.id,
-        name: m.author.username,
-        description: m.content,
-        image: m.author.avatar
-          ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
-          : null,
-        link: null,
-      }));
+      .filter(m => (m.content && m.content.trim().length > 0) || (m.embeds && m.embeds.length > 0))
+      .map(m => {
+        let description = m.content || "";
+        if (m.embeds && m.embeds.length > 0) {
+          description = m.embeds[0].description || m.embeds[0].title || description;
+        }
+        return {
+          id: m.id,
+          name: m.author.username,
+          description: description,
+          image: m.author.avatar
+            ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
+            : null,
+          link: null,
+        };
+      });
   }),
 
   featuredClients: publicProcedure.query(async () => {
@@ -74,8 +80,9 @@ export const reviewsRouter = router({
     const clients = [];
 
     for (const msg of messages) {
-      // Extract Discord invite code from content
-      const inviteMatch = msg.content.match(/discord\.gg\/([a-zA-Z0-9-]+)/) || msg.content.match(/discord\.com\/invite\/([a-zA-Z0-9-]+)/);
+      // Extract Discord invite code from content or embeds
+      const fullText = msg.content + (msg.embeds?.map(e => (e.description || "") + (e.title || "")).join(" ") || "");
+      const inviteMatch = fullText.match(/discord\.gg\/([a-zA-Z0-9-]+)/) || fullText.match(/discord\.com\/invite\/([a-zA-Z0-9-]+)/);
       
       if (inviteMatch) {
         const inviteCode = inviteMatch[1];
