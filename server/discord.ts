@@ -34,6 +34,11 @@ interface DiscordMessage {
       url: string;
     };
   }>;
+  attachments: Array<{
+    url: string;
+    proxy_url: string;
+    content_type?: string;
+  }>;
 }
 
 export async function validateDiscordToken(): Promise<{

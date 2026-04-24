@@ -16,6 +16,11 @@ export const reviewsRouter = router({
         if (m.embeds && m.embeds.length > 0) {
           content = m.embeds[0].description || m.embeds[0].title || content;
         }
+        let image = null;
+        if (m.attachments && m.attachments.length > 0) {
+          image = m.attachments[0].url;
+        }
+
         return {
           id: parseInt(m.id.slice(-8)),
           discordMessageId: m.id,
@@ -25,6 +30,7 @@ export const reviewsRouter = router({
             ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
             : null,
           content: content,
+          image: image,
           rating: 5,
           timestamp: new Date(m.timestamp),
         };
@@ -101,8 +107,21 @@ export const reviewsRouter = router({
   }),
 
   featuredClients: publicProcedure.query(async () => {
+    const manualClients = [
+      { id: "m1", name: "TRG", username: "trg", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/trg" },
+      { id: "m2", name: "D7MX", username: "d7mx", avatar: null, serverIcon: null, inviteLink: "https://kick.com/d7mx" },
+      { id: "m3", name: "IAZUZ", username: "iazuz", avatar: null, serverIcon: null, inviteLink: "https://kick.com/iazuz" },
+      { id: "m4", name: "IHIMO", username: "ihimo", avatar: null, serverIcon: null, inviteLink: "https://kick.com/ihimo" },
+      { id: "m5", name: "II3LI", username: "ii3li", avatar: null, serverIcon: null, inviteLink: "https://kick.com/ii3li" },
+      { id: "m6", name: "2MZX", username: "2mzx", avatar: null, serverIcon: null, inviteLink: "https://kick.com/2mzx" },
+      { id: "m7", name: "L1T", username: "l1t", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/l1t" },
+      { id: "m8", name: "VE", username: "ve", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/ve" },
+      { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/CMP" },
+      { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/s1s" },
+    ];
+
     const messages = await fetchDiscordPartners();
-    const clients = [];
+    const discordClients = [];
 
     for (const msg of messages) {
       const fullText = msg.content + JSON.stringify(msg.embeds);
@@ -112,7 +131,6 @@ export const reviewsRouter = router({
         const inviteCode = inviteMatch[2];
         const serverIcon = await getServerIconFromInvite(inviteCode);
         
-        // Use embed info if available for better display
         let displayName = msg.author.username;
         let displayAvatar = msg.author.avatar
           ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
@@ -124,7 +142,7 @@ export const reviewsRouter = router({
           if (embed.thumbnail?.url) displayAvatar = embed.thumbnail.url;
         }
         
-        clients.push({
+        discordClients.push({
           id: msg.id,
           name: displayName,
           username: msg.author.username,
@@ -135,6 +153,6 @@ export const reviewsRouter = router({
       }
     }
 
-    return clients;
+    return [...manualClients, ...discordClients];
   }),
 });

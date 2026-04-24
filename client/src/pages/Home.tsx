@@ -7,6 +7,7 @@ import Footer from "@/components/Footer";
 interface Review {
   id: number;
   content: string;
+  image?: string | null;
   rating: number | null;
   authorName: string;
   authorAvatar?: string | null;
@@ -228,6 +229,12 @@ export default function Home() {
                 <p className="text-2xl md:text-3xl font-medium leading-tight mb-8 text-white/90">
                   "{currentReview.content}"
                 </p>
+
+                {currentReview.image && (
+                  <div className="mb-8 rounded-2xl overflow-hidden border border-white/10 shadow-2xl max-h-[400px]">
+                    <img src={currentReview.image} className="w-full h-full object-contain bg-black/40" />
+                  </div>
+                )}
                 
                 <div className="flex justify-between items-center">
                   <span className="text-sm text-white/20">
@@ -261,6 +268,11 @@ export default function Home() {
                       <span className="font-bold text-xs">{r.authorName}</span>
                     </div>
                     <p className="text-xs text-white/60 line-clamp-3 mb-3 leading-relaxed">"{r.content}"</p>
+                    {r.image && (
+                      <div className="mb-3 rounded-lg overflow-hidden border border-white/5">
+                        <img src={r.image} className="w-full h-24 object-cover" />
+                      </div>
+                    )}
                     <div className="flex gap-0.5">
                       {Array.from({ length: 5 }).map((_, i) => (
                         <Star key={i} className={`w-3 h-3 ${i < (r.rating || 5) ? 'fill-white' : 'fill-white/10 text-transparent'}`} />
