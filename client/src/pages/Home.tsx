@@ -11,7 +11,7 @@ interface Review {
   rating: number | null;
   authorName: string;
   authorAvatar?: string | null;
-  timestamp: Date;
+  timestamp: string | Date;
 }
 
 interface Partner {
@@ -33,8 +33,11 @@ interface FeaturedClient {
 }
 
 export default function Home() {
-  const { data: reviews } = trpc.reviews.list.useQuery();
-  const syncMutation = trpc.reviews.sync.useMutation();
+  // Queries with higher staleTime to prevent unnecessary re-fetches
+  const { data: reviewsData, isLoading: reviewsLoading } = trpc.reviews.list.useQuery(undefined, {
+    staleTime: 30000,
+    refetchOnWindowFocus: false
+  });
   const { data: partnerMessages } = trpc.reviews.partners.useQuery();
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
   const { data: stats } = trpc.reviews.getStats.useQuery();
@@ -45,16 +48,14 @@ export default function Home() {
   const [featuredClients, setFeaturedClients] = useState<FeaturedClient[]>([]);
 
   useEffect(() => {
-    syncMutation.mutate();
-  }, []);
-
-  useEffect(() => {
-    if (reviews) {
-      const filtered = reviews.filter(r => r.content?.trim() || r.image);
+    if (reviewsData) {
+      console.log("Raw reviews data received:", reviewsData.length);
+      // Accept any review that has either content OR an image
+      const filtered = reviewsData.filter(r => (r.content && r.content.trim().length > 0) || r.image);
+      console.log("Filtered reviews to display:", filtered.length);
       setDisplayReviews(filtered);
-      console.log("Reviews loaded:", filtered.length);
     }
-  }, [reviews]);
+  }, [reviewsData]);
 
   useEffect(() => {
     if (partnerMessages) setPartners(partnerMessages);
@@ -67,13 +68,13 @@ export default function Home() {
   // Auto-rotate main review
   useEffect(() => {
     if (displayReviews.length > 0) {
-      const interval = setInterval(() => setCurrentReviewIndex(p => (p + 1) % displayReviews.length), 5000);
+      const interval = setInterval(() => setCurrentReviewIndex(p => (p + 1) % displayReviews.length), 6000);
       return () => clearInterval(interval);
     }
   }, [displayReviews]);
 
   const currentReview = displayReviews[currentReviewIndex];
-  const isLoading = !reviews && !partnerMessages && !featuredClientsData;
+  const isLoading = reviewsLoading && displayReviews.length === 0;
 
   const PlatformIcon = ({ platform }: { platform: 'discord' | 'kick' }) => {
     if (platform === 'kick') {
@@ -200,7 +201,7 @@ export default function Home() {
             <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
               <div className="xl:col-span-7 space-y-12">
                 {/* Main Review Spotlight */}
-                {currentReview && (
+                {currentReview ? (
                   <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group">
                     <div className="absolute top-0 right-0 p-8 opacity-5">
                       <MessageSquare className="w-32 h-32 rotate-12" />
@@ -253,14 +254,15 @@ export default function Home() {
                       </div>
                     </div>
                   </div>
+                ) : (
+                  <div className="bg-white/5 border border-white/10 border-dashed rounded-[2.5rem] p-12 text-center">
+                    <MessageSquare className="w-12 h-12 text-white/10 mx-auto mb-4" />
+                    <p className="text-white/30 font-bold uppercase tracking-widest text-xs">Waiting for Discord Reviews...</p>
+                  </div>
                 )}
 
-                {/* Partners Section */}
+                {/* Partners Section (Title Removed as requested) */}
                 <section>
-                  <div className="flex items-center gap-2 mb-6">
-                    <Users className="w-5 h-5 text-white/60" />
-                    <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">الشركاء</h2>
-                  </div>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {partners.map(p => (
                       <div key={p.id} className="group p-5 bg-white/[0.03] border border-white/5 rounded-2xl hover:border-white/20 transition-all">
@@ -281,25 +283,31 @@ export default function Home() {
                     <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Feedback Feed</h2>
                   </div>
                   <div className="grid gap-4">
-                    {displayReviews.slice(0, 6).map(r => (
-                      <div key={r.id} className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-colors">
-                        <div className="flex items-center gap-3 mb-3">
-                          {r.authorAvatar && <img src={r.authorAvatar} className="w-8 h-8 rounded-full grayscale border border-white/10" />}
-                          <span className="font-bold text-[10px] uppercase tracking-tight">{r.authorName}</span>
-                        </div>
-                        <p className="text-[11px] text-white/50 line-clamp-3 mb-3 leading-relaxed">"{r.content}"</p>
-                        {r.image && (
-                          <div className="mb-3 rounded-lg overflow-hidden border border-white/5">
-                            <img src={r.image} className="w-full h-24 object-cover grayscale hover:grayscale-0 transition-all" />
+                    {displayReviews.length > 0 ? (
+                      displayReviews.slice(0, 6).map(r => (
+                        <div key={r.id} className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-colors">
+                          <div className="flex items-center gap-3 mb-3">
+                            {r.authorAvatar && <img src={r.authorAvatar} className="w-8 h-8 rounded-full grayscale border border-white/10" />}
+                            <span className="font-bold text-[10px] uppercase tracking-tight">{r.authorName}</span>
                           </div>
-                        )}
-                        <div className="flex gap-0.5">
-                          {Array.from({ length: 5 }).map((_, i) => (
-                            <Star key={i} className={`w-2.5 h-2.5 ${i < (r.rating || 5) ? 'fill-white' : 'fill-white/10 text-transparent'}`} />
-                          ))}
+                          <p className="text-[11px] text-white/50 line-clamp-3 mb-3 leading-relaxed">"{r.content}"</p>
+                          {r.image && (
+                            <div className="mb-3 rounded-lg overflow-hidden border border-white/5">
+                              <img src={r.image} className="w-full h-24 object-cover grayscale hover:grayscale-0 transition-all" />
+                            </div>
+                          )}
+                          <div className="flex gap-0.5">
+                            {Array.from({ length: 5 }).map((_, i) => (
+                              <Star key={i} className={`w-2.5 h-2.5 ${i < (r.rating || 5) ? 'fill-white' : 'fill-white/10 text-transparent'}`} />
+                            ))}
+                          </div>
                         </div>
+                      ))
+                    ) : (
+                      <div className="p-8 border border-white/5 border-dashed rounded-2xl text-center">
+                        <p className="text-[10px] font-bold text-white/10 uppercase tracking-[0.2em]">No Recent Feed</p>
                       </div>
-                    ))}
+                    )}
                   </div>
                 </section>
               </aside>
