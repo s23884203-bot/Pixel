@@ -7,7 +7,6 @@ export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
     try {
       const messages = await fetchDiscordReviews();
-      console.log(`Fetched ${messages.length} messages from Discord reviews channel`);
       
       const discordReviews = messages
         .filter(m => {
@@ -44,34 +43,10 @@ export const reviewsRouter = router({
           };
         });
 
-      if (discordReviews.length > 0) return discordReviews;
-      
-      // Fallback to DB or dummy data if discord is empty
-      const dbReviews = await getAllReviews();
-      if (dbReviews.length > 0) return dbReviews;
-      
-      return [
-        {
-          id: 1,
-          authorName: "Pixel Customer",
-          content: "أفضل متجر بكسل آرت تعاملت معه، جودة وسرعة في التنفيذ!",
-          rating: 5,
-          timestamp: new Date(),
-          image: null
-        }
-      ];
+      return discordReviews;
     } catch (error) {
       console.error("Error in list reviews:", error);
-      return [
-        {
-          id: 1,
-          authorName: "Pixel Customer",
-          content: "أفضل متجر بكسل آرت تعاملت معه، جودة وسرعة في التنفيذ!",
-          rating: 5,
-          timestamp: new Date(),
-          image: null
-        }
-      ];
+      return [];
     }
   }),
 
@@ -133,25 +108,21 @@ export const reviewsRouter = router({
   }),
 
   featuredClients: publicProcedure.query(async () => {
-    // Platform default icons if specific ones fail
     const KICK_ICON = "https://kick.com/favicon.ico";
     const DISCORD_ICON = "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico";
 
     const manualClients = [
-      { id: "m1", name: "TRG", username: "trg", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/trg", platform: 'discord' },
-      { id: "m2", name: "D7MX", username: "d7mx", avatar: null, serverIcon: null, inviteLink: "https://kick.com/d7mx", platform: 'kick' },
-      { id: "m3", name: "IAZUZ", username: "iazuz", avatar: null, serverIcon: null, inviteLink: "https://kick.com/iazuz", platform: 'kick' },
-      { id: "m4", name: "IHIMO", username: "ihimo", avatar: null, serverIcon: null, inviteLink: "https://kick.com/ihimo", platform: 'kick' },
-      { id: "m5", name: "II3LI", username: "ii3li", avatar: null, serverIcon: null, inviteLink: "https://kick.com/ii3li", platform: 'kick' },
-      { id: "m6", name: "2MZX", username: "2mzx", avatar: null, serverIcon: null, inviteLink: "https://kick.com/2mzx", platform: 'kick' },
-      { id: "m7", name: "L1T", username: "l1t", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/l1t", platform: 'discord' },
-      { id: "m8", name: "VE", username: "ve", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/ve", platform: 'discord' },
-      { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/CMP", platform: 'discord' },
-      { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/s1s", platform: 'discord' },
-    ].map(c => ({
-      ...c,
-      serverIcon: c.platform === 'kick' ? KICK_ICON : DISCORD_ICON
-    }));
+      { id: "m1", name: "TRG", username: "trg", avatar: null, serverIcon: "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico", inviteLink: "https://discord.gg/trg", platform: 'discord' },
+      { id: "m2", name: "D7MX", username: "d7mx", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/d7mx", platform: 'kick' },
+      { id: "m3", name: "IAZUZ", username: "iazuz", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/iazuz", platform: 'kick' },
+      { id: "m4", name: "IHIMO", username: "ihimo", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/ihimo", platform: 'kick' },
+      { id: "m5", name: "II3LI", username: "ii3li", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/ii3li", platform: 'kick' },
+      { id: "m6", name: "2MZX", username: "2mzx", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/2mzx", platform: 'kick' },
+      { id: "m7", name: "L1T", username: "l1t", avatar: null, serverIcon: "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico", inviteLink: "https://discord.gg/l1t", platform: 'discord' },
+      { id: "m8", name: "VE", username: "ve", avatar: null, serverIcon: "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico", inviteLink: "https://discord.gg/ve", platform: 'discord' },
+      { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico", inviteLink: "https://discord.gg/CMP", platform: 'discord' },
+      { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico", inviteLink: "https://discord.gg/s1s", platform: 'discord' },
+    ];
 
     try {
       const messages = await fetchDiscordPartners();
