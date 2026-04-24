@@ -65,7 +65,7 @@ export default function Home() {
     staleTime: 30000,
     refetchOnWindowFocus: false,
     retry: 1,
-    refetchInterval: 3600000 // Refetch every hour (3600000ms)
+    refetchInterval: 3600000 // Refetch every hour
   });
   const { data: partnerMessages } = trpc.reviews.partners.useQuery();
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
@@ -78,8 +78,9 @@ export default function Home() {
   useEffect(() => {
     if (reviewsData) {
       console.log("Reviews received in Frontend:", reviewsData);
-      const filtered = reviewsData.filter(r => (r.content && r.content.trim().length > 0) || r.image);
-      setDisplayReviews(filtered);
+      // Sort reviews by timestamp descending
+      const sorted = [...reviewsData].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      setDisplayReviews(sorted);
     }
     if (reviewsError) {
       console.error("TRPC Error fetching reviews:", reviewsError);
@@ -229,8 +230,14 @@ export default function Home() {
               </div>
               
               <div className="inline-block mb-8 relative group">
-                <div className="absolute -inset-2 bg-white/20 rounded-full blur-xl opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-                <img src="/logo.webp" alt="Logo" className="relative w-40 h-40 md:w-56 md:h-56 object-contain animate-float" />
+                {/* Improved Logo Blending */}
+                <div className="absolute -inset-8 bg-white/10 rounded-full blur-[60px] opacity-20 group-hover:opacity-40 transition duration-1000"></div>
+                <div className="absolute -inset-4 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-full blur-2xl opacity-30"></div>
+                <img 
+                  src="/logo.webp" 
+                  alt="Logo" 
+                  className="relative w-40 h-40 md:w-56 md:h-56 object-contain animate-float drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]" 
+                />
               </div>
               <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic mb-8 leading-none">
                 Pixel <span className="text-white/20">Design</span>
@@ -246,7 +253,7 @@ export default function Home() {
                 </div>
                 <div className="w-px h-12 bg-white/10 hidden md:block"></div>
                 <div className="flex flex-col items-center">
-                  <span className="text-3xl md:text-4xl font-black">{stats?.totalReviews || 200}+</span>
+                  <span className="text-3xl md:text-4xl font-black">{displayReviews.length || stats?.totalReviews || 200}+</span>
                   <span className="text-white/40 text-[12px] uppercase tracking-[0.3em] font-bold">Reviews</span>
                 </div>
               </div>
@@ -277,7 +284,7 @@ export default function Home() {
                   <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">Customer Reviews</p>
                 </div>
               </div>
-              <div className="max-h-[700px] overflow-y-auto pr-4 space-y-4 custom-scrollbar">
+              <div className="max-h-[800px] overflow-y-auto pr-4 space-y-4 custom-scrollbar">
                 {displayReviews.length > 0 ? (
                   displayReviews.map(r => (
                     <div key={r.id} className="p-6 bg-white/5 border border-white/5 rounded-[1.5rem] hover:bg-white/10 hover:border-white/20 transition-all group shadow-lg">
@@ -300,8 +307,12 @@ export default function Home() {
                       </div>
                       <p className="text-[11px] text-white/60 leading-relaxed mb-4 italic">"{r.content}"</p>
                       {r.image && (
-                        <div className="rounded-xl overflow-hidden border border-white/10 shadow-inner">
-                          <img src={r.image} className="w-full h-auto object-contain grayscale group-hover:grayscale-0 transition-all" />
+                        <div className="rounded-xl overflow-hidden border border-white/10 shadow-inner bg-black/40 p-1">
+                          <img 
+                            src={r.image} 
+                            className="w-full h-auto object-contain grayscale group-hover:grayscale-0 transition-all duration-500 hover:scale-105" 
+                            loading="lazy"
+                          />
                         </div>
                       )}
                     </div>

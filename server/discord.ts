@@ -33,6 +33,9 @@ interface DiscordMessage {
     thumbnail?: {
       url: string;
     };
+    image?: {
+      url: string;
+    };
   }>;
   attachments: Array<{
     url: string;
@@ -72,28 +75,36 @@ export async function validateDiscordToken(): Promise<{
   }
 }
 
-export async function fetchDiscordReviews(): Promise<DiscordMessage[]> {
+export async function fetchDiscordReviews(limit = 100): Promise<DiscordMessage[]> {
   try {
     const token = process.env.DISCORD_TOKEN;
     if (!token) {
       throw new Error("DISCORD_TOKEN not set");
     }
 
-    const response = await fetch(
-      `${DISCORD_API_BASE}/channels/${REVIEWS_CHANNEL_ID}/messages?limit=100`,
-      {
-        headers: {
-          Authorization: `Bot ${token}`,
-        },
-      }
-    );
+    let allMessages: DiscordMessage[] = [];
+    let lastId: string | null = null;
+    
+    // Fetch multiple pages to get more than 100 reviews
+    for (let i = 0; i < 3; i++) { // Fetch up to 300 messages
+        const url = `${DISCORD_API_BASE}/channels/${REVIEWS_CHANNEL_ID}/messages?limit=100${lastId ? `&before=${lastId}` : ''}`;
+        const response = await fetch(url, {
+            headers: {
+                Authorization: `Bot ${token}`,
+            },
+        });
 
-    if (!response.ok) {
-      throw new Error(`Failed to fetch messages: ${response.status}`);
+        if (!response.ok) break;
+
+        const messages = (await response.json()) as DiscordMessage[];
+        if (messages.length === 0) break;
+
+        allMessages = [...allMessages, ...messages];
+        lastId = messages[messages.length - 1].id;
+        if (messages.length < 100) break;
     }
 
-    const messages = (await response.json()) as DiscordMessage[];
-    return messages;
+    return allMessages;
   } catch (error) {
     console.error("Error fetching Discord reviews:", error);
     return [];
@@ -192,7 +203,10 @@ export async function syncReviewsFromDiscord(): Promise<number> {
         content = message.embeds[0].description || message.embeds[0].title || content;
       }
       
-      if (!existing && content.trim().length > 0) {
+      // If no content but has attachments, it's still a review
+      const hasAttachments = message.attachments && message.attachments.length > 0;
+      
+      if (!existing && (content.trim().length > 0 || hasAttachments)) {
         await createReview({
           discordMessageId: message.id,
           discordUserId: message.author.id,
@@ -200,7 +214,7 @@ export async function syncReviewsFromDiscord(): Promise<number> {
           authorAvatar: message.author.avatar
             ? `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.png`
             : null,
-          content: content,
+          content: content.trim() || "تقييم Pixel Design",
           rating: 5,
           timestamp: new Date(message.timestamp),
         });
