@@ -87,7 +87,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
           <div className="text-2xl font-black text-white">PIXEL DESIGN</div>
           <a
-            href="https://discord.gg/pixeldesign"
+            href="https://discord.gg/wBuqaM6tqm"
             target="_blank"
             rel="noopener noreferrer"
             className="px-4 py-2 bg-purple-600 hover:bg-purple-700 text-white rounded-md transition-colors font-medium flex items-center gap-2"
@@ -130,15 +130,16 @@ export default function Home() {
           <div className="lg:col-span-2 flex flex-col items-center justify-center">
             {/* Logo */}
             <div className="mb-8">
-              <img
-                src="/manus-storage/a_59b6606ae6c2e0f0be6a6a02c12c40d1_18fea0bb.webp"
-                alt="Pixel Design Logo"
-                className="w-48 h-auto drop-shadow-2xl animate-float"
-                onError={(e) => {
-                  console.error("Logo failed to load");
-                  e.currentTarget.style.display = "none";
-                }}
-              />
+            <img
+              src="/manus-storage/a_59b6606ae6c2e0f0be6a6a02c12c40d1_18fea0bb.webp"
+              alt="Pixel Design Logo"
+              className="w-48 h-auto drop-shadow-2xl animate-float"
+              onError={(e) => {
+                console.error("Logo failed to load from:", e.currentTarget.src);
+                // Try fallback
+                e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23fff' width='200' height='200'/%3E%3C/svg%3E";
+              }}
+            />
             </div>
 
             {/* Title */}
@@ -163,7 +164,7 @@ export default function Home() {
 
             {/* Discord Button */}
             <a
-              href="https://discord.gg/pixeldesign"
+              href="https://discord.gg/wBuqaM6tqm"
               target="_blank"
               rel="noopener noreferrer"
               className="px-8 py-4 bg-purple-600 hover:bg-purple-700 text-white font-bold text-lg rounded-lg transition-colors flex items-center gap-2 mb-8"
