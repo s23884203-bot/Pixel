@@ -24,12 +24,18 @@ export const reviewsRouter = router({
           const hasContent = m.content && m.content.trim().length > 0;
           const hasEmbeds = m.embeds && m.embeds.length > 0;
           const hasAttachments = m.attachments && m.attachments.length > 0;
+          // Allow messages that have at least one of these
           return hasContent || hasEmbeds || hasAttachments;
         })
         .map(m => {
           let content = m.content || "";
-          if (m.embeds && m.embeds.length > 0) {
-            content = m.embeds[0].description || m.embeds[0].title || content;
+          
+          // If content is just a name with colon (like "Reviews:" or "Neon:"), 
+          // and there's an embed, use embed description
+          if (content.includes(":") && m.embeds && m.embeds.length > 0) {
+             content = m.embeds[0].description || m.embeds[0].title || content;
+          } else if (!content && m.embeds && m.embeds.length > 0) {
+            content = m.embeds[0].description || m.embeds[0].title || "";
           }
           
           let image = null;
