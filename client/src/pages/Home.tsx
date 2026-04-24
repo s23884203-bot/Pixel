@@ -132,7 +132,7 @@ export default function Home() {
                 {partners.map((partner) => (
                   <div
                     key={partner.id}
-                    className="p-4 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 hover:border-purple-500/50 transition-colors"
+                    className="p-4 bg-purple-900/10 backdrop-blur-sm rounded-lg border border-purple-500/20 hover:border-purple-500/80 shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-colors"
                   >
                     {partner.image && (
                       <img
@@ -167,18 +167,18 @@ export default function Home() {
             </div>
 
             {/* Title */}
-            <h1 className="text-5xl md:text-6xl font-black text-white text-center mb-4">
+            <h1 className="text-5xl md:text-7xl font-black text-white text-center mb-4 tracking-tighter uppercase italic">
               Pixel Design
             </h1>
 
 
             {/* Stats */}
             <div className="grid grid-cols-2 gap-6 mb-12 w-full">
-              <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
+              <div className="p-6 bg-purple-900/10 backdrop-blur-sm rounded-xl border border-purple-500/20 text-center">
                 <p className="text-4xl font-black text-white mb-2">{stats?.memberCount || 2000}+</p>
                 <p className="text-white/60">members</p>
               </div>
-              <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
+              <div className="p-6 bg-purple-900/10 backdrop-blur-sm rounded-xl border border-purple-500/20 text-center">
                 <p className="text-4xl font-black text-white mb-2">{stats?.totalReviews || 200}+</p>
                 <p className="text-white/60">reviews</p>
               </div>
@@ -199,7 +199,7 @@ export default function Home() {
             {currentClient && (
               <div className="mt-12 w-full max-w-md">
                 <h3 className="text-2xl font-bold text-white mb-6 text-center">عميلنا المميز</h3>
-                <div className="relative p-6 bg-white/5 backdrop-blur-md rounded-xl border border-white/20">
+                <div className="relative p-6 bg-purple-900/10 backdrop-blur-md rounded-xl border border-white/20">
                   {/* Client Info */}
                   <div className="flex items-center gap-4 mb-4">
                     {currentClient.avatar && (
@@ -271,7 +271,7 @@ export default function Home() {
             {/* Reviews Carousel */}
             <div className="mt-12 w-full">
               {currentReview ? (
-                <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
+                <div className="p-6 bg-purple-900/10 backdrop-blur-sm rounded-xl border border-purple-500/20">
                   <div className="flex items-start gap-4 mb-4">
                     {currentReview.authorAvatar ? (
                       <img
@@ -320,7 +320,7 @@ export default function Home() {
                   </div>
                 </div>
               ) : (
-                <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center text-white/40">
+                <div className="p-6 bg-purple-900/10 backdrop-blur-sm rounded-xl border border-purple-500/20 text-center text-white/40">
                   جاري تحميل التقييمات...
                 </div>
               )}
@@ -335,7 +335,7 @@ export default function Home() {
                 {displayReviews.slice(0, 5).map((review) => (
                   <div
                     key={review.id}
-                    className="p-4 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 hover:border-blue-500/50 transition-colors"
+                    className="p-4 bg-purple-900/10 backdrop-blur-sm rounded-lg border border-purple-500/20 hover:border-purple-500/80 shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-colors"
                   >
                     <div className="flex items-center gap-2 mb-2">
                       {review.authorAvatar ? (
@@ -379,7 +379,7 @@ export default function Home() {
                   {displayReviews.map((review, index) => (
                     <div
                       key={review.id}
-                      className="flex-shrink-0 w-80 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-white/10 hover:border-blue-500/50 transition-all"
+                      className="flex-shrink-0 w-80 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-purple-500/20 hover:border-purple-500/80 shadow-[0_0_15px_rgba(168,85,247,0.2)] transition-all"
                       style={{
                         animation: `slideIn 0.5s ease-out ${index * 0.1}s both`,
                       }}
@@ -429,6 +429,7 @@ export default function Home() {
       </div>
 
       <Footer />
+      </div>
 
       <style>{`
         @keyframes slideIn {
