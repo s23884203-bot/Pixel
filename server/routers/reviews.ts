@@ -57,19 +57,34 @@ export const reviewsRouter = router({
   partners: publicProcedure.query(async () => {
     const messages = await fetchDiscordPartners();
     return messages
-      .filter(m => (m.content && m.content.trim().length > 0) || (m.embeds && m.embeds.length > 0))
+      .filter(m => {
+        const hasContent = m.content && m.content.trim().length > 0;
+        const hasEmbeds = m.embeds && m.embeds.length > 0;
+        // Filter out messages that look like "featured clients" (contain invite links)
+        const hasInvite = /discord\.(gg|com\/invite)\/[a-zA-Z0-9-]+/.test(m.content + JSON.stringify(m.embeds));
+        return (hasContent || hasEmbeds) && !hasInvite;
+      })
       .map(m => {
         let description = m.content || "";
+        let name = m.author.username;
+        let image = m.author.avatar
+          ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
+          : null;
+
         if (m.embeds && m.embeds.length > 0) {
-          description = m.embeds[0].description || m.embeds[0].title || description;
+          const embed = m.embeds[0];
+          description = embed.description || embed.title || description;
+          if (embed.title) name = embed.title;
+          if (embed.fields && embed.fields.length > 0) {
+            description += "\n" + embed.fields.map(f => `${f.name}: ${f.value}`).join("\n");
+          }
         }
+
         return {
           id: m.id,
-          name: m.author.username,
+          name: name,
           description: description,
-          image: m.author.avatar
-            ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
-            : null,
+          image: image,
           link: null,
         };
       });
@@ -80,21 +95,30 @@ export const reviewsRouter = router({
     const clients = [];
 
     for (const msg of messages) {
-      // Extract Discord invite code from content or embeds
-      const fullText = msg.content + (msg.embeds?.map(e => (e.description || "") + (e.title || "")).join(" ") || "");
-      const inviteMatch = fullText.match(/discord\.gg\/([a-zA-Z0-9-]+)/) || fullText.match(/discord\.com\/invite\/([a-zA-Z0-9-]+)/);
+      const fullText = msg.content + JSON.stringify(msg.embeds);
+      const inviteMatch = fullText.match(/discord\.(gg|com\/invite)\/([a-zA-Z0-9-]+)/);
       
       if (inviteMatch) {
-        const inviteCode = inviteMatch[1];
+        const inviteCode = inviteMatch[2];
         const serverIcon = await getServerIconFromInvite(inviteCode);
+        
+        // Use embed info if available for better display
+        let displayName = msg.author.username;
+        let displayAvatar = msg.author.avatar
+          ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
+          : null;
+
+        if (msg.embeds && msg.embeds.length > 0) {
+          const embed = msg.embeds[0];
+          if (embed.title) displayName = embed.title;
+          if (embed.thumbnail?.url) displayAvatar = embed.thumbnail.url;
+        }
         
         clients.push({
           id: msg.id,
-          name: msg.author.username,
+          name: displayName,
           username: msg.author.username,
-          avatar: msg.author.avatar
-            ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
-            : null,
+          avatar: displayAvatar,
           serverIcon: serverIcon,
           inviteLink: `https://discord.gg/${inviteCode}`,
         });

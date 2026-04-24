@@ -30,6 +30,9 @@ interface DiscordMessage {
       value: string;
       inline?: boolean;
     }>;
+    thumbnail?: {
+      url: string;
+    };
   }>;
 }
 

@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
 import { Button } from "@/components/ui/button";
-import { Star, ExternalLink, ChevronLeft, ChevronRight } from "lucide-react";
+import { Star, ExternalLink, ChevronLeft, ChevronRight, Users, MessageSquare, Award } from "lucide-react";
 import Footer from "@/components/Footer";
 
 interface Review {
@@ -36,58 +36,40 @@ export default function Home() {
   const { data: partnerMessages } = trpc.reviews.partners.useQuery();
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
   const { data: stats } = trpc.reviews.getStats.useQuery();
+
   const [displayReviews, setDisplayReviews] = useState<Review[]>([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [featuredClients, setFeaturedClients] = useState<FeaturedClient[]>([]);
   const [currentClientIndex, setCurrentClientIndex] = useState(0);
 
-  // Auto-sync reviews on page load
   useEffect(() => {
-    const syncReviews = async () => {
-      await syncMutation.mutateAsync();
-    };
-    syncReviews();
+    syncMutation.mutate();
   }, []);
 
-  // Filter and display reviews
   useEffect(() => {
-    if (reviews && reviews.length > 0) {
-      const filtered = reviews.filter(r => r.content && r.content.trim().length > 0);
-      setDisplayReviews(filtered);
-    }
+    if (reviews) setDisplayReviews(reviews.filter(r => r.content?.trim()));
   }, [reviews]);
 
-  // Auto-rotate reviews
+  useEffect(() => {
+    if (partnerMessages) setPartners(partnerMessages);
+  }, [partnerMessages]);
+
+  useEffect(() => {
+    if (featuredClientsData) setFeaturedClients(featuredClientsData);
+  }, [featuredClientsData]);
+
+  // Auto-rotate carousels
   useEffect(() => {
     if (displayReviews.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentReviewIndex((prev) => (prev + 1) % displayReviews.length);
-      }, 5000);
+      const interval = setInterval(() => setCurrentReviewIndex(p => (p + 1) % displayReviews.length), 5000);
       return () => clearInterval(interval);
     }
   }, [displayReviews]);
 
-  // Fetch partners from Discord
-  useEffect(() => {
-    if (partnerMessages && partnerMessages.length > 0) {
-      setPartners(partnerMessages);
-    }
-  }, [partnerMessages]);
-
-  // Fetch featured clients
-  useEffect(() => {
-    if (featuredClientsData && featuredClientsData.length > 0) {
-      setFeaturedClients(featuredClientsData);
-    }
-  }, [featuredClientsData]);
-
-  // Auto-rotate featured clients
   useEffect(() => {
     if (featuredClients.length > 0) {
-      const interval = setInterval(() => {
-        setCurrentClientIndex((prev) => (prev + 1) % featuredClients.length);
-      }, 6000);
+      const interval = setInterval(() => setCurrentClientIndex(p => (p + 1) % featuredClients.length), 6000);
       return () => clearInterval(interval);
     }
   }, [featuredClients]);
@@ -96,377 +78,201 @@ export default function Home() {
   const currentClient = featuredClients[currentClientIndex];
 
   return (
-    <div className="min-h-screen bg-[#0a0a0a] text-white relative overflow-hidden">
-      {/* Background Image with Overlay */}
-      <div 
-        className="fixed inset-0 z-0 opacity-40 bg-cover bg-center bg-no-repeat"
-        style={{ backgroundImage: 'url("/bg.webp")' }}
-      />
-      <div className="fixed inset-0 z-0 bg-gradient-to-b from-transparent via-[#0a0a0a]/60 to-[#0a0a0a]" />
-      
-      <div className="relative z-10 min-h-screen flex flex-col">
-      {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-black/40 backdrop-blur-md border-b border-white/5">
-        <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="text-2xl font-black text-white cursor-pointer" onClick={() => window.location.href='/'}>PIXEL DESIGN</div>
-          <a
-            href="https://discord.gg/wBuqaM6tqm"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="px-4 py-2 bg-white text-black hover:bg-white/90 rounded-md transition-colors font-medium flex items-center gap-2"
-          >
-            <ExternalLink className="w-4 h-4" />
-            Discord
-          </a>
-        </div>
-      </nav>
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black">
+      {/* Background Decor */}
+      <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
+        <div 
+          className="absolute inset-0 opacity-20 bg-cover bg-center grayscale"
+          style={{ backgroundImage: 'url("/bg.webp")' }}
+        />
+        <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
+      </div>
 
-      {/* Main Content */}
-      <div className="pt-16 flex-1 flex flex-col">
-        <div className="flex-1 grid grid-cols-1 lg:grid-cols-4 gap-8 p-8 max-w-7xl mx-auto w-full">
-          {/* Left Sidebar - Partners */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24">
-              <h2 className="text-2xl font-bold text-white mb-6">الشركاء</h2>
-              <div className="space-y-4">
-                {partners.map((partner) => (
-                  <div
-                    key={partner.id}
-                    className="p-4 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 hover:border-white/40 shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transition-colors"
-                  >
-                    {partner.image && (
-                      <img
-                        src={partner.image}
-                        alt={partner.name}
-                        className="w-full h-24 object-cover rounded-md mb-3"
-                      />
-                    )}
-                    <h3 className="font-bold text-white text-sm">{partner.name}</h3>
-                    <p className="text-xs text-white/40 mt-1 line-clamp-2">
-                      {partner.description}
-                    </p>
+      <div className="relative z-10">
+        {/* Nav */}
+        <nav className="border-b border-white/5 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
+          <div className="max-w-7xl mx-auto px-6 py-4 flex justify-between items-center">
+            <div className="text-xl font-black tracking-tighter uppercase italic">Pixel Design</div>
+            <a 
+              href="https://discord.gg/wBuqaM6tqm" 
+              target="_blank" 
+              className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform flex items-center gap-2"
+            >
+              <ExternalLink className="w-4 h-4" /> Discord
+            </a>
+          </div>
+        </nav>
+
+        {/* Hero Section */}
+        <header className="pt-20 pb-16 px-6 text-center max-w-4xl mx-auto">
+          <div className="inline-block mb-8 relative group">
+            <div className="absolute -inset-1 bg-white/20 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+            <img src="/logo.webp" alt="Logo" className="relative w-32 h-32 md:w-40 md:h-40 object-contain animate-float" />
+          </div>
+          <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic mb-8 leading-none">
+            Pixel <span className="text-white/20">Design</span>
+          </h1>
+          
+          <div className="flex flex-wrap justify-center gap-4 md:gap-8 mb-12">
+            <div className="flex flex-col items-center">
+              <span className="text-3xl md:text-4xl font-black">{stats?.memberCount || 2000}+</span>
+              <span className="text-white/40 text-xs uppercase tracking-widest">Members</span>
+            </div>
+            <div className="w-px h-12 bg-white/10 hidden md:block"></div>
+            <div className="flex flex-col items-center">
+              <span className="text-3xl md:text-4xl font-black">{stats?.totalReviews || 200}+</span>
+              <span className="text-white/40 text-xs uppercase tracking-widest">Reviews</span>
+            </div>
+          </div>
+        </header>
+
+        {/* Content Grid */}
+        <main className="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12">
+          
+          {/* Left: Partners & Stats */}
+          <aside className="lg:col-span-3 space-y-12">
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <Users className="w-5 h-5 text-white/60" />
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Partners</h2>
+              </div>
+              <div className="grid gap-4">
+                {partners.slice(0, 6).map(p => (
+                  <div key={p.id} className="group p-4 bg-white/5 border border-white/5 rounded-2xl hover:border-white/20 transition-all">
+                    {p.image && <img src={p.image} className="w-full h-24 object-cover rounded-xl mb-3 grayscale group-hover:grayscale-0 transition-all" />}
+                    <h3 className="font-bold text-sm mb-1">{p.name}</h3>
+                    <p className="text-xs text-white/40 line-clamp-2">{p.description}</p>
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
+            </section>
+          </aside>
 
-          {/* Center - Hero & Discord */}
-          <div className="lg:col-span-2 flex flex-col items-center justify-center">
-            {/* Logo */}
-            <div className="mb-8">
-              <img
-                src="/logo.webp"
-                alt="Pixel Design Logo"
-                className="w-48 h-auto drop-shadow-2xl animate-float"
-                onError={(e) => {
-                  console.error("Logo failed to load from:", e.currentTarget.src);
-                  e.currentTarget.src = "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 200 200'%3E%3Crect fill='%23fff' width='200' height='200'/%3E%3C/svg%3E";
-                }}
-              />
-            </div>
-
-            {/* Title */}
-            <h1 className="text-5xl md:text-7xl font-black text-white text-center mb-4 tracking-tighter uppercase italic">
-              Pixel Design
-            </h1>
-
-
-            {/* Stats */}
-            <div className="grid grid-cols-2 gap-6 mb-12 w-full">
-              <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
-                <p className="text-4xl font-black text-white mb-2">{stats?.memberCount || 2000}+</p>
-                <p className="text-white/60">members</p>
-              </div>
-              <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center">
-                <p className="text-4xl font-black text-white mb-2">{stats?.totalReviews || 200}+</p>
-                <p className="text-white/60">reviews</p>
-              </div>
-            </div>
-
-            {/* Discord Button */}
-            <a
-              href="https://discord.gg/wBuqaM6tqm"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="px-8 py-3 bg-white text-black hover:bg-white/90 rounded-lg font-bold text-lg transition-all transform hover:scale-105 flex items-center gap-2"
-            >
-              <ExternalLink className="w-5 h-5" />
-              انضم إلى الديسكورد
-            </a>
-
-            {/* Featured Client Carousel */}
+          {/* Center: Featured Client & Main Reviews */}
+          <section className="lg:col-span-6 space-y-12">
+            {/* Featured Client Card */}
             {currentClient && (
-              <div className="mt-12 w-full max-w-md">
-                <h3 className="text-2xl font-bold text-white mb-6 text-center">عميلنا المميز</h3>
-                <div className="relative p-6 bg-white/5 backdrop-blur-md rounded-xl border border-white/20">
-                  {/* Client Info */}
-                  <div className="flex items-center gap-4 mb-4">
+              <div className="bg-white text-black rounded-[2rem] p-8 md:p-12 relative overflow-hidden group">
+                <div className="relative z-10">
+                  <div className="flex items-center gap-2 mb-8">
+                    <Award className="w-5 h-5" />
+                    <span className="text-xs font-black uppercase tracking-[0.2em]">Featured Client</span>
+                  </div>
+                  
+                  <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
                     {currentClient.avatar && (
-                      <img
-                        src={currentClient.avatar}
-                        alt={currentClient.name}
-                        className="w-16 h-16 rounded-full border-2 border-white/20"
-                      />
+                      <img src={currentClient.avatar} className="w-24 h-24 rounded-full border-4 border-black/10" />
                     )}
-                    <div>
-                      <h4 className="text-xl font-bold text-white">{currentClient.name}</h4>
-                      <p className="text-sm text-white/40">@{currentClient.username}</p>
+                    <div className="flex-1">
+                      <h2 className="text-4xl font-black tracking-tighter mb-2 uppercase italic">{currentClient.name}</h2>
+                      <p className="text-black/60 font-medium mb-6">@{currentClient.username}</p>
+                      
+                      {currentClient.serverIcon && (
+                        <div className="mb-8 rounded-2xl overflow-hidden border border-black/5 shadow-2xl">
+                          <img src={currentClient.serverIcon} className="w-full h-48 object-cover" />
+                        </div>
+                      )}
+                      
+                      <a 
+                        href={currentClient.inviteLink} 
+                        target="_blank"
+                        className="inline-flex items-center gap-3 bg-black text-white px-8 py-4 rounded-full font-bold hover:scale-105 transition-transform"
+                      >
+                        Visit Server <ExternalLink className="w-4 h-4" />
+                      </a>
                     </div>
                   </div>
-
-                  {/* Server Icon */}
-                  {currentClient.serverIcon && (
-                    <img
-                      src={currentClient.serverIcon}
-                      alt="Server Icon"
-                      className="w-full h-40 object-cover rounded-lg mb-4 border border-slate-700"
-                    />
-                  )}
-
-                  {/* Invite Link */}
-                  <a
-                    href={currentClient.inviteLink}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="block w-full px-4 py-2 bg-white text-black hover:bg-white/90 rounded-lg transition-colors text-sm font-medium text-center mb-4"
-                  >
-                    زيارة السيرفر
-                  </a>
-
-                  {/* Carousel Controls */}
-                  {featuredClients.length > 1 && (
-                    <div className="flex items-center justify-between gap-2">
-                      <button
-                        onClick={() => setCurrentClientIndex((prev) => (prev - 1 + featuredClients.length) % featuredClients.length)}
-                        className="p-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
-                      >
-                        <ChevronLeft className="w-4 h-4" />
-                      </button>
-                      <div className="flex gap-2">
-                        {featuredClients.map((_, index) => (
-                          <button
-                            key={index}
-                            onClick={() => setCurrentClientIndex(index)}
-                            className={`w-2 h-2 rounded-full transition-all ${
-                              index === currentClientIndex
-                                ? "bg-white/60 w-6"
-                                : "bg-slate-600 hover:bg-slate-500"
-                            }`}
-                          />
-                        ))}
-                      </div>
-                      <button
-                        onClick={() => setCurrentClientIndex((prev) => (prev + 1) % featuredClients.length)}
-                        className="p-2 bg-slate-700 hover:bg-slate-600 text-white rounded-lg transition-colors"
-                      >
-                        <ChevronRight className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
                 </div>
+                {/* Background Decor for Card */}
+                <div className="absolute top-0 right-0 w-64 h-64 bg-black/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
               </div>
             )}
 
-            {/* Reviews Carousel */}
-            <div className="mt-12 w-full">
-              {currentReview ? (
-                <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10">
-                  <div className="flex items-start gap-4 mb-4">
-                    {currentReview.authorAvatar ? (
-                      <img
-                        src={currentReview.authorAvatar}
-                        alt={currentReview.authorName}
-                        className="w-14 h-14 rounded-full border border-slate-600"
-                      />
-                    ) : (
-                      <div className="w-14 h-14 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                        {currentReview.authorName.charAt(0).toUpperCase()}
-                      </div>
-                    )}
-                    <div className="flex-1">
-                      <h3 className="font-bold text-white">{currentReview.authorName}</h3>
-                      <div className="flex gap-1">
-                        {Array.from({ length: currentReview.rating || 5 }).map((_, i) => (
-                          <Star key={i} className="w-4 h-4 fill-white text-white" />
-                        ))}
-                      </div>
+            {/* Main Review Spotlight */}
+            {currentReview && (
+              <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-12">
+                <div className="flex items-center gap-2 mb-8">
+                  <MessageSquare className="w-5 h-5 text-white/60" />
+                  <span className="text-xs font-bold uppercase tracking-[0.2em] text-white/60">Testimonial</span>
+                </div>
+                
+                <div className="flex gap-6 mb-8">
+                  {currentReview.authorAvatar ? (
+                    <img src={currentReview.authorAvatar} className="w-16 h-16 rounded-full grayscale" />
+                  ) : (
+                    <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center font-bold text-2xl">
+                      {currentReview.authorName[0]}
+                    </div>
+                  )}
+                  <div>
+                    <h3 className="text-xl font-bold mb-1">{currentReview.authorName}</h3>
+                    <div className="flex gap-1">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`w-4 h-4 ${i < (currentReview.rating || 5) ? 'fill-white' : 'fill-white/10 text-transparent'}`} />
+                      ))}
                     </div>
                   </div>
-                  <p className="text-white/70 mb-4 line-clamp-4">
-                    {currentReview.content}
-                  </p>
-                  <p className="text-sm text-slate-500">
-                    {typeof currentReview.timestamp === 'string' 
-                      ? new Date(currentReview.timestamp).toLocaleDateString("ar-SA")
-                      : currentReview.timestamp instanceof Date
-                      ? currentReview.timestamp.toLocaleDateString("ar-SA")
-                      : new Date(currentReview.timestamp).toLocaleDateString("ar-SA")}
-                  </p>
-
-                  {/* Review Indicators */}
-                  <div className="flex gap-2 justify-center mt-4">
-                    {displayReviews.map((_, index) => (
-                      <button
-                        key={index}
-                        onClick={() => setCurrentReviewIndex(index)}
-                        className={`w-2 h-2 rounded-full transition-all ${
-                          index === currentReviewIndex
-                            ? "bg-white/60 w-6"
-                            : "bg-slate-600 hover:bg-slate-500"
-                        }`}
-                      />
-                    ))}
+                </div>
+                
+                <p className="text-2xl md:text-3xl font-medium leading-tight mb-8 text-white/90">
+                  "{currentReview.content}"
+                </p>
+                
+                <div className="flex justify-between items-center">
+                  <span className="text-sm text-white/20">
+                    {new Date(currentReview.timestamp).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                  </span>
+                  <div className="flex gap-2">
+                    <button onClick={() => setCurrentReviewIndex(p => (p - 1 + displayReviews.length) % displayReviews.length)} className="p-3 rounded-full border border-white/10 hover:bg-white hover:text-black transition-all">
+                      <ChevronLeft className="w-4 h-4" />
+                    </button>
+                    <button onClick={() => setCurrentReviewIndex(p => (p + 1) % displayReviews.length)} className="p-3 rounded-full border border-white/10 hover:bg-white hover:text-black transition-all">
+                      <ChevronRight className="w-4 h-4" />
+                    </button>
                   </div>
                 </div>
-              ) : (
-                <div className="p-6 bg-white/5 backdrop-blur-sm rounded-xl border border-white/10 text-center text-white/40">
-                  جاري تحميل التقييمات...
-                </div>
-              )}
-            </div>
-          </div>
+              </div>
+            )}
+          </section>
 
-          {/* Right Sidebar - Reviews */}
-          <div className="lg:col-span-1">
-            <div className="sticky top-24">
-              <h2 className="text-2xl font-bold text-white mb-6">التقييمات</h2>
-              <div className="space-y-4">
-                {displayReviews.slice(0, 5).map((review) => (
-                  <div
-                    key={review.id}
-                    className="p-4 bg-white/5 backdrop-blur-sm rounded-lg border border-white/10 hover:border-white/40 shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transition-colors"
-                  >
-                    <div className="flex items-center gap-2 mb-2">
-                      {review.authorAvatar ? (
-                        <img
-                          src={review.authorAvatar}
-                          alt={review.authorName}
-                          className="w-8 h-8 rounded-full"
-                        />
-                      ) : (
-                        <div className="w-8 h-8 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white text-xs font-bold">
-                          {review.authorName.charAt(0).toUpperCase()}
-                        </div>
-                      )}
-                      <h3 className="font-bold text-white text-sm">{review.authorName}</h3>
+          {/* Right: Recent Reviews List */}
+          <aside className="lg:col-span-3 space-y-12">
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <Star className="w-5 h-5 text-white/60" />
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Latest Feedback</h2>
+              </div>
+              <div className="grid gap-4">
+                {displayReviews.slice(0, 5).map(r => (
+                  <div key={r.id} className="p-5 bg-white/5 border border-white/5 rounded-2xl">
+                    <div className="flex items-center gap-3 mb-3">
+                      {r.authorAvatar && <img src={r.authorAvatar} className="w-8 h-8 rounded-full grayscale" />}
+                      <span className="font-bold text-xs">{r.authorName}</span>
                     </div>
-                    <p className="text-xs text-white/40 line-clamp-2 mb-2">
-                      {review.content}
-                    </p>
+                    <p className="text-xs text-white/60 line-clamp-3 mb-3 leading-relaxed">"{r.content}"</p>
                     <div className="flex gap-0.5">
-                      {Array.from({ length: review.rating || 5 }).map((_, i) => (
-                        <Star key={i} className="w-3 h-3 fill-white text-white" />
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <Star key={i} className={`w-3 h-3 ${i < (r.rating || 5) ? 'fill-white' : 'fill-white/10 text-transparent'}`} />
                       ))}
                     </div>
                   </div>
                 ))}
               </div>
-            </div>
-          </div>
-        </div>
+            </section>
+          </aside>
 
-        {/* Reviews Stream - Below */}
-        <div className="w-full bg-slate-900/50 border-t border-slate-800 py-12 px-4">
-          <div className="max-w-7xl mx-auto">
-            <h2 className="text-3xl font-bold text-white mb-8 text-center">
-              آخر التقييمات
-            </h2>
+        </main>
 
-            {displayReviews.length > 0 ? (
-              <div className="overflow-x-auto pb-4">
-                <div className="flex gap-6 min-w-max px-4">
-                  {displayReviews.map((review, index) => (
-                    <div
-                      key={review.id}
-                      className="flex-shrink-0 w-80 p-6 bg-gradient-to-br from-slate-800/50 to-slate-900/50 rounded-xl border border-white/10 hover:border-white/40 shadow-[0_0_20px_rgba(255,255,255,0.05)] transition-all duration-300 transition-all"
-                      style={{
-                        animation: `slideIn 0.5s ease-out ${index * 0.1}s both`,
-                      }}
-                    >
-                      <div className="flex items-center gap-3 mb-4">
-                        {review.authorAvatar ? (
-                          <img
-                            src={review.authorAvatar}
-                            alt={review.authorName}
-                            className="w-12 h-12 rounded-full border border-slate-600"
-                          />
-                        ) : (
-                          <div className="w-12 h-12 rounded-full bg-gradient-to-br from-blue-500 to-purple-500 flex items-center justify-center text-white font-bold">
-                            {review.authorName.charAt(0).toUpperCase()}
-                          </div>
-                        )}
-                        <div className="flex-1">
-                          <h3 className="font-bold text-white">{review.authorName}</h3>
-                          <div className="flex gap-1">
-                            {Array.from({ length: review.rating || 5 }).map((_, i) => (
-                              <Star key={i} className="w-3 h-3 fill-white text-white" />
-                            ))}
-                          </div>
-                        </div>
-                      </div>
-                      <p className="text-white/70 text-sm line-clamp-4 mb-4">
-                        {review.content}
-                      </p>
-                      <p className="text-xs text-slate-500">
-                        {typeof review.timestamp === 'string' 
-                          ? new Date(review.timestamp).toLocaleDateString("ar-SA")
-                          : review.timestamp instanceof Date
-                          ? review.timestamp.toLocaleDateString("ar-SA")
-                          : new Date(review.timestamp).toLocaleDateString("ar-SA")}
-                      </p>
-                    </div>
-                  ))}
-                </div>
-              </div>
-            ) : (
-              <div className="text-center text-white/40">
-                لا توجد تقييمات حالياً
-              </div>
-            )}
-          </div>
-        </div>
-      </div>
-
-      <Footer />
+        <Footer />
       </div>
 
       <style>{`
-        @keyframes slideIn {
-          from {
-            opacity: 0;
-            transform: translateX(-20px);
-          }
-          to {
-            opacity: 1;
-            transform: translateX(0);
-          }
-        }
-
-        @keyframes fadeIn {
-          from {
-            opacity: 0;
-          }
-          to {
-            opacity: 1;
-          }
-        }
-
-        .animate-fade-in {
-          animation: fadeIn 0.3s ease-in;
-        }
-
         @keyframes float {
-          0%, 100% {
-            transform: translateY(0px);
-          }
-          50% {
-            transform: translateY(-20px);
-          }
+          0%, 100% { transform: translateY(0px); }
+          50% { transform: translateY(-10px); }
         }
-
         .animate-float {
-          animation: float 3s ease-in-out infinite;
+          animation: float 4s ease-in-out infinite;
         }
       `}</style>
     </div>
