@@ -1,11 +1,15 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
+import { getAllReviews } from "../db";
 import { fetchDiscordReviews, fetchDiscordPartners, getServerIconFromInvite } from "../discord";
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
     try {
-      // Fetch directly from Discord every time to ensure fresh data
+      // 1. Get reviews from Database (sent by bot or synced)
+      const dbReviews = await getAllReviews();
+      
+      // 2. Get live reviews from Discord
       const messages = await fetchDiscordReviews();
       
       const discordReviews = messages
@@ -43,16 +47,21 @@ export const reviewsRouter = router({
           };
         });
 
-      return discordReviews;
+      // Merge and remove duplicates based on image or content
+      const allReviews = [...dbReviews, ...discordReviews];
+      const uniqueReviews = Array.from(new Map(allReviews.map(r => [r.image || r.content, r])).values());
+
+      return uniqueReviews;
     } catch (error) {
       console.error("Error in list reviews:", error);
-      return [];
+      const dbReviews = await getAllReviews();
+      return dbReviews;
     }
   }),
 
   getStats: publicProcedure.query(async () => {
     return {
-      totalReviews: 200, // Fixed to 200+ as requested
+      totalReviews: 200,
       averageRating: 5.0,
       memberCount: 2000,
     };

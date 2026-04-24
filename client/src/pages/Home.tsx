@@ -62,10 +62,10 @@ const AnimatedTagline = () => {
 
 export default function Home() {
   const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = trpc.reviews.list.useQuery(undefined, {
-    staleTime: 30000,
-    refetchOnWindowFocus: false,
+    staleTime: 10000,
+    refetchOnWindowFocus: true,
     retry: 1,
-    refetchInterval: 3600000 
+    refetchInterval: 300000 // Refetch every 5 minutes
   });
   const { data: partnerMessages } = trpc.reviews.partners.useQuery();
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
