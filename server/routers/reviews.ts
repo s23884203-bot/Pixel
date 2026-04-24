@@ -24,20 +24,22 @@ export const reviewsRouter = router({
           const hasContent = m.content && m.content.trim().length > 0;
           const hasEmbeds = m.embeds && m.embeds.length > 0;
           const hasAttachments = m.attachments && m.attachments.length > 0;
-          // Allow messages that have at least one of these
+          // IMPORTANT: Allow messages that have only images/attachments
           return hasContent || hasEmbeds || hasAttachments;
         })
         .map(m => {
           let content = m.content || "";
           
-          // If content is just a name with colon (like "Reviews:" or "Neon:"), 
-          // and there's an embed, use embed description
-          if (content.includes(":") && m.embeds && m.embeds.length > 0) {
-             content = m.embeds[0].description || m.embeds[0].title || content;
-          } else if (!content && m.embeds && m.embeds.length > 0) {
-            content = m.embeds[0].description || m.embeds[0].title || "";
+          // Better content parsing
+          if (m.embeds && m.embeds.length > 0) {
+            content = m.embeds[0].description || m.embeds[0].title || content;
           }
           
+          // If still no content but has attachments, use a default text
+          if (!content.trim() && m.attachments && m.attachments.length > 0) {
+            content = "تقييم Pixel Design";
+          }
+
           let image = null;
           if (m.attachments && m.attachments.length > 0) {
             image = m.attachments[0].url;
@@ -136,10 +138,10 @@ export const reviewsRouter = router({
       { id: "m4", name: "IHIMO", username: "ihimo", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/ihimo", platform: 'kick' },
       { id: "m5", name: "II3LI", username: "ii3li", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/ii3li", platform: 'kick' },
       { id: "m6", name: "2MZX", username: "2mzx", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/2mzx", platform: 'kick' },
-      { id: "m7", name: "L1T", username: "l1t", avatar: null, serverIcon: "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico", inviteLink: "https://discord.gg/l1t", platform: 'discord' },
-      { id: "m8", name: "VE", username: "ve", avatar: null, serverIcon: "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico", inviteLink: "https://discord.gg/ve", platform: 'discord' },
-      { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico", inviteLink: "https://discord.gg/CMP", platform: 'discord' },
-      { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico", inviteLink: "https://discord.gg/s1s", platform: 'discord' },
+      { id: "m7", name: "L1T", username: "l1t", avatar: null, serverIcon: "https://discord.gg/l1t", platform: 'discord' },
+      { id: "m8", name: "VE", username: "ve", avatar: null, serverIcon: "https://discord.gg/ve", platform: 'discord' },
+      { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: "https://discord.gg/CMP", platform: 'discord' },
+      { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: "https://discord.gg/s1s", platform: 'discord' },
     ];
 
     try {
@@ -181,54 +183,6 @@ export const reviewsRouter = router({
     } catch (error) {
       console.error("Error fetching featured clients:", error);
       return manualClients;
-    }
-  }),
-
-  // New endpoint for hourly refresh
-  hourlySync: publicProcedure.query(async () => {
-    try {
-      const now = Date.now();
-      if (now - lastSyncTime > SYNC_INTERVAL) {
-        lastSyncTime = now;
-        const synced = await syncReviewsFromDiscord();
-        return { success: true, synced, message: "Hourly sync completed" };
-      }
-      return { success: true, synced: 0, message: "Sync interval not reached yet" };
-    } catch (error) {
-      console.error("Failed to perform hourly sync:", error);
-      return { success: false, error: "Failed to sync reviews" };
-    }
-  }),
-
-  // New endpoint for Discord channel info
-  getDiscordChannelInfo: publicProcedure.query(async () => {
-    try {
-      const DISCORD_API_BASE = "https://discord.com/api/v10";
-      const REVIEWS_CHANNEL_ID = "1384289587718918365";
-      const token = process.env.DISCORD_TOKEN;
-      
-      if (!token) {
-        return { success: false, error: "Discord token not configured" };
-      }
-
-      const response = await fetch(
-        `${DISCORD_API_BASE}/channels/${REVIEWS_CHANNEL_ID}`,
-        {
-          headers: {
-            Authorization: `Bot ${token}`,
-          },
-        }
-      );
-
-      if (!response.ok) {
-        return { success: false, error: "Failed to fetch channel info" };
-      }
-
-      const channelInfo = await response.json();
-      return { success: true, data: channelInfo };
-    } catch (error) {
-      console.error("Error fetching Discord channel info:", error);
-      return { success: false, error: "Failed to fetch channel info" };
     }
   }),
 });
