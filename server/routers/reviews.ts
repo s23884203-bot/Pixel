@@ -5,40 +5,42 @@ import { fetchDiscordReviews, syncReviewsFromDiscord, fetchDiscordPartners, getS
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
-    const dbReviews = await getAllReviews();
-    
-    // Fallback to live discord fetch if DB is empty or unavailable
-    const messages = await fetchDiscordReviews();
-    const discordReviews = messages
-      .filter(m => (m.content && m.content.trim().length > 0) || (m.embeds && m.embeds.length > 0))
-      .map(m => {
-        let content = m.content || "";
-        if (m.embeds && m.embeds.length > 0) {
-          content = m.embeds[0].description || m.embeds[0].title || content;
-        }
-        let image = null;
-        if (m.attachments && m.attachments.length > 0) {
-          image = m.attachments[0].url;
-        }
+    try {
+      const messages = await fetchDiscordReviews();
+      const discordReviews = messages
+        .filter(m => (m.content && m.content.trim().length > 0) || (m.embeds && m.embeds.length > 0) || (m.attachments && m.attachments.length > 0))
+        .map(m => {
+          let content = m.content || "";
+          if (m.embeds && m.embeds.length > 0) {
+            content = m.embeds[0].description || m.embeds[0].title || content;
+          }
+          
+          let image = null;
+          if (m.attachments && m.attachments.length > 0) {
+            image = m.attachments[0].url;
+          }
 
-        return {
-          id: parseInt(m.id.slice(-8)),
-          discordMessageId: m.id,
-          discordUserId: m.author.id,
-          authorName: m.author.username,
-          authorAvatar: m.author.avatar
-            ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
-            : null,
-          content: content,
-          image: image,
-          rating: 5,
-          timestamp: new Date(m.timestamp),
-        };
-      });
+          return {
+            id: parseInt(m.id.slice(-8)) || Math.floor(Math.random() * 1000000),
+            discordMessageId: m.id,
+            discordUserId: m.author.id,
+            authorName: m.author.username,
+            authorAvatar: m.author.avatar
+              ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
+              : null,
+            content: content || "تقييم مصور",
+            image: image,
+            rating: 5,
+            timestamp: new Date(m.timestamp),
+          };
+        });
 
-    // Combine and prioritize DB if available
-    if (dbReviews.length > 0) return dbReviews;
-    return discordReviews;
+      if (discordReviews.length > 0) return discordReviews;
+      return await getAllReviews();
+    } catch (error) {
+      console.error("Error in list reviews:", error);
+      return await getAllReviews();
+    }
   }),
 
   sync: publicProcedure.mutation(async () => {
@@ -52,34 +54,23 @@ export const reviewsRouter = router({
   }),
 
   getStats: publicProcedure.query(async () => {
-    let reviewsList = await getAllReviews();
-    if (reviewsList.length === 0) {
+    try {
       const messages = await fetchDiscordReviews();
-      reviewsList = messages.map(m => ({ rating: 5 })) as any;
+      const totalReviews = messages.length > 0 ? messages.length : 200;
+      return {
+        totalReviews: totalReviews,
+        averageRating: 5.0,
+        memberCount: 2000,
+      };
+    } catch {
+      return { totalReviews: 200, averageRating: 5.0, memberCount: 2000 };
     }
-    
-    const totalReviews = reviewsList.length;
-    const averageRating =
-      reviewsList.length > 0
-        ? reviewsList.reduce((sum, r) => sum + (r.rating || 0), 0) / reviewsList.length
-        : 0;
-
-    return {
-      totalReviews: totalReviews || 200,
-      averageRating: Math.round(averageRating * 10) / 10 || 5.0,
-      memberCount: 2000,
-    };
   }),
 
   partners: publicProcedure.query(async () => {
     const messages = await fetchDiscordPartners();
     return messages
-      .filter(m => {
-        const hasContent = m.content && m.content.trim().length > 0;
-        const hasEmbeds = m.embeds && m.embeds.length > 0;
-        // Filter out messages that look like "featured clients" (contain invite links)
-        return (hasContent || hasEmbeds);
-      })
+      .filter(m => (m.content && m.content.trim().length > 0) || (m.embeds && m.embeds.length > 0))
       .map(m => {
         let description = m.content || "";
         let name = m.author.username;
@@ -91,9 +82,6 @@ export const reviewsRouter = router({
           const embed = m.embeds[0];
           description = embed.description || embed.title || description;
           if (embed.title) name = embed.title;
-          if (embed.fields && embed.fields.length > 0) {
-            description += "\n" + embed.fields.map(f => `${f.name}: ${f.value}`).join("\n");
-          }
         }
 
         return {
