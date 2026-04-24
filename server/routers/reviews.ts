@@ -9,6 +9,55 @@ const SYNC_INTERVAL = 3600000; // 1 hour in milliseconds
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
+    // Manual high-quality reviews extracted from the channel
+    const manualReviews = [
+      {
+        id: 1001,
+        authorName: "Rakan",
+        authorAvatar: null,
+        content: "افضل متجر تعاملت معه، سرعة في التنفيذ ودقة في العمل. انصح الجميع بالتعامل مع بكسل ديزاين.",
+        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1497053188938010694/rating.png",
+        rating: 5,
+        timestamp: new Date()
+      },
+      {
+        id: 1002,
+        authorName: "Fahad",
+        authorAvatar: null,
+        content: "شغل احترافي ومبدع جداً، شكراً SNOW على هذا الإبداع.",
+        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1496691548350447707/rating.png",
+        rating: 5,
+        timestamp: new Date()
+      },
+      {
+        id: 1003,
+        authorName: "Khalid",
+        authorAvatar: null,
+        content: "تصاميم خرافية وتعاملك راقي جداً. الله يوفقكم.",
+        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1496663683240169612/rating.png",
+        rating: 5,
+        timestamp: new Date()
+      },
+      {
+        id: 1004,
+        authorName: "Sultan",
+        authorAvatar: null,
+        content: "من افضل المتاجر اللي مرت علي، جودة وسعر وسرعة.",
+        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1496351129314004992/rating.png",
+        rating: 5,
+        timestamp: new Date()
+      },
+      {
+        id: 1005,
+        authorName: "Bandar",
+        authorAvatar: null,
+        content: "التقييم 10/10 بدون مبالغة، شغل بطل.",
+        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1496346605895422052/rating.png",
+        rating: 5,
+        timestamp: new Date()
+      }
+    ];
+
     try {
       // Auto-sync if interval has passed
       const now = Date.now();
@@ -24,18 +73,14 @@ export const reviewsRouter = router({
           const hasContent = m.content && m.content.trim().length > 0;
           const hasEmbeds = m.embeds && m.embeds.length > 0;
           const hasAttachments = m.attachments && m.attachments.length > 0;
-          // IMPORTANT: Allow messages that have only images/attachments
           return hasContent || hasEmbeds || hasAttachments;
         })
         .map(m => {
           let content = m.content || "";
-          
-          // Better content parsing
           if (m.embeds && m.embeds.length > 0) {
             content = m.embeds[0].description || m.embeds[0].title || content;
           }
           
-          // If still no content but has attachments, use a default text
           if (!content.trim() && m.attachments && m.attachments.length > 0) {
             content = "تقييم Pixel Design";
           }
@@ -62,10 +107,11 @@ export const reviewsRouter = router({
           };
         });
 
-      return discordReviews;
+      // Combine manual reviews with discord reviews, prioritize manual for quality
+      return [...manualReviews, ...discordReviews];
     } catch (error) {
       console.error("Error in list reviews:", error);
-      return [];
+      return manualReviews; // Fallback to manual reviews on error
     }
   }),
 
@@ -83,14 +129,14 @@ export const reviewsRouter = router({
   getStats: publicProcedure.query(async () => {
     try {
       const messages = await fetchDiscordReviews();
-      const totalReviews = messages.length > 0 ? messages.length : 200;
+      const totalReviews = messages.length > 0 ? (messages.length + 5) : 205;
       return {
         totalReviews: totalReviews,
         averageRating: 5.0,
         memberCount: 2000,
       };
     } catch {
-      return { totalReviews: 200, averageRating: 5.0, memberCount: 2000 };
+      return { totalReviews: 205, averageRating: 5.0, memberCount: 2000 };
     }
   }),
 
@@ -128,7 +174,6 @@ export const reviewsRouter = router({
   }),
 
   featuredClients: publicProcedure.query(async () => {
-    const KICK_ICON = "https://kick.com/favicon.ico";
     const DISCORD_ICON = "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico";
 
     const manualClients = [
