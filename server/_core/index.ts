@@ -58,8 +58,18 @@ async function startServer() {
     console.log(`Port ${preferredPort} is busy, using port ${port} instead`);
   }
 
-  server.listen(port, () => {
+  server.listen(port, async () => {
     console.log(`Server running on http://localhost:${port}/`);
+    
+    // Force initial sync of reviews from Discord on startup
+    try {
+      const { syncReviewsFromDiscord } = await import("../discord");
+      console.log("[Server] Starting initial Discord reviews sync...");
+      const count = await syncReviewsFromDiscord();
+      console.log(`[Server] Initial sync completed. Synced ${count} reviews.`);
+    } catch (error) {
+      console.error("[Server] Initial sync failed:", error);
+    }
   });
 }
 
