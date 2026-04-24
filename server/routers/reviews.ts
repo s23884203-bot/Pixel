@@ -53,24 +53,23 @@ export const reviewsRouter = router({
     const clients = [];
 
     for (const msg of messages) {
-      if (msg.content && msg.content.includes("عميلنا المميز")) {
-        // Extract Discord invite code from content
-        const inviteMatch = msg.content.match(/discord\.gg\/([a-zA-Z0-9]+)/);
-        if (inviteMatch) {
-          const inviteCode = inviteMatch[1];
-          const serverIcon = await getServerIconFromInvite(inviteCode);
-          
-          clients.push({
-            id: msg.id,
-            name: msg.author.username,
-            username: msg.author.username,
-            avatar: msg.author.avatar
-              ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
-              : null,
-            serverIcon: serverIcon,
-            inviteLink: `https://discord.gg/${inviteCode}`,
-          });
-        }
+      // Extract Discord invite code from content
+      const inviteMatch = msg.content.match(/discord\.gg\/([a-zA-Z0-9-]+)/) || msg.content.match(/discord\.com\/invite\/([a-zA-Z0-9-]+)/);
+      
+      if (inviteMatch) {
+        const inviteCode = inviteMatch[1];
+        const serverIcon = await getServerIconFromInvite(inviteCode);
+        
+        clients.push({
+          id: msg.id,
+          name: msg.author.username,
+          username: msg.author.username,
+          avatar: msg.author.avatar
+            ? `https://cdn.discordapp.com/avatars/${msg.author.id}/${msg.author.avatar}.png`
+            : null,
+          serverIcon: serverIcon,
+          inviteLink: `https://discord.gg/${inviteCode}`,
+        });
       }
     }
 

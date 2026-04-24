@@ -99,7 +99,12 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="text-2xl font-black text-white">PIXEL DESIGN</div>
+          <div className="flex items-center gap-6">
+            <div className="text-2xl font-black text-white cursor-pointer" onClick={() => window.location.href='/'}>PIXEL DESIGN</div>
+            <div className="hidden md:flex items-center gap-4">
+              <a href="/overview" className="text-slate-300 hover:text-white transition-colors font-medium">نبذة عنا</a>
+            </div>
+          </div>
           <a
             href="https://discord.gg/wBuqaM6tqm"
             target="_blank"
@@ -147,7 +152,7 @@ export default function Home() {
             {/* Logo */}
             <div className="mb-8">
               <img
-                src="/manus-storage/a_59b6606ae6c2e0f0be6a6a02c12c40d1_18fea0bb.webp"
+                src="/logo_new.png"
                 alt="Pixel Design Logo"
                 className="w-48 h-auto drop-shadow-2xl animate-float"
                 onError={(e) => {

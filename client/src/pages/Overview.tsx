@@ -10,7 +10,7 @@ export default function Overview() {
       {/* Header */}
       <section className="py-16 px-4 border-b border-slate-800">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-5xl font-black text-white mb-4">Pixel Design Server</h1>
+          <h1 className="text-5xl font-black text-white mb-4">Pixel Design</h1>
           <p className="text-xl text-slate-300">
             اكتشف مجتمع Pixel Design الإبداعي
           </p>
