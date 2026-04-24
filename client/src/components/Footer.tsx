@@ -9,7 +9,7 @@ export default function Footer() {
         
         <div className="flex flex-col items-center md:items-end">
           <p className="text-white/40 text-xs font-bold uppercase tracking-widest mb-2">
-            Dev: <span className="text-white">Sba3 & Brx</span>
+            <span className="text-white">Alpha dev</span>
           </p>
           <p className="text-white/20 text-[10px]">
             © 2026 Pixel Design. All rights reserved.

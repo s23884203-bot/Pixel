@@ -3,9 +3,20 @@ import { publicProcedure, router } from "../_core/trpc";
 import { getAllReviews } from "../db";
 import { fetchDiscordReviews, syncReviewsFromDiscord, fetchDiscordPartners, getServerIconFromInvite } from "../discord";
 
+// Track last sync time to prevent excessive syncing
+let lastSyncTime = 0;
+const SYNC_INTERVAL = 3600000; // 1 hour in milliseconds
+
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
     try {
+      // Auto-sync if interval has passed
+      const now = Date.now();
+      if (now - lastSyncTime > SYNC_INTERVAL) {
+        lastSyncTime = now;
+        await syncReviewsFromDiscord();
+      }
+
       const messages = await fetchDiscordReviews();
       
       const discordReviews = messages
@@ -52,6 +63,7 @@ export const reviewsRouter = router({
 
   sync: publicProcedure.mutation(async () => {
     try {
+      lastSyncTime = Date.now();
       const synced = await syncReviewsFromDiscord();
       return { success: true, count: synced };
     } catch (error) {
@@ -163,6 +175,54 @@ export const reviewsRouter = router({
     } catch (error) {
       console.error("Error fetching featured clients:", error);
       return manualClients;
+    }
+  }),
+
+  // New endpoint for hourly refresh
+  hourlySync: publicProcedure.query(async () => {
+    try {
+      const now = Date.now();
+      if (now - lastSyncTime > SYNC_INTERVAL) {
+        lastSyncTime = now;
+        const synced = await syncReviewsFromDiscord();
+        return { success: true, synced, message: "Hourly sync completed" };
+      }
+      return { success: true, synced: 0, message: "Sync interval not reached yet" };
+    } catch (error) {
+      console.error("Failed to perform hourly sync:", error);
+      return { success: false, error: "Failed to sync reviews" };
+    }
+  }),
+
+  // New endpoint for Discord channel info
+  getDiscordChannelInfo: publicProcedure.query(async () => {
+    try {
+      const DISCORD_API_BASE = "https://discord.com/api/v10";
+      const REVIEWS_CHANNEL_ID = "1384289587718918365";
+      const token = process.env.DISCORD_TOKEN;
+      
+      if (!token) {
+        return { success: false, error: "Discord token not configured" };
+      }
+
+      const response = await fetch(
+        `${DISCORD_API_BASE}/channels/${REVIEWS_CHANNEL_ID}`,
+        {
+          headers: {
+            Authorization: `Bot ${token}`,
+          },
+        }
+      );
+
+      if (!response.ok) {
+        return { success: false, error: "Failed to fetch channel info" };
+      }
+
+      const channelInfo = await response.json();
+      return { success: true, data: channelInfo };
+    } catch (error) {
+      console.error("Error fetching Discord channel info:", error);
+      return { success: false, error: "Failed to fetch channel info" };
     }
   }),
 });

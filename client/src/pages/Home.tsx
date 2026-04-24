@@ -32,11 +32,40 @@ interface FeaturedClient {
   platform: 'discord' | 'kick';
 }
 
+const AnimatedTagline = () => {
+  const [displayText, setDisplayText] = useState("");
+  const fullText = "من خيالك… للواقع";
+  
+  useEffect(() => {
+    let index = 0;
+    const interval = setInterval(() => {
+      if (index <= fullText.length) {
+        setDisplayText(fullText.slice(0, index));
+        index++;
+      } else {
+        clearInterval(interval);
+      }
+    }, 80);
+    
+    return () => clearInterval(interval);
+  }, []);
+  
+  return (
+    <div className="text-center mt-6 mb-8">
+      <p className="text-xl md:text-2xl font-bold text-white/80 tracking-wide min-h-[2rem] animate-fadeIn">
+        📌 {displayText}
+        {displayText.length < fullText.length && <span className="animate-pulse">|</span>}
+      </p>
+    </div>
+  );
+};
+
 export default function Home() {
   const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = trpc.reviews.list.useQuery(undefined, {
     staleTime: 30000,
     refetchOnWindowFocus: false,
-    retry: 1
+    retry: 1,
+    refetchInterval: 3600000 // Refetch every hour (3600000ms)
   });
   const { data: partnerMessages } = trpc.reviews.partners.useQuery();
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
@@ -115,13 +144,23 @@ export default function Home() {
         <nav className="border-b border-white/5 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
           <div className="max-w-[1800px] mx-auto px-6 py-4 flex justify-between items-center">
             <div className="text-xl font-black tracking-tighter uppercase italic">Pixel Design</div>
-            <a 
-              href="https://discord.gg/wBuqaM6tqm" 
-              target="_blank" 
-              className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform flex items-center gap-2"
-            >
-              <ExternalLink className="w-4 h-4" /> Discord
-            </a>
+            <div className="flex items-center gap-3">
+              <a 
+                href="https://salla.sa/pixel.design" 
+                target="_blank"
+                rel="noopener noreferrer"
+                className="bg-white/10 text-white px-4 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform flex items-center gap-2 border border-white/20"
+              >
+                <ExternalLink className="w-4 h-4" /> Store
+              </a>
+              <a 
+                href="https://discord.gg/wBuqaM6tqm" 
+                target="_blank"
+                className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform flex items-center gap-2"
+              >
+                <ExternalLink className="w-4 h-4" /> Discord
+              </a>
+            </div>
           </div>
         </nav>
 
@@ -181,6 +220,14 @@ export default function Home() {
           {/* Center Main Area: Store Identity Only */}
           <div className="flex-1 space-y-12 order-1 lg:order-2 flex flex-col items-center justify-start pt-20">
             <div className="text-center max-w-4xl mx-auto">
+              {/* SNOW Owner Section */}
+              <div className="mb-8 flex flex-col items-center">
+                <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-4 hover:bg-white/10 transition-all">
+                  <img src="/snow_logo.webp" alt="SNOW" className="w-6 h-6 object-contain" />
+                  <span className="text-sm font-bold text-white uppercase tracking-wider">SNOW</span>
+                </div>
+              </div>
+              
               <div className="inline-block mb-8 relative group">
                 <div className="absolute -inset-2 bg-white/20 rounded-full blur-xl opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
                 <img src="/logo.webp" alt="Logo" className="relative w-40 h-40 md:w-56 md:h-56 object-contain animate-float" />
@@ -188,6 +235,9 @@ export default function Home() {
               <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic mb-8 leading-none">
                 Pixel <span className="text-white/20">Design</span>
               </h1>
+              
+              {/* Animated Tagline */}
+              <AnimatedTagline />
               
               <div className="flex flex-wrap justify-center gap-8 md:gap-12 mt-8">
                 <div className="flex flex-col items-center">
@@ -235,7 +285,7 @@ export default function Home() {
                         {r.authorAvatar ? (
                           <img src={r.authorAvatar} className="w-10 h-10 rounded-full grayscale border border-white/10" />
                         ) : (
-                          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold text-sm">
+                          <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center font-bold">
                             {r.authorName[0]}
                           </div>
                         )}
@@ -278,6 +328,17 @@ export default function Home() {
         }
         .animate-float {
           animation: float 5s ease-in-out infinite;
+        }
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+          }
+          to {
+            opacity: 1;
+          }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-in-out;
         }
         .custom-scrollbar::-webkit-scrollbar {
           width: 4px;
