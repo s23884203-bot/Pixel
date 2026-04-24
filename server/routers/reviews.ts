@@ -1,51 +1,11 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
-import { getAllReviews } from "../db";
-import { fetchDiscordReviews, syncReviewsFromDiscord, fetchDiscordPartners, getServerIconFromInvite } from "../discord";
-
-// Track last sync time to prevent excessive syncing
-let lastSyncTime = 0;
-const SYNC_INTERVAL = 3600000; // 1 hour in milliseconds
+import { fetchDiscordReviews, fetchDiscordPartners, getServerIconFromInvite } from "../discord";
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
-    // Official Rating Images provided by the user
-    const officialRatingImages = [
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1497053188938010694/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496691548350447707/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496663683240169612/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496351129314004992/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496346605895422052/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496206330006868158/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1495650188096966738/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1495411564335992924/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1494025195512533022/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1493735415394468011/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1493694413204095056/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1493681197824479374/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1493225644371476480/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1492594844424732904/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1492263111875367153/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1491988974204358787/rating.png"
-    ];
-
-    const manualReviews = officialRatingImages.map((url, index) => ({
-      id: 2000 + index,
-      authorName: "Customer",
-      authorAvatar: null,
-      content: "تقييم Pixel Design",
-      image: url,
-      rating: 5,
-      timestamp: new Date(Date.now() - index * 3600000) // Spaced out by hour
-    }));
-
     try {
-      const now = Date.now();
-      if (now - lastSyncTime > SYNC_INTERVAL) {
-        lastSyncTime = now;
-        await syncReviewsFromDiscord();
-      }
-
+      // Fetch directly from Discord every time to ensure fresh data
       const messages = await fetchDiscordReviews();
       
       const discordReviews = messages
@@ -61,10 +21,6 @@ export const reviewsRouter = router({
             content = m.embeds[0].description || m.embeds[0].title || content;
           }
           
-          if (!content.trim() && m.attachments && m.attachments.length > 0) {
-            content = "تقييم Pixel Design";
-          }
-
           let image = null;
           if (m.attachments && m.attachments.length > 0) {
             image = m.attachments[0].url;
@@ -80,46 +36,26 @@ export const reviewsRouter = router({
             authorAvatar: m.author.avatar
               ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
               : null,
-            content: content.trim() || "تقييم Pixel Design",
+            content: content.trim(),
             image: image,
             rating: 5,
             timestamp: new Date(m.timestamp),
           };
         });
 
-      // Filter out discord reviews that might be duplicates of our official ones
-      const filteredDiscord = discordReviews.filter(dr => !officialRatingImages.includes(dr.image || ""));
-
-      return [...manualReviews, ...filteredDiscord];
+      return discordReviews;
     } catch (error) {
       console.error("Error in list reviews:", error);
-      return manualReviews;
-    }
-  }),
-
-  sync: publicProcedure.mutation(async () => {
-    try {
-      lastSyncTime = Date.now();
-      const synced = await syncReviewsFromDiscord();
-      return { success: true, count: synced };
-    } catch (error) {
-      console.error("Failed to sync reviews:", error);
-      return { success: false, error: "Failed to sync reviews" };
+      return [];
     }
   }),
 
   getStats: publicProcedure.query(async () => {
-    try {
-      const messages = await fetchDiscordReviews();
-      const totalReviews = messages.length > 0 ? (messages.length + 16) : 216;
-      return {
-        totalReviews: totalReviews,
-        averageRating: 5.0,
-        memberCount: 2000,
-      };
-    } catch {
-      return { totalReviews: 216, averageRating: 5.0, memberCount: 2000 };
-    }
+    return {
+      totalReviews: 200, // Fixed to 200+ as requested
+      averageRating: 5.0,
+      memberCount: 2000,
+    };
   }),
 
   partners: publicProcedure.query(async () => {
