@@ -35,6 +35,7 @@ export default function Home() {
   const syncMutation = trpc.reviews.sync.useMutation();
   const { data: partnerMessages } = trpc.reviews.partners.useQuery();
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
+  const { data: stats } = trpc.reviews.getStats.useQuery();
   const [displayReviews, setDisplayReviews] = useState<Review[]>([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [partners, setPartners] = useState<Partner[]>([]);
@@ -99,12 +100,7 @@ export default function Home() {
       {/* Navigation */}
       <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/80 backdrop-blur border-b border-slate-800">
         <div className="max-w-7xl mx-auto px-4 py-4 flex items-center justify-between">
-          <div className="flex items-center gap-6">
-            <div className="text-2xl font-black text-white cursor-pointer" onClick={() => window.location.href='/'}>PIXEL DESIGN</div>
-            <div className="hidden md:flex items-center gap-4">
-              <a href="/overview" className="text-slate-300 hover:text-white transition-colors font-medium">نبذة عنا</a>
-            </div>
-          </div>
+          <div className="text-2xl font-black text-white cursor-pointer" onClick={() => window.location.href='/'}>PIXEL DESIGN</div>
           <a
             href="https://discord.gg/wBuqaM6tqm"
             target="_blank"
@@ -173,11 +169,11 @@ export default function Home() {
             {/* Stats */}
             <div className="grid grid-cols-2 gap-6 mb-12 w-full">
               <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center">
-                <p className="text-4xl font-black text-blue-400 mb-2">2000+</p>
+                <p className="text-4xl font-black text-blue-400 mb-2">{stats?.memberCount || 2000}+</p>
                 <p className="text-slate-300">members</p>
               </div>
               <div className="p-6 bg-slate-800/50 rounded-xl border border-slate-700/50 text-center">
-                <p className="text-4xl font-black text-purple-400 mb-2">200+</p>
+                <p className="text-4xl font-black text-purple-400 mb-2">{stats?.totalReviews || 200}+</p>
                 <p className="text-slate-300">reviews</p>
               </div>
             </div>
