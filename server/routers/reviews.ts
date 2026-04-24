@@ -6,22 +6,33 @@ import { fetchDiscordReviews, syncReviewsFromDiscord, fetchDiscordPartners, getS
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
     const dbReviews = await getAllReviews();
-    if (dbReviews.length > 0) return dbReviews;
     
     // Fallback to live discord fetch if DB is empty or unavailable
     const messages = await fetchDiscordReviews();
-    return messages.map(m => ({
-      id: parseInt(m.id.slice(-8)), // temporary numeric id
-      discordMessageId: m.id,
-      discordUserId: m.author.id,
-      authorName: m.author.username,
-      authorAvatar: m.author.avatar
-        ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
-        : null,
-      content: m.content,
-      rating: 5,
-      timestamp: new Date(m.timestamp),
-    }));
+    const discordReviews = messages
+      .filter(m => (m.content && m.content.trim().length > 0) || (m.embeds && m.embeds.length > 0))
+      .map(m => {
+        let content = m.content || "";
+        if (m.embeds && m.embeds.length > 0) {
+          content = m.embeds[0].description || m.embeds[0].title || content;
+        }
+        return {
+          id: parseInt(m.id.slice(-8)),
+          discordMessageId: m.id,
+          discordUserId: m.author.id,
+          authorName: m.author.username,
+          authorAvatar: m.author.avatar
+            ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
+            : null,
+          content: content,
+          rating: 5,
+          timestamp: new Date(m.timestamp),
+        };
+      });
+
+    // Combine and prioritize DB if available
+    if (dbReviews.length > 0) return dbReviews;
+    return discordReviews;
   }),
 
   sync: publicProcedure.mutation(async () => {

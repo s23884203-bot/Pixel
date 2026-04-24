@@ -49,7 +49,7 @@ export async function validateDiscordToken(): Promise<{
 
     const response = await fetch(`${DISCORD_API_BASE}/users/@me`, {
       headers: {
-        Authorization: token,
+        Authorization: `Bot ${token}`,
       },
     });
 
@@ -78,7 +78,7 @@ export async function fetchDiscordReviews(): Promise<DiscordMessage[]> {
       `${DISCORD_API_BASE}/channels/${REVIEWS_CHANNEL_ID}/messages?limit=100`,
       {
         headers: {
-          Authorization: token,
+          Authorization: `Bot ${token}`,
         },
       }
     );
@@ -104,7 +104,7 @@ export async function getChannelInfo() {
 
     const response = await fetch(`${DISCORD_API_BASE}/channels/${REVIEWS_CHANNEL_ID}`, {
       headers: {
-        Authorization: token,
+        Authorization: `Bot ${token}`,
       },
     });
 
@@ -130,7 +130,7 @@ export async function fetchDiscordPartners(): Promise<DiscordMessage[]> {
       `${DISCORD_API_BASE}/channels/${PARTNERS_CHANNEL_ID}/messages?limit=100`,
       {
         headers: {
-          Authorization: token,
+          Authorization: `Bot ${token}`,
         },
       }
     );
@@ -156,7 +156,7 @@ export async function getServerIconFromInvite(inviteCode: string): Promise<strin
       `${DISCORD_API_BASE}/invites/${inviteCode}?with_counts=true`,
       {
         headers: {
-          Authorization: token,
+          Authorization: `Bot ${token}`,
         },
       }
     );
@@ -182,7 +182,12 @@ export async function syncReviewsFromDiscord(): Promise<number> {
 
     for (const message of messages) {
       const existing = await getReviewByDiscordId(message.id);
-      if (!existing && message.content) {
+      let content = message.content || "";
+      if (message.embeds && message.embeds.length > 0) {
+        content = message.embeds[0].description || message.embeds[0].title || content;
+      }
+      
+      if (!existing && content.trim().length > 0) {
         await createReview({
           discordMessageId: message.id,
           discordUserId: message.author.id,
@@ -190,7 +195,7 @@ export async function syncReviewsFromDiscord(): Promise<number> {
           authorAvatar: message.author.avatar
             ? `https://cdn.discordapp.com/avatars/${message.author.id}/${message.author.avatar}.png`
             : null,
-          content: message.content,
+          content: content,
           rating: 5,
           timestamp: new Date(message.timestamp),
         });
