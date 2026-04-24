@@ -152,7 +152,7 @@ export default function Home() {
             {/* Logo */}
             <div className="mb-8">
               <img
-                src="/logo_new.png"
+                src="/logo.webp"
                 alt="Pixel Design Logo"
                 className="w-48 h-auto drop-shadow-2xl animate-float"
                 onError={(e) => {
