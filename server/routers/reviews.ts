@@ -108,16 +108,16 @@ export const reviewsRouter = router({
 
   featuredClients: publicProcedure.query(async () => {
     const manualClients = [
-      { id: "m1", name: "TRG", username: "trg", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/trg" },
-      { id: "m2", name: "D7MX", username: "d7mx", avatar: null, serverIcon: null, inviteLink: "https://kick.com/d7mx" },
-      { id: "m3", name: "IAZUZ", username: "iazuz", avatar: null, serverIcon: null, inviteLink: "https://kick.com/iazuz" },
-      { id: "m4", name: "IHIMO", username: "ihimo", avatar: null, serverIcon: null, inviteLink: "https://kick.com/ihimo" },
-      { id: "m5", name: "II3LI", username: "ii3li", avatar: null, serverIcon: null, inviteLink: "https://kick.com/ii3li" },
-      { id: "m6", name: "2MZX", username: "2mzx", avatar: null, serverIcon: null, inviteLink: "https://kick.com/2mzx" },
-      { id: "m7", name: "L1T", username: "l1t", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/l1t" },
-      { id: "m8", name: "VE", username: "ve", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/ve" },
-      { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/CMP" },
-      { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/s1s" },
+      { id: "m1", name: "TRG", username: "trg", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/trg", platform: 'discord' },
+      { id: "m2", name: "D7MX", username: "d7mx", avatar: null, serverIcon: null, inviteLink: "https://kick.com/d7mx", platform: 'kick' },
+      { id: "m3", name: "IAZUZ", username: "iazuz", avatar: null, serverIcon: null, inviteLink: "https://kick.com/iazuz", platform: 'kick' },
+      { id: "m4", name: "IHIMO", username: "ihimo", avatar: null, serverIcon: null, inviteLink: "https://kick.com/ihimo", platform: 'kick' },
+      { id: "m5", name: "II3LI", username: "ii3li", avatar: null, serverIcon: null, inviteLink: "https://kick.com/ii3li", platform: 'kick' },
+      { id: "m6", name: "2MZX", username: "2mzx", avatar: null, serverIcon: null, inviteLink: "https://kick.com/2mzx", platform: 'kick' },
+      { id: "m7", name: "L1T", username: "l1t", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/l1t", platform: 'discord' },
+      { id: "m8", name: "VE", username: "ve", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/ve", platform: 'discord' },
+      { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/CMP", platform: 'discord' },
+      { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: null, inviteLink: "https://discord.gg/s1s", platform: 'discord' },
     ];
 
     const messages = await fetchDiscordPartners();
@@ -149,6 +149,7 @@ export const reviewsRouter = router({
           avatar: displayAvatar,
           serverIcon: serverIcon,
           inviteLink: `https://discord.gg/${inviteCode}`,
+          platform: 'discord',
         });
       }
     }

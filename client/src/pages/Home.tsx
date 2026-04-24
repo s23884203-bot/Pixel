@@ -29,6 +29,7 @@ interface FeaturedClient {
   avatar: string | null;
   serverIcon: string | null;
   inviteLink: string;
+  platform: 'discord' | 'kick';
 }
 
 export default function Home() {
@@ -42,7 +43,6 @@ export default function Home() {
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [featuredClients, setFeaturedClients] = useState<FeaturedClient[]>([]);
-  const [currentClientIndex, setCurrentClientIndex] = useState(0);
 
   useEffect(() => {
     syncMutation.mutate();
@@ -60,7 +60,7 @@ export default function Home() {
     if (featuredClientsData) setFeaturedClients(featuredClientsData);
   }, [featuredClientsData]);
 
-  // Auto-rotate carousels
+  // Auto-rotate main review
   useEffect(() => {
     if (displayReviews.length > 0) {
       const interval = setInterval(() => setCurrentReviewIndex(p => (p + 1) % displayReviews.length), 5000);
@@ -68,17 +68,25 @@ export default function Home() {
     }
   }, [displayReviews]);
 
-  useEffect(() => {
-    if (featuredClients.length > 0) {
-      const interval = setInterval(() => setCurrentClientIndex(p => (p + 1) % featuredClients.length), 6000);
-      return () => clearInterval(interval);
-    }
-  }, [featuredClients]);
-
   const currentReview = displayReviews[currentReviewIndex];
-  const currentClient = featuredClients[currentClientIndex];
-
   const isLoading = !reviews && !partnerMessages && !featuredClientsData;
+
+  const PlatformIcon = ({ platform }: { platform: 'discord' | 'kick' }) => {
+    if (platform === 'kick') {
+      return (
+        <div className="w-5 h-5 bg-[#53fc18] rounded flex items-center justify-center p-0.5">
+          <span className="text-[10px] font-black text-black">K</span>
+        </div>
+      );
+    }
+    return (
+      <div className="w-5 h-5 bg-[#5865F2] rounded flex items-center justify-center p-1">
+        <svg viewBox="0 0 127.14 96.36" fill="white" className="w-full h-full">
+          <path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.71,32.65-1.82,56.6.48,80.21a105.73,105.73,0,0,0,32.22,16.15,77.7,77.7,0,0,0,7.34-11.86,68.11,68.11,0,0,1-11.85-5.65c.99-.71,1.96-1.46,2.89-2.22a74.87,74.87,0,0,0,65.35,0c.93.76,1.9,1.51,2.89,2.22a68.4,68.4,0,0,1-11.85,5.65,77,77,0,0,0,7.34,11.86,105.55,105.55,0,0,0,32.25-16.15C129.58,52.13,125.4,28.38,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5.12-12.67,11.45-12.67S54,46,54,53,48.83,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5.12-12.67,11.44-12.67S96.2,46,96.2,53,91.05,65.69,84.69,65.69Z"/>
+        </svg>
+      </div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black">
@@ -141,65 +149,47 @@ export default function Home() {
         {/* Content Grid */}
         <main className="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12">
           
-          {/* Left: Partners & Stats */}
-          <aside className="lg:col-span-3 space-y-12">
-            <section>
+          {/* Left: Featured Clients (Scrollable List) */}
+          <aside className="lg:col-span-3">
+            <div className="sticky top-24">
               <div className="flex items-center gap-2 mb-6">
-                <Users className="w-5 h-5 text-white/60" />
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Partners</h2>
+                <Award className="w-5 h-5 text-white/60" />
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">عملاء مميزون</h2>
               </div>
-              <div className="grid gap-4">
-                {partners.slice(0, 6).map(p => (
-                  <div key={p.id} className="group p-4 bg-white/5 border border-white/5 rounded-2xl hover:border-white/20 transition-all">
-                    {p.image && <img src={p.image} className="w-full h-24 object-cover rounded-xl mb-3 grayscale group-hover:grayscale-0 transition-all" />}
-                    <h3 className="font-bold text-sm mb-1">{p.name}</h3>
-                    <p className="text-xs text-white/40 line-clamp-2">{p.description}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </aside>
-
-          {/* Center: Featured Client & Main Reviews */}
-          <section className="lg:col-span-6 space-y-12">
-            {/* Featured Client Card */}
-            {currentClient && (
-              <div className="bg-white text-black rounded-[2rem] p-8 md:p-12 relative overflow-hidden group">
-                <div className="relative z-10">
-                  <div className="flex items-center gap-2 mb-8">
-                    <Award className="w-5 h-5" />
-                    <span className="text-xs font-black uppercase tracking-[0.2em]">Featured Client</span>
-                  </div>
-                  
-                  <div className="flex flex-col md:flex-row gap-8 items-center md:items-start text-center md:text-left">
-                    {currentClient.avatar && (
-                      <img src={currentClient.avatar} className="w-24 h-24 rounded-full border-4 border-black/10" />
-                    )}
-                    <div className="flex-1">
-                      <h2 className="text-4xl font-black tracking-tighter mb-2 uppercase italic">{currentClient.name}</h2>
-                      <p className="text-black/60 font-medium mb-6">@{currentClient.username}</p>
-                      
-                      {currentClient.serverIcon && (
-                        <div className="mb-8 rounded-2xl overflow-hidden border border-black/5 shadow-2xl">
-                          <img src={currentClient.serverIcon} className="w-full h-48 object-cover" />
+              <div className="max-h-[600px] overflow-y-auto pr-2 space-y-4 custom-scrollbar">
+                {featuredClients.map(client => (
+                  <a 
+                    key={client.id}
+                    href={client.inviteLink}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="flex items-center gap-4 p-4 bg-white/5 border border-white/5 rounded-2xl hover:bg-white/10 hover:border-white/20 transition-all group"
+                  >
+                    <div className="relative">
+                      {client.avatar ? (
+                        <img src={client.avatar} className="w-12 h-12 rounded-full border border-white/10" />
+                      ) : (
+                        <div className="w-12 h-12 rounded-full bg-white/10 flex items-center justify-center font-bold">
+                          {client.name[0]}
                         </div>
                       )}
-                      
-                      <a 
-                        href={currentClient.inviteLink} 
-                        target="_blank"
-                        className="inline-flex items-center gap-3 bg-black text-white px-8 py-4 rounded-full font-bold hover:scale-105 transition-transform"
-                      >
-                        Visit Server <ExternalLink className="w-4 h-4" />
-                      </a>
+                      <div className="absolute -bottom-1 -right-1">
+                        <PlatformIcon platform={client.platform} />
+                      </div>
                     </div>
-                  </div>
-                </div>
-                {/* Background Decor for Card */}
-                <div className="absolute top-0 right-0 w-64 h-64 bg-black/5 rounded-full -mr-32 -mt-32 blur-3xl pointer-events-none"></div>
+                    <div className="flex-1 min-w-0">
+                      <h3 className="font-bold text-sm truncate group-hover:text-white transition-colors">{client.name}</h3>
+                      <p className="text-[10px] text-white/40 uppercase tracking-wider">Visit {client.platform}</p>
+                    </div>
+                    <ExternalLink className="w-3 h-3 text-white/20 group-hover:text-white transition-colors" />
+                  </a>
+                ))}
               </div>
-            )}
+            </div>
+          </aside>
 
+          {/* Center: Main Review Spotlight & Partners */}
+          <section className="lg:col-span-6 space-y-12">
             {/* Main Review Spotlight */}
             {currentReview && (
               <div className="bg-white/5 border border-white/10 rounded-[2rem] p-8 md:p-12">
@@ -251,6 +241,23 @@ export default function Home() {
                 </div>
               </div>
             )}
+
+            {/* Partners Section */}
+            <section>
+              <div className="flex items-center gap-2 mb-6">
+                <Users className="w-5 h-5 text-white/60" />
+                <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">الشركاء</h2>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {partners.map(p => (
+                  <div key={p.id} className="group p-4 bg-white/5 border border-white/5 rounded-2xl hover:border-white/20 transition-all">
+                    {p.image && <img src={p.image} className="w-full h-32 object-cover rounded-xl mb-3 grayscale group-hover:grayscale-0 transition-all" />}
+                    <h3 className="font-bold text-sm mb-1">{p.name}</h3>
+                    <p className="text-xs text-white/40 line-clamp-2">{p.description}</p>
+                  </div>
+                ))}
+              </div>
+            </section>
           </section>
 
           {/* Right: Recent Reviews List */}
@@ -296,6 +303,19 @@ export default function Home() {
         }
         .animate-float {
           animation: float 4s ease-in-out infinite;
+        }
+        .custom-scrollbar::-webkit-scrollbar {
+          width: 4px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+          background: rgba(255, 255, 255, 0.02);
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+          background: rgba(255, 255, 255, 0.1);
+          border-radius: 10px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+          background: rgba(255, 255, 255, 0.2);
         }
       `}</style>
     </div>
