@@ -123,35 +123,11 @@ export default function Home() {
           </div>
         )}
 
-        {/* Hero Section */}
-        <header className="pt-16 pb-12 px-6 text-center max-w-4xl mx-auto">
-          <div className="inline-block mb-6 relative group">
-            <div className="absolute -inset-1 bg-white/20 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
-            <img src="/logo.webp" alt="Logo" className="relative w-28 h-28 md:w-32 md:h-32 object-contain animate-float" />
-          </div>
-          <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic mb-6 leading-none">
-            Pixel <span className="text-white/20">Design</span>
-          </h1>
+        <div className="max-w-7xl mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-12 items-start pt-12">
           
-          <div className="flex flex-wrap justify-center gap-4 md:gap-8">
-            <div className="flex flex-col items-center">
-              <span className="text-2xl md:text-3xl font-black">{stats?.memberCount || 2000}+</span>
-              <span className="text-white/40 text-[10px] uppercase tracking-widest">Members</span>
-            </div>
-            <div className="w-px h-10 bg-white/10 hidden md:block"></div>
-            <div className="flex flex-col items-center">
-              <span className="text-2xl md:text-3xl font-black">{stats?.totalReviews || 200}+</span>
-              <span className="text-white/40 text-[10px] uppercase tracking-widest">Reviews</span>
-            </div>
-          </div>
-        </header>
-
-        {/* Content Grid */}
-        <main className="max-w-7xl mx-auto px-6 pb-24 grid grid-cols-1 lg:grid-cols-12 gap-12 items-start w-full">
-          
-          {/* Left: Featured Clients (TOP LEFT - ENLARGED) */}
-          <aside className="lg:col-span-4 lg:order-first order-last">
-            <div className="lg:sticky lg:top-24 bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl shadow-black">
+          {/* Left Sidebar: Featured Clients (STARTS FROM TOP) */}
+          <aside className="lg:col-span-4 lg:sticky lg:top-24 order-2 lg:order-1">
+            <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl shadow-black">
               <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
                 <div className="bg-white/10 p-2 rounded-xl">
                   <Award className="w-6 h-6 text-white" />
@@ -190,114 +166,141 @@ export default function Home() {
             </div>
           </aside>
 
-          {/* Center: Main Review Spotlight & Partners */}
-          <section className="lg:col-span-5 space-y-12">
-            {/* Main Review Spotlight */}
-            {currentReview && (
-              <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group">
-                <div className="absolute top-0 right-0 p-8 opacity-5">
-                  <MessageSquare className="w-32 h-32 rotate-12" />
+          {/* Right Main Content: Hero + Reviews + Partners */}
+          <div className="lg:col-span-8 space-y-12 order-1 lg:order-2">
+            {/* Hero Section */}
+            <header className="text-center max-w-4xl mx-auto pb-8">
+              <div className="inline-block mb-6 relative group">
+                <div className="absolute -inset-1 bg-white/20 rounded-full blur opacity-25 group-hover:opacity-50 transition duration-1000 group-hover:duration-200"></div>
+                <img src="/logo.webp" alt="Logo" className="relative w-28 h-28 md:w-32 md:h-32 object-contain animate-float" />
+              </div>
+              <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic mb-6 leading-none">
+                Pixel <span className="text-white/20">Design</span>
+              </h1>
+              
+              <div className="flex flex-wrap justify-center gap-4 md:gap-8">
+                <div className="flex flex-col items-center">
+                  <span className="text-2xl md:text-3xl font-black">{stats?.memberCount || 2000}+</span>
+                  <span className="text-white/40 text-[10px] uppercase tracking-widest">Members</span>
                 </div>
+                <div className="w-px h-10 bg-white/10 hidden md:block"></div>
+                <div className="flex flex-col items-center">
+                  <span className="text-2xl md:text-3xl font-black">{stats?.totalReviews || 200}+</span>
+                  <span className="text-white/40 text-[10px] uppercase tracking-widest">Reviews</span>
+                </div>
+              </div>
+            </header>
 
-                <div className="flex items-center gap-2 mb-8 relative z-10">
-                  <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
-                  <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/60">Live Feedback</span>
-                </div>
-                
-                <div className="flex gap-6 mb-8 relative z-10">
-                  {currentReview.authorAvatar ? (
-                    <img src={currentReview.authorAvatar} className="w-16 h-16 rounded-full grayscale border border-white/10" />
-                  ) : (
-                    <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center font-bold text-2xl">
-                      {currentReview.authorName[0]}
+            {/* Grid for Reviews & Partners */}
+            <div className="grid grid-cols-1 xl:grid-cols-12 gap-12">
+              <div className="xl:col-span-7 space-y-12">
+                {/* Main Review Spotlight */}
+                {currentReview && (
+                  <div className="bg-white/5 border border-white/10 rounded-[2.5rem] p-8 md:p-12 relative overflow-hidden group">
+                    <div className="absolute top-0 right-0 p-8 opacity-5">
+                      <MessageSquare className="w-32 h-32 rotate-12" />
                     </div>
-                  )}
-                  <div>
-                    <h3 className="text-xl font-bold mb-1 tracking-tight">{currentReview.authorName}</h3>
-                    <div className="flex gap-1">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className={`w-4 h-4 ${i < (currentReview.rating || 5) ? 'fill-white' : 'fill-white/10 text-transparent'}`} />
-                      ))}
+
+                    <div className="flex items-center gap-2 mb-8 relative z-10">
+                      <div className="w-2 h-2 bg-white rounded-full animate-pulse"></div>
+                      <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/60">Live Feedback</span>
                     </div>
-                  </div>
-                </div>
-                
-                <p className="text-2xl md:text-3xl font-medium leading-tight mb-8 text-white/90 relative z-10">
-                  "{currentReview.content}"
-                </p>
-
-                {currentReview.image && (
-                  <div className="mb-8 rounded-2xl overflow-hidden border border-white/10 shadow-2xl max-h-[450px] relative z-10">
-                    <img src={currentReview.image} className="w-full h-full object-contain bg-black/40" />
-                  </div>
-                )}
-                
-                <div className="flex justify-between items-center relative z-10">
-                  <span className="text-[10px] font-bold uppercase tracking-widest text-white/20">
-                    {new Date(currentReview.timestamp).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
-                  </span>
-                  <div className="flex gap-2">
-                    <button onClick={() => setCurrentReviewIndex(p => (p - 1 + displayReviews.length) % displayReviews.length)} className="p-3 rounded-full border border-white/10 hover:bg-white hover:text-black transition-all">
-                      <ChevronLeft className="w-4 h-4" />
-                    </button>
-                    <button onClick={() => setCurrentReviewIndex(p => (p + 1) % displayReviews.length)} className="p-3 rounded-full border border-white/10 hover:bg-white hover:text-black transition-all">
-                      <ChevronRight className="w-4 h-4" />
-                    </button>
-                  </div>
-                </div>
-              </div>
-            )}
-
-            {/* Partners Section */}
-            <section>
-              <div className="flex items-center gap-2 mb-6">
-                <Users className="w-5 h-5 text-white/60" />
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">الشركاء</h2>
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {partners.map(p => (
-                  <div key={p.id} className="group p-5 bg-white/[0.03] border border-white/5 rounded-2xl hover:border-white/20 transition-all">
-                    {p.image && <img src={p.image} className="w-full h-32 object-cover rounded-xl mb-4 grayscale group-hover:grayscale-0 transition-all border border-white/5" />}
-                    <h3 className="font-bold text-sm mb-1 uppercase tracking-tight">{p.name}</h3>
-                    <p className="text-xs text-white/40 line-clamp-2 leading-relaxed">{p.description}</p>
-                  </div>
-                ))}
-              </div>
-            </section>
-          </section>
-
-          {/* Right: Recent Reviews List */}
-          <aside className="lg:col-span-3 space-y-12 lg:block hidden">
-            <section>
-              <div className="flex items-center gap-2 mb-6">
-                <Star className="w-5 h-5 text-white/60" />
-                <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Feedback Feed</h2>
-              </div>
-              <div className="grid gap-4">
-                {displayReviews.slice(0, 6).map(r => (
-                  <div key={r.id} className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-colors">
-                    <div className="flex items-center gap-3 mb-3">
-                      {r.authorAvatar && <img src={r.authorAvatar} className="w-8 h-8 rounded-full grayscale border border-white/10" />}
-                      <span className="font-bold text-[10px] uppercase tracking-tight">{r.authorName}</span>
+                    
+                    <div className="flex gap-6 mb-8 relative z-10">
+                      {currentReview.authorAvatar ? (
+                        <img src={currentReview.authorAvatar} className="w-16 h-16 rounded-full grayscale border border-white/10" />
+                      ) : (
+                        <div className="w-16 h-16 rounded-full bg-white/10 flex items-center justify-center font-bold text-2xl">
+                          {currentReview.authorName[0]}
+                        </div>
+                      )}
+                      <div>
+                        <h3 className="text-xl font-bold mb-1 tracking-tight">{currentReview.authorName}</h3>
+                        <div className="flex gap-1">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} className={`w-4 h-4 ${i < (currentReview.rating || 5) ? 'fill-white' : 'fill-white/10 text-transparent'}`} />
+                          ))}
+                        </div>
+                      </div>
                     </div>
-                    <p className="text-[11px] text-white/50 line-clamp-3 mb-3 leading-relaxed">"{r.content}"</p>
-                    {r.image && (
-                      <div className="mb-3 rounded-lg overflow-hidden border border-white/5">
-                        <img src={r.image} className="w-full h-24 object-cover grayscale hover:grayscale-0 transition-all" />
+                    
+                    <p className="text-2xl md:text-3xl font-medium leading-tight mb-8 text-white/90 relative z-10">
+                      "{currentReview.content}"
+                    </p>
+
+                    {currentReview.image && (
+                      <div className="mb-8 rounded-2xl overflow-hidden border border-white/10 shadow-2xl max-h-[450px] relative z-10">
+                        <img src={currentReview.image} className="w-full h-full object-contain bg-black/40" />
                       </div>
                     )}
-                    <div className="flex gap-0.5">
-                      {Array.from({ length: 5 }).map((_, i) => (
-                        <Star key={i} className={`w-2.5 h-2.5 ${i < (r.rating || 5) ? 'fill-white' : 'fill-white/10 text-transparent'}`} />
-                      ))}
+                    
+                    <div className="flex justify-between items-center relative z-10">
+                      <span className="text-[10px] font-bold uppercase tracking-widest text-white/20">
+                        {new Date(currentReview.timestamp).toLocaleDateString('en-US', { month: 'long', year: 'numeric' })}
+                      </span>
+                      <div className="flex gap-2">
+                        <button onClick={() => setCurrentReviewIndex(p => (p - 1 + displayReviews.length) % displayReviews.length)} className="p-3 rounded-full border border-white/10 hover:bg-white hover:text-black transition-all">
+                          <ChevronLeft className="w-4 h-4" />
+                        </button>
+                        <button onClick={() => setCurrentReviewIndex(p => (p + 1) % displayReviews.length)} className="p-3 rounded-full border border-white/10 hover:bg-white hover:text-black transition-all">
+                          <ChevronRight className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
                   </div>
-                ))}
-              </div>
-            </section>
-          </aside>
+                )}
 
-        </main>
+                {/* Partners Section */}
+                <section>
+                  <div className="flex items-center gap-2 mb-6">
+                    <Users className="w-5 h-5 text-white/60" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">الشركاء</h2>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {partners.map(p => (
+                      <div key={p.id} className="group p-5 bg-white/[0.03] border border-white/5 rounded-2xl hover:border-white/20 transition-all">
+                        {p.image && <img src={p.image} className="w-full h-32 object-cover rounded-xl mb-4 grayscale group-hover:grayscale-0 transition-all border border-white/5" />}
+                        <h3 className="font-bold text-sm mb-1 uppercase tracking-tight">{p.name}</h3>
+                        <p className="text-xs text-white/40 line-clamp-2 leading-relaxed">{p.description}</p>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </div>
+
+              {/* Recent Reviews Sidebar */}
+              <aside className="xl:col-span-5 space-y-12">
+                <section>
+                  <div className="flex items-center gap-2 mb-6">
+                    <Star className="w-5 h-5 text-white/60" />
+                    <h2 className="text-sm font-bold uppercase tracking-widest text-white/60">Feedback Feed</h2>
+                  </div>
+                  <div className="grid gap-4">
+                    {displayReviews.slice(0, 6).map(r => (
+                      <div key={r.id} className="p-5 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.04] transition-colors">
+                        <div className="flex items-center gap-3 mb-3">
+                          {r.authorAvatar && <img src={r.authorAvatar} className="w-8 h-8 rounded-full grayscale border border-white/10" />}
+                          <span className="font-bold text-[10px] uppercase tracking-tight">{r.authorName}</span>
+                        </div>
+                        <p className="text-[11px] text-white/50 line-clamp-3 mb-3 leading-relaxed">"{r.content}"</p>
+                        {r.image && (
+                          <div className="mb-3 rounded-lg overflow-hidden border border-white/5">
+                            <img src={r.image} className="w-full h-24 object-cover grayscale hover:grayscale-0 transition-all" />
+                          </div>
+                        )}
+                        <div className="flex gap-0.5">
+                          {Array.from({ length: 5 }).map((_, i) => (
+                            <Star key={i} className={`w-2.5 h-2.5 ${i < (r.rating || 5) ? 'fill-white' : 'fill-white/10 text-transparent'}`} />
+                          ))}
+                        </div>
+                      </div>
+                    ))}
+                  </div>
+                </section>
+              </aside>
+            </div>
+          </div>
+        </div>
 
         <Footer />
       </div>
