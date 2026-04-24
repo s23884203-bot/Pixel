@@ -2,7 +2,8 @@ import { ENV } from "./_core/env";
 
 const DISCORD_API_BASE = "https://discord.com/api/v10";
 const GUILD_ID = "1195454002284990614";
-const CHANNEL_ID = "1384289587718918365";
+const REVIEWS_CHANNEL_ID = "1384289587718918365";
+const PARTNERS_CHANNEL_ID = "1400841587977621604";
 
 interface DiscordUser {
   id: string;
@@ -71,7 +72,7 @@ export async function fetchDiscordReviews(): Promise<DiscordMessage[]> {
     }
 
     const response = await fetch(
-      `${DISCORD_API_BASE}/channels/${CHANNEL_ID}/messages?limit=100`,
+      `${DISCORD_API_BASE}/channels/${REVIEWS_CHANNEL_ID}/messages?limit=100`,
       {
         headers: {
           Authorization: token,
@@ -98,7 +99,7 @@ export async function getChannelInfo() {
       throw new Error("DISCORD_TOKEN not set");
     }
 
-    const response = await fetch(`${DISCORD_API_BASE}/channels/${CHANNEL_ID}`, {
+    const response = await fetch(`${DISCORD_API_BASE}/channels/${REVIEWS_CHANNEL_ID}`, {
       headers: {
         Authorization: token,
       },
@@ -112,6 +113,34 @@ export async function getChannelInfo() {
   } catch (error) {
     console.error("Error fetching channel info:", error);
     return null;
+  }
+}
+
+export async function fetchDiscordPartners(): Promise<DiscordMessage[]> {
+  try {
+    const token = process.env.DISCORD_TOKEN;
+    if (!token) {
+      throw new Error("DISCORD_TOKEN not set");
+    }
+
+    const response = await fetch(
+      `${DISCORD_API_BASE}/channels/${PARTNERS_CHANNEL_ID}/messages?limit=50`,
+      {
+        headers: {
+          Authorization: token,
+        },
+      }
+    );
+
+    if (!response.ok) {
+      throw new Error(`Failed to fetch partners: ${response.status}`);
+    }
+
+    const messages = (await response.json()) as DiscordMessage[];
+    return messages;
+  } catch (error) {
+    console.error("Error fetching Discord partners:", error);
+    return [];
   }
 }
 

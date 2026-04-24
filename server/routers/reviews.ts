@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
 import { getAllReviews } from "../db";
-import { fetchDiscordReviews, syncReviewsFromDiscord } from "../discord";
+import { fetchDiscordReviews, syncReviewsFromDiscord, fetchDiscordPartners } from "../discord";
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
@@ -31,5 +31,20 @@ export const reviewsRouter = router({
       averageRating: Math.round(averageRating * 10) / 10,
       memberCount: 2000,
     };
+  }),
+
+  partners: publicProcedure.query(async () => {
+    const messages = await fetchDiscordPartners();
+    return messages
+      .filter(m => m.content && m.content.trim().length > 0)
+      .map(m => ({
+        id: m.id,
+        name: m.author.username,
+        description: m.content,
+        image: m.author.avatar
+          ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png`
+          : null,
+        link: null,
+      }));
   }),
 });

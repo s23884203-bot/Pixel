@@ -17,13 +17,14 @@ interface Partner {
   id: string;
   name: string;
   description: string;
-  image?: string;
-  link?: string;
+  image?: string | null;
+  link?: string | null;
 }
 
 export default function Home() {
   const { data: reviews } = trpc.reviews.list.useQuery();
   const syncMutation = trpc.reviews.sync.useMutation();
+  const { data: partnerMessages } = trpc.reviews.partners.useQuery();
   const [displayReviews, setDisplayReviews] = useState<Review[]>([]);
   const [currentReviewIndex, setCurrentReviewIndex] = useState(0);
   const [partners, setPartners] = useState<Partner[]>([]);
@@ -54,29 +55,12 @@ export default function Home() {
     }
   }, [displayReviews]);
 
-  // Mock partners data (replace with actual Discord fetch)
+  // Fetch partners from Discord
   useEffect(() => {
-    setPartners([
-      {
-        id: "1",
-        name: "Partner 1",
-        description: "شريك مميز",
-        image: "https://via.placeholder.com/150x150?text=Partner+1",
-      },
-      {
-        id: "2",
-        name: "Partner 2",
-        description: "شريك متعاون",
-        image: "https://via.placeholder.com/150x150?text=Partner+2",
-      },
-      {
-        id: "3",
-        name: "Partner 3",
-        description: "شريك إبداعي",
-        image: "https://via.placeholder.com/150x150?text=Partner+3",
-      },
-    ]);
-  }, []);
+    if (partnerMessages && partnerMessages.length > 0) {
+      setPartners(partnerMessages);
+    }
+  }, [partnerMessages]);
 
   const currentReview = displayReviews[currentReviewIndex];
 
