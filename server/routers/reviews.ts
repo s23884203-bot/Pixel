@@ -9,57 +9,37 @@ const SYNC_INTERVAL = 3600000; // 1 hour in milliseconds
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
-    // Manual high-quality reviews extracted from the channel
-    const manualReviews = [
-      {
-        id: 1001,
-        authorName: "Rakan",
-        authorAvatar: null,
-        content: "افضل متجر تعاملت معه، سرعة في التنفيذ ودقة في العمل. انصح الجميع بالتعامل مع بكسل ديزاين.",
-        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1497053188938010694/rating.png",
-        rating: 5,
-        timestamp: new Date()
-      },
-      {
-        id: 1002,
-        authorName: "Fahad",
-        authorAvatar: null,
-        content: "شغل احترافي ومبدع جداً، شكراً SNOW على هذا الإبداع.",
-        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1496691548350447707/rating.png",
-        rating: 5,
-        timestamp: new Date()
-      },
-      {
-        id: 1003,
-        authorName: "Khalid",
-        authorAvatar: null,
-        content: "تصاميم خرافية وتعاملك راقي جداً. الله يوفقكم.",
-        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1496663683240169612/rating.png",
-        rating: 5,
-        timestamp: new Date()
-      },
-      {
-        id: 1004,
-        authorName: "Sultan",
-        authorAvatar: null,
-        content: "من افضل المتاجر اللي مرت علي، جودة وسعر وسرعة.",
-        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1496351129314004992/rating.png",
-        rating: 5,
-        timestamp: new Date()
-      },
-      {
-        id: 1005,
-        authorName: "Bandar",
-        authorAvatar: null,
-        content: "التقييم 10/10 بدون مبالغة، شغل بطل.",
-        image: "https://cdn.discordapp.com/attachments/1384289587718918365/1496346605895422052/rating.png",
-        rating: 5,
-        timestamp: new Date()
-      }
+    // Official Rating Images provided by the user
+    const officialRatingImages = [
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1497053188938010694/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1496691548350447707/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1496663683240169612/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1496351129314004992/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1496346605895422052/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1496206330006868158/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1495650188096966738/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1495411564335992924/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1494025195512533022/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1493735415394468011/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1493694413204095056/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1493681197824479374/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1493225644371476480/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1492594844424732904/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1492263111875367153/rating.png",
+      "https://cdn.discordapp.com/attachments/1384289587718918365/1491988974204358787/rating.png"
     ];
 
+    const manualReviews = officialRatingImages.map((url, index) => ({
+      id: 2000 + index,
+      authorName: "Customer",
+      authorAvatar: null,
+      content: "تقييم Pixel Design",
+      image: url,
+      rating: 5,
+      timestamp: new Date(Date.now() - index * 3600000) // Spaced out by hour
+    }));
+
     try {
-      // Auto-sync if interval has passed
       const now = Date.now();
       if (now - lastSyncTime > SYNC_INTERVAL) {
         lastSyncTime = now;
@@ -107,11 +87,13 @@ export const reviewsRouter = router({
           };
         });
 
-      // Combine manual reviews with discord reviews, prioritize manual for quality
-      return [...manualReviews, ...discordReviews];
+      // Filter out discord reviews that might be duplicates of our official ones
+      const filteredDiscord = discordReviews.filter(dr => !officialRatingImages.includes(dr.image || ""));
+
+      return [...manualReviews, ...filteredDiscord];
     } catch (error) {
       console.error("Error in list reviews:", error);
-      return manualReviews; // Fallback to manual reviews on error
+      return manualReviews;
     }
   }),
 
@@ -129,14 +111,14 @@ export const reviewsRouter = router({
   getStats: publicProcedure.query(async () => {
     try {
       const messages = await fetchDiscordReviews();
-      const totalReviews = messages.length > 0 ? (messages.length + 5) : 205;
+      const totalReviews = messages.length > 0 ? (messages.length + 16) : 216;
       return {
         totalReviews: totalReviews,
         averageRating: 5.0,
         memberCount: 2000,
       };
     } catch {
-      return { totalReviews: 205, averageRating: 5.0, memberCount: 2000 };
+      return { totalReviews: 216, averageRating: 5.0, memberCount: 2000 };
     }
   }),
 
