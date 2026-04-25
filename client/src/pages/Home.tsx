@@ -44,7 +44,7 @@ const AnimatedTagline = () => {
             <span className="text-5xl md:text-7xl animate-bounce filter drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]">📌</span>
             
             <div className="flex flex-col">
-              <h2 className="flex flex-wrap justify-center items-center gap-x-6 text-4xl md:text-7xl font-black italic tracking-tighter">
+              <h2 className="flex flex-wrap justify-center items-center gap-x-6 text-4xl md:text-7xl font-black italic tracking-tighter" style={{ fontFamily: "'Tajawal', sans-serif" }}>
                 <span className="text-white animate-pulse transition-all duration-500 hover:scale-110 cursor-default">
                   من خيالك
                 </span>
@@ -76,6 +76,20 @@ const AnimatedTagline = () => {
   );
 };
 
+const StarRating = ({ rating }: { rating: number | null }) => {
+  const stars = rating || 5;
+  return (
+    <div className="flex items-center gap-0.5">
+      {[1, 2, 3, 4, 5].map(i => (
+        <Star
+          key={i}
+          className={`w-3 h-3 ${i <= stars ? 'text-yellow-400 fill-yellow-400' : 'text-white/20'}`}
+        />
+      ))}
+    </div>
+  );
+};
+
 export default function Home() {
   const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = trpc.reviews.list.useQuery(undefined, {
     staleTime: 10000,
@@ -103,7 +117,7 @@ export default function Home() {
   }, [partnerMessages]);
 
   useEffect(() => {
-    if (featuredClientsData) setFeaturedClients(featuredClientsData);
+    if (featuredClientsData) setFeaturedClients(featuredClientsData as FeaturedClient[]);
   }, [featuredClientsData]);
 
   const isLoading = reviewsLoading && displayReviews.length === 0;
@@ -127,7 +141,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black flex flex-col">
+    <div className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black flex flex-col" style={{ fontFamily: "'Tajawal', sans-serif" }}>
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 opacity-20 bg-cover bg-center grayscale" style={{ backgroundImage: 'url("/bg.webp")' }} />
         <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
@@ -136,7 +150,7 @@ export default function Home() {
       <div className="relative z-10 flex flex-col flex-1">
         <nav className="border-b border-white/5 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
           <div className="max-w-[1800px] mx-auto px-6 py-4 flex justify-between items-center">
-            <div className="text-xl font-black tracking-tighter uppercase italic">Pixel Design</div>
+            <div className="text-xl font-black tracking-tighter uppercase italic" style={{ fontFamily: "'Tajawal', sans-serif" }}>Pixel Design</div>
             <div className="flex items-center gap-3">
               <a href="https://salla.sa/pixel.design" target="_blank" rel="noopener noreferrer" className="bg-white/10 text-white px-4 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform flex items-center gap-2 border border-white/20">
                 <ExternalLink className="w-4 h-4" /> Store
@@ -152,7 +166,7 @@ export default function Home() {
           <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
               <div className="w-12 h-12 border-4 border-white/10 border-t-white rounded-full animate-spin"></div>
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40">Loading Pixel Experience</span>
+              <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40" style={{ fontFamily: "'Tajawal', sans-serif" }}>Loading Pixel Experience</span>
             </div>
           </div>
         )}
@@ -163,7 +177,7 @@ export default function Home() {
               <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
                 <div className="bg-white/10 p-2 rounded-xl"><Award className="w-6 h-6 text-white" /></div>
                 <div>
-                  <h2 className="text-lg font-black uppercase tracking-tighter italic text-white">عملاء مميزون</h2>
+                  <h2 className="text-lg font-black uppercase tracking-tighter italic text-white" style={{ fontFamily: "'Tajawal', sans-serif" }}>عملاء مميزون</h2>
                   <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">Premium Clients</p>
                 </div>
               </div>
@@ -172,7 +186,7 @@ export default function Home() {
                   <a key={client.id} href={client.inviteLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-5 bg-white/5 border border-white/5 rounded-[1.5rem] hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] transition-all group shadow-lg">
                     <div className="flex-shrink-0 transform group-hover:rotate-12 transition-transform"><PlatformIcon platform={client.platform} icon={client.serverIcon} /></div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-black text-base truncate group-hover:text-white transition-colors uppercase tracking-tighter italic">{client.name}</h3>
+                      <h3 className="font-black text-base truncate group-hover:text-white transition-colors uppercase tracking-tighter italic" style={{ fontFamily: "'Tajawal', sans-serif" }}>{client.name}</h3>
                       <div className="flex items-center gap-2">
                         <span className="text-[9px] text-white/40 uppercase tracking-widest font-black">View Project</span>
                         <div className="w-1 h-1 bg-white/20 rounded-full"></div>
@@ -191,7 +205,7 @@ export default function Home() {
               <div className="mb-8 flex flex-col items-center">
                 <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-4 hover:bg-white/10 transition-all">
                   <img src="/snow_logo.webp" alt="SNOW" className="w-6 h-6 object-contain" />
-                  <span className="text-sm font-bold text-white uppercase tracking-wider">SNOW</span>
+                  <span className="text-sm font-bold text-white uppercase tracking-wider" style={{ fontFamily: "'Tajawal', sans-serif" }}>SNOW</span>
                 </div>
               </div>
               <div className="inline-block mb-8 relative group">
@@ -199,16 +213,16 @@ export default function Home() {
                 <div className="absolute -inset-4 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-full blur-2xl opacity-30"></div>
                 <img src="/logo.webp" alt="Logo" className="relative w-40 h-40 md:w-56 md:h-56 object-contain animate-float drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]" />
               </div>
-              <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic mb-8 leading-none">Pixel <span className="text-white/20">Design</span></h1>
+              <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic mb-8 leading-none" style={{ fontFamily: "'Tajawal', sans-serif" }}>Pixel <span className="text-white/20">Design</span></h1>
               <AnimatedTagline />
               <div className="flex flex-wrap justify-center gap-8 md:gap-12 mt-8">
                 <div className="flex flex-col items-center">
-                  <span className="text-3xl md:text-4xl font-black">{stats?.memberCount || 2000}+</span>
+                  <span className="text-3xl md:text-4xl font-black" style={{ fontFamily: "'Tajawal', sans-serif" }}>{stats?.memberCount || 2000}+</span>
                   <span className="text-white/40 text-[12px] uppercase tracking-[0.3em] font-bold">Members</span>
                 </div>
                 <div className="w-px h-12 bg-white/10 hidden md:block"></div>
                 <div className="flex flex-col items-center">
-                  <span className="text-3xl md:text-4xl font-black">{displayReviews.length || stats?.totalReviews || 200}+</span>
+                  <span className="text-3xl md:text-4xl font-black" style={{ fontFamily: "'Tajawal', sans-serif" }}>{displayReviews.length || stats?.totalReviews || 200}+</span>
                   <span className="text-white/40 text-[12px] uppercase tracking-[0.3em] font-bold">Reviews</span>
                 </div>
               </div>
@@ -217,7 +231,7 @@ export default function Home() {
                   {partners.slice(0, 6).map(p => (
                     <div key={p.id} className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col items-center text-center">
                       {p.image && <img src={p.image} className="w-10 h-10 rounded-full grayscale mb-2" />}
-                      <span className="text-[10px] font-bold uppercase tracking-widest truncate w-full">{p.name}</span>
+                      <span className="text-[10px] font-bold uppercase tracking-widest truncate w-full" style={{ fontFamily: "'Tajawal', sans-serif" }}>{p.name}</span>
                     </div>
                   ))}
                 </div>
@@ -230,7 +244,7 @@ export default function Home() {
               <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
                 <div className="bg-white/10 p-2 rounded-xl"><MessageSquare className="w-6 h-6 text-white" /></div>
                 <div>
-                  <h2 className="text-lg font-black uppercase tracking-tighter italic text-white">أحدث التقييمات</h2>
+                  <h2 className="text-lg font-black uppercase tracking-tighter italic text-white" style={{ fontFamily: "'Tajawal', sans-serif" }}>أحدث التقييمات</h2>
                   <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">Customer Reviews</p>
                 </div>
               </div>
@@ -243,18 +257,27 @@ export default function Home() {
                           <img src={r.image} className="w-full h-auto object-contain grayscale-[0.5] transition-all duration-700 group-hover:grayscale-0" loading="lazy" />
                         </div>
                       )}
-                      {/* Only show text if it's NOT the default placeholder */}
-                      {r.content && r.content !== "تقييم Pixel Design" && (
-                        <div className="p-4 bg-gradient-to-t from-black/80 to-transparent">
-                          <p className="text-[11px] text-white/80 italic leading-relaxed">"{r.content}"</p>
+                      {/* Review info: author name, stars, and content */}
+                      <div className="p-3 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
+                        <div className="flex items-center justify-between gap-2 mb-1">
+                          <div className="flex items-center gap-2">
+                            {r.authorAvatar && (
+                              <img src={r.authorAvatar} alt={r.authorName} className="w-5 h-5 rounded-full border border-white/10" />
+                            )}
+                            <span className="text-[11px] font-bold text-white/80 truncate" style={{ fontFamily: "'Tajawal', sans-serif" }}>{r.authorName}</span>
+                          </div>
+                          <StarRating rating={r.rating} />
                         </div>
-                      )}
+                        {r.content && r.content !== "تقييم Pixel Design" && (
+                          <p className="text-[11px] text-white/60 italic leading-relaxed mt-1" style={{ fontFamily: "'Tajawal', sans-serif" }}>"{r.content}"</p>
+                        )}
+                      </div>
                     </div>
                   ))
                 ) : (
                   <div className="p-12 border border-white/5 border-dashed rounded-[1.5rem] text-center">
                     <MessageSquare className="w-12 h-12 text-white/10 mx-auto mb-4" />
-                    <p className="text-[10px] font-bold text-white/10 uppercase tracking-[0.2em]">No Reviews Yet</p>
+                    <p className="text-[10px] font-bold text-white/10 uppercase tracking-[0.2em]" style={{ fontFamily: "'Tajawal', sans-serif" }}>No Reviews Yet</p>
                   </div>
                 )}
               </div>

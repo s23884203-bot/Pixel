@@ -32,6 +32,7 @@ export const reviews = mysqlTable("reviews", {
   authorName: varchar("authorName", { length: 255 }).notNull(),
   authorAvatar: text("authorAvatar"),
   content: text("content").notNull(),
+  image: text("image"),
   rating: int("rating").default(5),
   timestamp: timestamp("timestamp").notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),

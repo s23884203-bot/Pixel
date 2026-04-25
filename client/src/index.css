@@ -116,9 +116,13 @@
 @layer base {
   * {
     @apply border-border outline-ring/50;
+    font-family: 'Tajawal', sans-serif;
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Tajawal', sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
   }
   button:not(:disabled),
   [role="button"]:not([aria-disabled="true"]),
