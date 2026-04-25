@@ -34,41 +34,34 @@ interface FeaturedClient {
 
 const AnimatedTagline = () => {
   return (
-    <div className="text-center mt-12 mb-20">
+    <div className="text-center mt-8 mb-16">
       <div className="relative inline-block group">
         {/* Multi-layered glow effect */}
-        <div className="absolute -inset-4 bg-gradient-to-r from-white/20 via-white/5 to-white/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+        <div className="absolute -inset-4 bg-gradient-to-r from-white/10 via-white/5 to-white/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
         
-        <div className="relative flex flex-col items-center gap-6">
-          <div className="flex items-center gap-6 px-10 py-6 bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-[2.5rem] backdrop-blur-xl shadow-2xl">
-            <span className="text-5xl md:text-7xl animate-bounce filter drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]">📌</span>
+        <div className="relative flex flex-col items-center gap-4">
+          <div className="flex items-center gap-4 px-8 py-4 bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 rounded-[2rem] backdrop-blur-lg shadow-xl">
+            <span className="text-3xl md:text-5xl animate-bounce filter drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">📌</span>
             
             <div className="flex flex-col">
-              <h2 className="flex flex-wrap justify-center items-center gap-x-6 text-4xl md:text-7xl font-black italic tracking-tighter" style={{ fontFamily: "'Tajawal', sans-serif" }}>
-                <span className="text-white animate-pulse transition-all duration-500 hover:scale-110 cursor-default">
+              <h2 className="flex flex-wrap justify-center items-center gap-x-4 text-2xl md:text-4xl font-black italic tracking-tighter" style={{ fontFamily: "'Tajawal', sans-serif" }}>
+                <span className="text-white transition-all duration-500 hover:scale-105 cursor-default">
                   من خيالك
                 </span>
-                <span className="text-white/30 text-2xl md:text-4xl font-light not-italic">——</span>
+                <span className="text-white/20 text-xl md:text-2xl font-light not-italic">——</span>
                 <span className="relative">
-                  <span className="absolute -inset-2 bg-white/10 blur-xl rounded-full animate-pulse"></span>
-                  <span className="relative bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 drop-shadow-2xl">
+                  <span className="absolute -inset-1 bg-white/5 blur-lg rounded-full animate-pulse"></span>
+                  <span className="relative bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50 drop-shadow-xl">
                     للواقع
                   </span>
                 </span>
               </h2>
               
               {/* Modern animated underline */}
-              <div className="relative w-full h-[3px] mt-4 bg-white/10 rounded-full overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent -translate-x-full animate-[shimmer_2.5s_infinite_ease-in-out]"></div>
+              <div className="relative w-full h-[2px] mt-3 bg-white/5 rounded-full overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[shimmer_3s_infinite_ease-in-out]"></div>
               </div>
             </div>
-          </div>
-          
-          {/* Bottom decorative element */}
-          <div className="flex gap-2 opacity-30 group-hover:opacity-60 transition-opacity duration-500">
-            <div className="w-12 h-1 bg-white rounded-full"></div>
-            <div className="w-4 h-1 bg-white rounded-full"></div>
-            <div className="w-2 h-1 bg-white rounded-full"></div>
           </div>
         </div>
       </div>
@@ -83,7 +76,7 @@ const StarRating = ({ rating }: { rating: number | null }) => {
       {[1, 2, 3, 4, 5].map(i => (
         <Star
           key={i}
-          className={`w-3 h-3 ${i <= stars ? 'text-yellow-400 fill-yellow-400' : 'text-white/20'}`}
+          className={`w-3 h-3 ${i <= stars ? 'text-yellow-400 fill-yellow-400' : 'text-white/10'}`}
         />
       ))}
     </div>
@@ -202,10 +195,13 @@ export default function Home() {
 
           <div className="flex-1 space-y-12 order-1 lg:order-2 flex flex-col items-center justify-start pt-20">
             <div className="text-center max-w-4xl mx-auto">
-              <div className="mb-8 flex flex-col items-center">
-                <div className="inline-flex items-center gap-3 px-4 py-2 bg-white/5 border border-white/10 rounded-full mb-4 hover:bg-white/10 transition-all">
-                  <img src="/snow_logo.webp" alt="SNOW" className="w-6 h-6 object-contain" />
-                  <span className="text-sm font-bold text-white uppercase tracking-wider" style={{ fontFamily: "'Tajawal', sans-serif" }}>SNOW</span>
+              <div className="mb-12 flex flex-col items-center">
+                <div className="inline-flex items-center gap-5 px-8 py-4 bg-white/10 border border-white/20 rounded-[2rem] mb-6 hover:bg-white/20 transition-all shadow-2xl backdrop-blur-md group">
+                  <div className="relative">
+                    <div className="absolute -inset-2 bg-white/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <img src="/snow_logo.webp" alt="SNOW" className="relative w-12 h-12 md:w-16 md:h-16 object-contain" />
+                  </div>
+                  <span className="text-2xl md:text-4xl font-black text-white uppercase tracking-[0.2em] italic" style={{ fontFamily: "'Tajawal', sans-serif" }}>SNOW</span>
                 </div>
               </div>
               <div className="inline-block mb-8 relative group">
@@ -251,35 +247,36 @@ export default function Home() {
               <div className="max-h-[800px] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
                 {displayReviews.length > 0 ? (
                   displayReviews.map(r => (
-                    <div key={r.id} className="group relative overflow-hidden rounded-[1.5rem] border border-white/5 bg-black/40 transition-all duration-500 hover:border-white/20 hover:scale-[1.02]">
+                    <div key={r.id} className="group relative overflow-hidden rounded-[1.5rem] border border-white/5 bg-black/40 transition-all duration-500 hover:border-white/20 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]">
                       {r.image && (
-                        <div className="aspect-auto w-full">
-                          <img src={r.image} className="w-full h-auto object-contain grayscale-[0.5] transition-all duration-700 group-hover:grayscale-0" loading="lazy" />
+                        <div className="aspect-auto w-full relative overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
+                          <img src={r.image} className="w-full h-auto object-contain grayscale-[0.3] transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105" loading="lazy" />
                         </div>
                       )}
                       {/* Review info: author name, stars, and content */}
-                      <div className="p-4 bg-gradient-to-t from-black/95 via-black/80 to-transparent">
-                        <div className="flex items-center justify-between gap-3 mb-2">
-                          <div className="flex items-center gap-2.5 min-w-0">
+                      <div className="p-5 bg-gradient-to-t from-black via-black/90 to-black/40 relative z-20">
+                        <div className="flex items-center justify-between gap-3 mb-3">
+                          <div className="flex items-center gap-3 min-w-0">
                             {r.authorAvatar && (
                               <div className="relative">
-                                <div className="absolute -inset-1 bg-white/10 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <img src={r.authorAvatar} alt={r.authorName} className="relative w-6 h-6 rounded-full border border-white/20 shadow-lg" />
+                                <div className="absolute -inset-1 bg-white/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <img src={r.authorAvatar} alt={r.authorName} className="relative w-8 h-8 rounded-full border border-white/20 shadow-xl" />
                               </div>
                             )}
                             <div className="flex flex-col min-w-0">
-                              <span className="text-[11px] font-black text-white uppercase tracking-tight truncate" style={{ fontFamily: "'Tajawal', sans-serif" }}>{r.authorName}</span>
-                              <span className="text-[8px] text-white/40 uppercase tracking-[0.1em] font-bold" style={{ fontFamily: "'Tajawal', sans-serif" }}>اليوزر نيم</span>
+                              <span className="text-[12px] font-black text-white uppercase tracking-tight truncate" style={{ fontFamily: "'Tajawal', sans-serif" }}>{r.authorName}</span>
+                              <span className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-black" style={{ fontFamily: "'Tajawal', sans-serif" }}>اليوزر نيم</span>
                             </div>
                           </div>
-                          <div className="flex-shrink-0 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
+                          <div className="flex-shrink-0 bg-white/[0.03] px-2 py-1.5 rounded-xl border border-white/5 shadow-inner">
                             <StarRating rating={r.rating} />
                           </div>
                         </div>
                         {r.content && r.content !== "تقييم Pixel Design" && (
-                          <div className="relative">
-                            <div className="absolute -left-2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-white/20 to-transparent"></div>
-                            <p className="text-[11px] text-white/70 italic leading-relaxed pl-3 mt-2" style={{ fontFamily: "'Tajawal', sans-serif" }}>"{r.content}"</p>
+                          <div className="relative mt-3">
+                            <div className="absolute -left-3 top-0 bottom-0 w-[2px] bg-gradient-to-b from-white/40 via-white/10 to-transparent"></div>
+                            <p className="text-[12px] text-white/80 italic leading-relaxed pl-4" style={{ fontFamily: "'Tajawal', sans-serif" }}>"{r.content}"</p>
                           </div>
                         )}
                       </div>
