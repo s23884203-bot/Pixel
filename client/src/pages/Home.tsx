@@ -4,7 +4,7 @@ import { Star, ExternalLink, MessageSquare, Award, Sparkles, LayoutGrid, ShieldC
 import Footer from "@/components/Footer";
 
 interface Review {
-  id: number;
+  id: number | string;
   content: string;
   image?: string | null;
   rating: number | null;
@@ -30,6 +30,90 @@ interface FeaturedClient {
   inviteLink: string;
   platform: 'discord' | 'kick';
 }
+
+// التقييمات اليدوية لضمان الظهور الفوري
+const MANUAL_REVIEWS: Review[] = [
+  {
+    id: "m1",
+    authorName: "Aymn !",
+    content: "ي شيخ افضل مصمم والله",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-04-24"
+  },
+  {
+    id: "m2",
+    authorName: "_3mx",
+    content: "الأفضل",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-04-23"
+  },
+  {
+    id: "m3",
+    authorName: "7mood !",
+    content: "الله يوفقك من نجاح لنجاح الافضل دايما",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-04-23"
+  },
+  {
+    id: "m4",
+    authorName: "66 !",
+    content: "تعبت وأنا أمدحه و الله المتجر",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-04-22"
+  },
+  {
+    id: "m5",
+    authorName: "y7d",
+    content: "والله متجر جامد",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-04-22"
+  },
+  {
+    id: "m6",
+    authorName: "Ahmed 23",
+    content: "أولاً نشكر المتجر على الرد السريع والخدمة المميزة عن باقي المتاجر ونشكر Snow على حسن التعامل والأسلوب ونسأل الله أن يوفقكم وينجحكم وين ما رحتموا",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-04-20"
+  },
+  {
+    id: "m7",
+    authorName: "slom !",
+    content: "شغل فاخر و اتمنى يستمر و الاسعار حلوه جدا الله يوفقك يا سنو",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-04-15"
+  },
+  {
+    id: "m8",
+    authorName: "Look",
+    content: "استمر بالأفضل وفالك التوفيق شغلك عالمي",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-04-14"
+  },
+  {
+    id: "m9",
+    authorName: "Saylr !",
+    content: "شغل تاريخي والله ويعطيك لمسه بالبس ويطلعه بشكل خرافي أشكرك على الشغل الجبار ذا",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-04-13"
+  },
+  {
+    id: "m10",
+    authorName: "Smadi",
+    content: "فوق التقييم سئو لو قيمته 100000 رح تظلمه والله قوت",
+    rating: 5,
+    authorAvatar: null,
+    timestamp: "2026-03-26"
+  }
+];
 
 const AnimatedTagline = () => {
   return (
@@ -80,14 +164,17 @@ export default function Home() {
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
   const { data: stats } = trpc.reviews.getStats.useQuery();
 
-  const [displayReviews, setDisplayReviews] = useState<Review[]>([]);
+  const [displayReviews, setDisplayReviews] = useState<Review[]>(MANUAL_REVIEWS);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [featuredClients, setFeaturedClients] = useState<FeaturedClient[]>([]);
 
   useEffect(() => {
-    if (reviewsData) {
+    if (reviewsData && reviewsData.length > 0) {
       const sorted = [...reviewsData].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-      setDisplayReviews(sorted);
+      // دمج التقييمات اليدوية مع تقييمات قاعدة البيانات
+      const merged = [...MANUAL_REVIEWS, ...sorted];
+      const unique = Array.from(new Map(merged.map(r => [r.content + r.authorName, r])).values());
+      setDisplayReviews(unique as Review[]);
     }
   }, [reviewsData]);
 
@@ -99,7 +186,7 @@ export default function Home() {
     if (featuredClientsData) setFeaturedClients(featuredClientsData as FeaturedClient[]);
   }, [featuredClientsData]);
 
-  const isLoading = reviewsLoading && displayReviews.length === 0;
+  const isLoading = reviewsLoading && displayReviews.length === MANUAL_REVIEWS.length;
 
   const PlatformIcon = ({ platform, icon }: { platform: 'discord' | 'kick', icon?: string | null }) => {
     const [imgError, setImgError] = useState(false);
@@ -147,15 +234,6 @@ export default function Home() {
             </div>
           </div>
         </nav>
-
-        {isLoading && (
-          <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center">
-            <div className="flex flex-col items-center gap-4">
-              <div className="w-10 h-10 border-2 border-white/10 border-t-white rounded-full animate-spin"></div>
-              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Loading Experience</span>
-            </div>
-          </div>
-        )}
 
         {/* Main Content Grid */}
         <main className="max-w-[1600px] mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 pt-12 pb-24 flex-1">
