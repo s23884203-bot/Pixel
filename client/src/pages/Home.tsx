@@ -1164,7 +1164,7 @@ export default function Home() {
                   <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Community</span>
                 </div>
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
-                  <span className="block text-2xl md:text-3xl font-black">{displayReviews.length || stats?.totalReviews || 200}+</span>
+                  <span className="block text-2xl md:text-3xl font-black">200+</span>
                   <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Satisfied</span>
                 </div>
               </div>
