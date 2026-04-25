@@ -258,18 +258,29 @@ export default function Home() {
                         </div>
                       )}
                       {/* Review info: author name, stars, and content */}
-                      <div className="p-3 bg-gradient-to-t from-black/90 via-black/60 to-transparent">
-                        <div className="flex items-center justify-between gap-2 mb-1">
-                          <div className="flex items-center gap-2">
+                      <div className="p-4 bg-gradient-to-t from-black/95 via-black/80 to-transparent">
+                        <div className="flex items-center justify-between gap-3 mb-2">
+                          <div className="flex items-center gap-2.5 min-w-0">
                             {r.authorAvatar && (
-                              <img src={r.authorAvatar} alt={r.authorName} className="w-5 h-5 rounded-full border border-white/10" />
+                              <div className="relative">
+                                <div className="absolute -inset-1 bg-white/10 rounded-full blur-sm opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                                <img src={r.authorAvatar} alt={r.authorName} className="relative w-6 h-6 rounded-full border border-white/20 shadow-lg" />
+                              </div>
                             )}
-                            <span className="text-[11px] font-bold text-white/80 truncate" style={{ fontFamily: "'Tajawal', sans-serif" }}>{r.authorName}</span>
+                            <div className="flex flex-col min-w-0">
+                              <span className="text-[11px] font-black text-white uppercase tracking-tight truncate" style={{ fontFamily: "'Tajawal', sans-serif" }}>{r.authorName}</span>
+                              <span className="text-[8px] text-white/40 uppercase tracking-[0.1em] font-bold" style={{ fontFamily: "'Tajawal', sans-serif" }}>اليوزر نيم</span>
+                            </div>
                           </div>
-                          <StarRating rating={r.rating} />
+                          <div className="flex-shrink-0 bg-white/5 px-2 py-1 rounded-lg border border-white/5">
+                            <StarRating rating={r.rating} />
+                          </div>
                         </div>
                         {r.content && r.content !== "تقييم Pixel Design" && (
-                          <p className="text-[11px] text-white/60 italic leading-relaxed mt-1" style={{ fontFamily: "'Tajawal', sans-serif" }}>"{r.content}"</p>
+                          <div className="relative">
+                            <div className="absolute -left-2 top-0 bottom-0 w-[1px] bg-gradient-to-b from-white/20 to-transparent"></div>
+                            <p className="text-[11px] text-white/70 italic leading-relaxed pl-3 mt-2" style={{ fontFamily: "'Tajawal', sans-serif" }}>"{r.content}"</p>
+                          </div>
                         )}
                       </div>
                     </div>
