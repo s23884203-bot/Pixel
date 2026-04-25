@@ -34,27 +34,41 @@ interface FeaturedClient {
 
 const AnimatedTagline = () => {
   return (
-    <div className="text-center mt-10 mb-16">
-      <div className="relative inline-flex flex-col items-center">
-        {/* Decorative background glow */}
-        <div className="absolute -inset-10 bg-white/5 blur-[100px] rounded-full"></div>
+    <div className="text-center mt-12 mb-20">
+      <div className="relative inline-block group">
+        {/* Multi-layered glow effect */}
+        <div className="absolute -inset-4 bg-gradient-to-r from-white/20 via-white/5 to-white/20 blur-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
         
-        <div className="relative flex items-center gap-4 px-8 py-4 bg-white/[0.02] border border-white/10 rounded-2xl backdrop-blur-sm group hover:border-white/20 transition-all duration-700">
-          <span className="text-4xl md:text-6xl animate-bounce drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">📌</span>
-          
-          <div className="flex flex-col items-start">
-            <h2 className="text-3xl md:text-6xl font-black italic tracking-[ -0.05em] uppercase leading-none">
-              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/40 animate-pulse">
-                من خيالك
-              </span>
-              <span className="mx-3 text-white/20">...</span>
-              <span className="text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
-                للواقع
-              </span>
-            </h2>
-            <div className="w-full h-1 mt-2 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full overflow-hidden">
-              <div className="w-full h-full bg-white/40 -translate-x-full animate-[shimmer_3s_infinite]"></div>
+        <div className="relative flex flex-col items-center gap-6">
+          <div className="flex items-center gap-6 px-10 py-6 bg-gradient-to-b from-white/[0.05] to-transparent border border-white/10 rounded-[2.5rem] backdrop-blur-xl shadow-2xl">
+            <span className="text-5xl md:text-7xl animate-bounce filter drop-shadow-[0_0_20px_rgba(255,255,255,0.6)]">📌</span>
+            
+            <div className="flex flex-col">
+              <h2 className="flex flex-wrap justify-center items-center gap-x-6 text-4xl md:text-7xl font-black italic tracking-tighter">
+                <span className="text-white animate-pulse transition-all duration-500 hover:scale-110 cursor-default">
+                  من خيالك
+                </span>
+                <span className="text-white/30 text-2xl md:text-4xl font-light not-italic">——</span>
+                <span className="relative">
+                  <span className="absolute -inset-2 bg-white/10 blur-xl rounded-full animate-pulse"></span>
+                  <span className="relative bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40 drop-shadow-2xl">
+                    للواقع
+                  </span>
+                </span>
+              </h2>
+              
+              {/* Modern animated underline */}
+              <div className="relative w-full h-[3px] mt-4 bg-white/10 rounded-full overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent -translate-x-full animate-[shimmer_2.5s_infinite_ease-in-out]"></div>
+              </div>
             </div>
+          </div>
+          
+          {/* Bottom decorative element */}
+          <div className="flex gap-2 opacity-30 group-hover:opacity-60 transition-opacity duration-500">
+            <div className="w-12 h-1 bg-white rounded-full"></div>
+            <div className="w-4 h-1 bg-white rounded-full"></div>
+            <div className="w-2 h-1 bg-white rounded-full"></div>
           </div>
         </div>
       </div>

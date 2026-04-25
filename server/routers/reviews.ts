@@ -1,63 +1,47 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
-import { getAllReviews } from "../db";
-import { fetchDiscordReviews, fetchDiscordPartners, getServerIconFromInvite } from "../discord";
+import { getAllReviews, createReview, getReviewByDiscordId } from "../db";
+import { fetchDiscordReviews, fetchDiscordPartners } from "../discord";
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
     try {
-      // 1. Fetch ALL historical reviews from Discord (Up to 1000 messages)
+      // 1. Fetch live from Discord (Fresh URLs)
       const messages = await fetchDiscordReviews();
       
       const discordReviews = messages
-        .filter(m => (m.attachments && m.attachments.length > 0) || (m.embeds && m.embeds.length > 0))
+        .filter(m => m.attachments && m.attachments.length > 0)
         .map(m => {
-          let content = m.content || "";
-          if (m.embeds && m.embeds.length > 0) {
-            content = m.embeds[0].description || m.embeds[0].title || content;
-          }
-          
-          let image = null;
-          if (m.attachments && m.attachments.length > 0) {
-            image = m.attachments[0].url;
-          } else if (m.embeds && m.embeds.length > 0 && m.embeds[0].image) {
-            image = m.embeds[0].image.url;
-          }
-
-          if (!content.trim() || content.toLowerCase().includes("rating.png")) {
-            content = "";
-          }
+          const image = m.attachments[0].url;
+          // Filter out lines or non-rating images if possible, but keep all for now as requested
+          if (image.includes("Pixel_Design_lein") || image.includes("line.png")) return null;
 
           return {
             id: parseInt(m.id.slice(-8)) || Math.floor(Math.random() * 1000000),
             discordMessageId: m.id,
             discordUserId: m.author.id,
-            authorName: m.author.username,
+            authorName: m.author.global_name || m.author.username,
             authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
-            content: content.trim(),
+            content: "",
             image: image,
             rating: 5,
             timestamp: new Date(m.timestamp),
           };
         })
-        .filter(r => r.image);
+        .filter(r => r !== null);
 
-      // 2. Fallback to Database if Discord fetch is empty (though fetchDiscordReviews is now robust)
+      // 2. Get from DB
       const dbReviews = await getAllReviews();
       
-      // Merge: Live Discord (Fresh URLs) takes priority
+      // Merge and unique by image
       const allReviews = [...discordReviews, ...dbReviews];
-      
-      // Unique by image URL or discordMessageId to prevent duplicates
-      const uniqueReviews = Array.from(new Map(allReviews.map(r => [r.image || r.discordMessageId, r])).values())
-        .filter(r => r.image)
+      const uniqueReviews = Array.from(new Map(allReviews.map(r => [r.image, r])).values())
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       return uniqueReviews;
     } catch (error) {
       console.error("Error in list reviews:", error);
-      const dbReviews = await getAllReviews();
-      return dbReviews.filter(r => r.image).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      return await getAllReviews();
     }
   }),
 
