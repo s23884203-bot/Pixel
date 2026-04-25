@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
-import { Star, ExternalLink, MessageSquare, Award, Sparkles, LayoutGrid } from "lucide-react";
+import { Star, ExternalLink, MessageSquare, Award, Sparkles, LayoutGrid, ShieldCheck } from "lucide-react";
 import Footer from "@/components/Footer";
 
 interface Review {
@@ -190,14 +190,17 @@ export default function Home() {
             {/* Hero Section */}
             <section className="text-center w-full pt-10">
               <div className="mb-10 flex flex-col items-center">
-                <div className="inline-flex items-center gap-4 px-6 py-3 bg-white/[0.03] border border-white/10 rounded-2xl mb-8 hover:bg-white/[0.06] transition-all group cursor-default">
+                <div className="inline-flex items-center gap-4 px-6 py-3 bg-white/[0.03] border border-white/10 rounded-2xl mb-8 hover:bg-white/[0.06] transition-all group cursor-default shadow-2xl backdrop-blur-md">
                   <div className="relative">
                     <div className="absolute -inset-2 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <img src="/snow_logo.webp" alt="SNOW" className="relative w-12 h-12 md:w-16 md:h-16 object-contain" />
                   </div>
                   <div className="flex flex-col items-start">
-                    <span className="text-xl md:text-3xl font-black text-white uppercase tracking-widest italic leading-none">SNOW</span>
-                    <span className="text-[8px] text-white/30 uppercase tracking-[0.4em] font-black mt-1">Founding Designer</span>
+                    <div className="flex items-center gap-2">
+                      <span className="text-xl md:text-3xl font-black text-white uppercase tracking-widest italic leading-none">SNOW</span>
+                      <ShieldCheck className="w-4 h-4 text-blue-400" />
+                    </div>
+                    <span className="text-[8px] text-white/30 uppercase tracking-[0.4em] font-black mt-1">Store Owner</span>
                   </div>
                 </div>
                 
@@ -248,8 +251,8 @@ export default function Home() {
 
           {/* Right Sidebar: Reviews Section (The specific requested place) */}
           <aside className="lg:col-span-3 order-3">
-            <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-6 md:p-8 shadow-2xl shadow-black backdrop-blur-xl sticky top-24 ring-1 ring-white/5">
-              <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
+            <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-6 md:p-8 shadow-2xl shadow-black backdrop-blur-xl sticky top-24 ring-1 ring-white/5 h-[80vh] flex flex-col">
+              <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6 flex-shrink-0">
                 <div className="flex items-center gap-3">
                   <div className="bg-white/10 p-2.5 rounded-2xl text-white shadow-lg"><MessageSquare className="w-5 h-5" /></div>
                   <div className="flex flex-col">
@@ -259,7 +262,7 @@ export default function Home() {
                 </div>
               </div>
 
-              <div className="max-h-[70vh] overflow-y-auto pr-3 space-y-6 custom-scrollbar relative">
+              <div className="flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar relative">
                 {displayReviews.length > 0 ? (
                   displayReviews.map((r, idx) => (
                     <div key={r.id} className="group relative overflow-hidden rounded-3xl border border-white/5 bg-black/40 transition-all duration-500 hover:border-white/20 hover:bg-black/60 hover:scale-[1.02] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]">
@@ -278,7 +281,9 @@ export default function Home() {
                               {r.authorAvatar ? (
                                 <img src={r.authorAvatar} alt={r.authorName} className="relative w-9 h-9 rounded-full border border-white/20 object-cover shadow-xl" />
                               ) : (
-                                <div className="relative w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black uppercase">{r.authorName[0]}</div>
+                                <div className="relative w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black uppercase tracking-tighter">
+                                  {r.authorName.charAt(0)}
+                                </div>
                               )}
                             </div>
                             <div className="flex flex-col min-w-0">
@@ -301,7 +306,6 @@ export default function Home() {
                         )}
                       </div>
                       
-                      {/* Decorative corner element */}
                       <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="w-4 h-4 border-t border-r border-white/20 rounded-tr-lg" />
                       </div>
