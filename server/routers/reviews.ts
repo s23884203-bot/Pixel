@@ -6,7 +6,7 @@ import { fetchDiscordReviews, fetchDiscordPartners, getServerIconFromInvite } fr
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
     try {
-      // 1. Get live reviews from Discord first (Fresh URLs)
+      // 1. Fetch ALL historical reviews from Discord (Up to 1000 messages)
       const messages = await fetchDiscordReviews();
       
       const discordReviews = messages
@@ -19,7 +19,6 @@ export const reviewsRouter = router({
           
           let image = null;
           if (m.attachments && m.attachments.length > 0) {
-            // Use the first attachment as the primary image
             image = m.attachments[0].url;
           } else if (m.embeds && m.embeds.length > 0 && m.embeds[0].image) {
             image = m.embeds[0].image.url;
@@ -43,13 +42,13 @@ export const reviewsRouter = router({
         })
         .filter(r => r.image);
 
-      // 2. Get reviews from Database as secondary
+      // 2. Fallback to Database if Discord fetch is empty (though fetchDiscordReviews is now robust)
       const dbReviews = await getAllReviews();
       
-      // Merge: Priority to Fresh Live Discord -> then DB
+      // Merge: Live Discord (Fresh URLs) takes priority
       const allReviews = [...discordReviews, ...dbReviews];
       
-      // Unique by image URL or discordMessageId
+      // Unique by image URL or discordMessageId to prevent duplicates
       const uniqueReviews = Array.from(new Map(allReviews.map(r => [r.image || r.discordMessageId, r])).values())
         .filter(r => r.image)
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
@@ -95,7 +94,7 @@ export const reviewsRouter = router({
 
   featuredClients: publicProcedure.query(async () => {
     const DISCORD_ICON = "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico";
-    const manualClients = [
+    return [
       { id: "m1", name: "TRG", username: "trg", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/trg", platform: 'discord' },
       { id: "m2", name: "D7MX", username: "d7mx", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/d7mx", platform: 'kick' },
       { id: "m3", name: "IAZUZ", username: "iazuz", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/iazuz", platform: 'kick' },
@@ -107,6 +106,5 @@ export const reviewsRouter = router({
       { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/CMP", platform: 'discord' },
       { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/s1s", platform: 'discord' },
     ];
-    return manualClients;
   }),
 });

@@ -43,19 +43,25 @@ const AnimatedTagline = () => {
         setDisplayText(fullText.slice(0, index));
         index++;
       } else {
-        clearInterval(interval);
+        index = 0; // Loop the animation
       }
-    }, 80);
+    }, 150);
     
     return () => clearInterval(interval);
   }, []);
   
   return (
-    <div className="text-center mt-6 mb-8">
-      <p className="text-xl md:text-2xl font-bold text-white/80 tracking-wide min-h-[2rem] animate-fadeIn">
-        📌 {displayText}
-        {displayText.length < fullText.length && <span className="animate-pulse">|</span>}
-      </p>
+    <div className="text-center mt-8 mb-12">
+      <div className="relative inline-block">
+        <div className="absolute -inset-1 bg-gradient-to-r from-white/0 via-white/20 to-white/0 blur-lg opacity-50 animate-pulse"></div>
+        <p className="relative text-2xl md:text-4xl font-black text-white tracking-tighter italic uppercase min-h-[3rem] flex items-center gap-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
+          <span className="text-3xl md:text-5xl animate-bounce">📌</span>
+          <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white/80 to-white/50">
+            {displayText}
+          </span>
+          <span className="w-1 h-8 md:h-12 bg-white animate-pulse rounded-full ml-1"></span>
+        </p>
+      </div>
     </div>
   );
 };
