@@ -1,7 +1,6 @@
 import { useState, useEffect } from "react";
 import { trpc } from "@/lib/trpc";
-import { Button } from "@/components/ui/button";
-import { Star, ExternalLink, ChevronLeft, ChevronRight, Users, MessageSquare, Award } from "lucide-react";
+import { Star, ExternalLink, MessageSquare, Award, Sparkles, LayoutGrid } from "lucide-react";
 import Footer from "@/components/Footer";
 
 interface Review {
@@ -34,32 +33,20 @@ interface FeaturedClient {
 
 const AnimatedTagline = () => {
   return (
-    <div className="text-center mt-8 mb-16">
+    <div className="text-center mt-6 mb-12">
       <div className="relative inline-block group">
-        {/* Multi-layered glow effect */}
-        <div className="absolute -inset-4 bg-gradient-to-r from-white/10 via-white/5 to-white/10 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
-        
-        <div className="relative flex flex-col items-center gap-4">
-          <div className="flex items-center gap-4 px-8 py-4 bg-gradient-to-b from-white/[0.03] to-transparent border border-white/5 rounded-[2rem] backdrop-blur-lg shadow-xl">
-            <span className="text-3xl md:text-5xl animate-bounce filter drop-shadow-[0_0_15px_rgba(255,255,255,0.4)]">📌</span>
-            
+        <div className="absolute -inset-4 bg-gradient-to-r from-white/5 via-white/10 to-white/5 blur-xl opacity-0 group-hover:opacity-100 transition-opacity duration-1000"></div>
+        <div className="relative flex flex-col items-center gap-3">
+          <div className="flex items-center gap-4 px-6 py-3 bg-white/[0.02] border border-white/5 rounded-2xl backdrop-blur-sm">
+            <span className="text-2xl md:text-3xl animate-bounce filter drop-shadow-[0_0_10px_rgba(255,255,255,0.3)]">📌</span>
             <div className="flex flex-col">
-              <h2 className="flex flex-wrap justify-center items-center gap-x-4 text-2xl md:text-4xl font-black italic tracking-tighter" style={{ fontFamily: "'Tajawal', sans-serif" }}>
-                <span className="text-white transition-all duration-500 hover:scale-105 cursor-default">
-                  من خيالك
-                </span>
-                <span className="text-white/20 text-xl md:text-2xl font-light not-italic">——</span>
-                <span className="relative">
-                  <span className="absolute -inset-1 bg-white/5 blur-lg rounded-full animate-pulse"></span>
-                  <span className="relative bg-clip-text text-transparent bg-gradient-to-b from-white to-white/50 drop-shadow-xl">
-                    للواقع
-                  </span>
-                </span>
+              <h2 className="flex flex-wrap justify-center items-center gap-x-3 text-xl md:text-3xl font-black italic tracking-tighter" style={{ fontFamily: "'Tajawal', sans-serif" }}>
+                <span className="text-white/90">من خيالك</span>
+                <span className="text-white/10 text-lg md:text-xl font-light not-italic">——</span>
+                <span className="relative bg-clip-text text-transparent bg-gradient-to-b from-white to-white/40">للواقع</span>
               </h2>
-              
-              {/* Modern animated underline */}
-              <div className="relative w-full h-[2px] mt-3 bg-white/5 rounded-full overflow-hidden">
-                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/40 to-transparent -translate-x-full animate-[shimmer_3s_infinite_ease-in-out]"></div>
+              <div className="relative w-full h-[1.5px] mt-2 bg-white/5 rounded-full overflow-hidden">
+                <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent -translate-x-full animate-[shimmer_3s_infinite_ease-in-out]"></div>
               </div>
             </div>
           </div>
@@ -76,7 +63,7 @@ const StarRating = ({ rating }: { rating: number | null }) => {
       {[1, 2, 3, 4, 5].map(i => (
         <Star
           key={i}
-          className={`w-3 h-3 ${i <= stars ? 'text-yellow-400 fill-yellow-400' : 'text-white/10'}`}
+          className={`w-2.5 h-2.5 ${i <= stars ? 'text-yellow-400 fill-yellow-400' : 'text-white/10'}`}
         />
       ))}
     </div>
@@ -84,11 +71,10 @@ const StarRating = ({ rating }: { rating: number | null }) => {
 };
 
 export default function Home() {
-  const { data: reviewsData, isLoading: reviewsLoading, error: reviewsError } = trpc.reviews.list.useQuery(undefined, {
+  const { data: reviewsData, isLoading: reviewsLoading } = trpc.reviews.list.useQuery(undefined, {
     staleTime: 10000,
     refetchOnWindowFocus: true,
-    retry: 1,
-    refetchInterval: 300000 // Refetch every 5 minutes
+    refetchInterval: 300000
   });
   const { data: partnerMessages } = trpc.reviews.partners.useQuery();
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
@@ -119,14 +105,14 @@ export default function Home() {
     const [imgError, setImgError] = useState(false);
     if (icon && !imgError) {
       return (
-        <div className="w-10 h-10 rounded-full overflow-hidden border-2 border-white/10 shadow-lg bg-black">
+        <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10 bg-black">
           <img src={icon} alt={platform} className="w-full h-full object-cover" onError={() => setImgError(true)} />
         </div>
       );
     }
     return (
-      <div className={`w-10 h-10 rounded-full flex items-center justify-center shadow-lg border-2 border-black ${platform === 'kick' ? 'bg-[#53fc18] shadow-[#53fc18]/20' : 'bg-[#5865F2] shadow-[#5865F2]/20 p-2'}`}>
-        {platform === 'kick' ? <span className="text-sm font-black text-black">K</span> : 
+      <div className={`w-8 h-8 rounded-full flex items-center justify-center border border-black ${platform === 'kick' ? 'bg-[#53fc18]' : 'bg-[#5865F2] p-1.5'}`}>
+        {platform === 'kick' ? <span className="text-[10px] font-black text-black">K</span> : 
           <svg viewBox="0 0 127.14 96.36" fill="white" className="w-full h-full"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.71,32.65-1.82,56.6.48,80.21a105.73,105.73,0,0,0,32.22,16.15,77.7,77.7,0,0,0,7.34-11.86,68.11,68.11,0,0,1-11.85-5.65c.99-.71,1.96-1.46,2.89-2.22a74.87,74.87,0,0,0,65.35,0c.93.76,1.9,1.51,2.89,2.22a68.4,68.4,0,0,1-11.85,5.65,77,77,0,0,0,7.34,11.86,105.55,105.55,0,0,0,32.25-16.15C129.58,52.13,125.4,28.38,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5.12-12.67,11.45-12.67S54,46,54,53,48.83,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5.12-12.67,11.44-12.67S96.2,46,96.2,53,91.05,65.69,84.69,65.69Z"/></svg>
         }
       </div>
@@ -135,173 +121,216 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black flex flex-col" style={{ fontFamily: "'Tajawal', sans-serif" }}>
+      {/* Background Effects */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
-        <div className="absolute inset-0 opacity-20 bg-cover bg-center grayscale" style={{ backgroundImage: 'url("/bg.webp")' }} />
+        <div className="absolute inset-0 opacity-10 bg-[url('/bg.webp')] bg-cover bg-center grayscale" />
+        <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-white/5 rounded-full blur-[120px]" />
+        <div className="absolute bottom-0 right-1/4 w-[500px] h-[500px] bg-white/5 rounded-full blur-[120px]" />
         <div className="absolute inset-0 bg-gradient-to-b from-black via-transparent to-black" />
       </div>
 
       <div className="relative z-10 flex flex-col flex-1">
-        <nav className="border-b border-white/5 bg-black/50 backdrop-blur-xl sticky top-0 z-50">
-          <div className="max-w-[1800px] mx-auto px-6 py-4 flex justify-between items-center">
-            <div className="text-xl font-black tracking-tighter uppercase italic" style={{ fontFamily: "'Tajawal', sans-serif" }}>Pixel Design</div>
+        {/* Navbar */}
+        <nav className="border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-50">
+          <div className="max-w-[1400px] mx-auto px-6 py-4 flex justify-between items-center">
+            <div className="text-xl font-black tracking-tighter uppercase italic flex items-center gap-2">
+              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black not-italic text-sm">P</div>
+              Pixel Design
+            </div>
             <div className="flex items-center gap-3">
-              <a href="https://salla.sa/pixel.design" target="_blank" rel="noopener noreferrer" className="bg-white/10 text-white px-4 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform flex items-center gap-2 border border-white/20">
-                <ExternalLink className="w-4 h-4" /> Store
+              <a href="https://salla.sa/pixel.design" target="_blank" rel="noopener noreferrer" className="bg-white/5 text-white px-4 py-2 rounded-xl text-xs font-bold hover:bg-white/10 transition-all border border-white/10 flex items-center gap-2">
+                <LayoutGrid className="w-3.5 h-3.5" /> Store
               </a>
-              <a href="https://discord.gg/wBuqaM6tqm" target="_blank" className="bg-white text-black px-5 py-2 rounded-full text-sm font-bold hover:scale-105 transition-transform flex items-center gap-2">
-                <ExternalLink className="w-4 h-4" /> Discord
+              <a href="https://discord.gg/wBuqaM6tqm" target="_blank" className="bg-white text-black px-4 py-2 rounded-xl text-xs font-bold hover:scale-105 transition-transform flex items-center gap-2">
+                <ExternalLink className="w-3.5 h-3.5" /> Discord
               </a>
             </div>
           </div>
         </nav>
 
         {isLoading && (
-          <div className="fixed inset-0 z-[100] bg-black flex items-center justify-center">
+          <div className="fixed inset-0 z-[100] bg-black/90 backdrop-blur-xl flex items-center justify-center">
             <div className="flex flex-col items-center gap-4">
-              <div className="w-12 h-12 border-4 border-white/10 border-t-white rounded-full animate-spin"></div>
-              <span className="text-xs font-bold uppercase tracking-[0.3em] text-white/40" style={{ fontFamily: "'Tajawal', sans-serif" }}>Loading Pixel Experience</span>
+              <div className="w-10 h-10 border-2 border-white/10 border-t-white rounded-full animate-spin"></div>
+              <span className="text-[10px] font-black uppercase tracking-[0.3em] text-white/40">Loading Experience</span>
             </div>
           </div>
         )}
 
-        <div className="max-w-[1800px] mx-auto px-6 w-full flex flex-col lg:flex-row gap-8 pt-12 flex-1">
-          <aside className="lg:w-[400px] lg:sticky lg:top-24 self-start order-2 lg:order-1">
-            <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl shadow-black">
-              <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
-                <div className="bg-white/10 p-2 rounded-xl"><Award className="w-6 h-6 text-white" /></div>
+        {/* Main Content Grid */}
+        <main className="max-w-[1600px] mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 pt-12 pb-24 flex-1">
+          
+          {/* Left Sidebar: Featured Clients */}
+          <aside className="lg:col-span-3 space-y-6 order-2 lg:order-1">
+            <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 backdrop-blur-md sticky top-24">
+              <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
+                <div className="bg-white/5 p-2 rounded-xl text-white/60"><Award className="w-5 h-5" /></div>
                 <div>
-                  <h2 className="text-lg font-black uppercase tracking-tighter italic text-white" style={{ fontFamily: "'Tajawal', sans-serif" }}>عملاء مميزون</h2>
-                  <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">Premium Clients</p>
+                  <h2 className="text-sm font-black uppercase tracking-tight italic">عملاء مميزون</h2>
+                  <p className="text-[8px] text-white/20 uppercase tracking-widest font-bold">Premium Clients</p>
                 </div>
               </div>
-              <div className="max-h-[700px] overflow-y-auto pr-4 space-y-4 custom-scrollbar">
+              <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                 {featuredClients.map(client => (
-                  <a key={client.id} href={client.inviteLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-5 p-5 bg-white/5 border border-white/5 rounded-[1.5rem] hover:bg-white/10 hover:border-white/20 hover:scale-[1.02] transition-all group shadow-lg">
-                    <div className="flex-shrink-0 transform group-hover:rotate-12 transition-transform"><PlatformIcon platform={client.platform} icon={client.serverIcon} /></div>
+                  <a key={client.id} href={client.inviteLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] hover:border-white/10 transition-all group">
+                    <div className="flex-shrink-0 group-hover:scale-110 transition-transform"><PlatformIcon platform={client.platform} icon={client.serverIcon} /></div>
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-black text-base truncate group-hover:text-white transition-colors uppercase tracking-tighter italic" style={{ fontFamily: "'Tajawal', sans-serif" }}>{client.name}</h3>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[9px] text-white/40 uppercase tracking-widest font-black">View Project</span>
-                        <div className="w-1 h-1 bg-white/20 rounded-full"></div>
-                        <span className="text-[9px] text-white/20 uppercase tracking-widest font-bold">{client.platform}</span>
-                      </div>
+                      <h3 className="font-black text-xs truncate uppercase italic">{client.name}</h3>
+                      <span className="text-[8px] text-white/20 uppercase tracking-widest font-bold">{client.platform}</span>
                     </div>
-                    <div className="bg-white/5 p-2 rounded-lg group-hover:bg-white group-hover:text-black transition-all"><ExternalLink className="w-4 h-4" /></div>
+                    <div className="text-white/20 group-hover:text-white transition-colors"><ExternalLink className="w-3 h-3" /></div>
                   </a>
                 ))}
               </div>
             </div>
           </aside>
 
-          <div className="flex-1 space-y-12 order-1 lg:order-2 flex flex-col items-center justify-start pt-20">
-            <div className="text-center max-w-4xl mx-auto">
-              <div className="mb-12 flex flex-col items-center">
-                <div className="inline-flex items-center gap-5 px-8 py-4 bg-white/10 border border-white/20 rounded-[2rem] mb-6 hover:bg-white/20 transition-all shadow-2xl backdrop-blur-md group">
+          {/* Center Content: Hero & Stats */}
+          <div className="lg:col-span-6 space-y-16 order-1 lg:order-2 flex flex-col items-center">
+            {/* Hero Section */}
+            <section className="text-center w-full pt-10">
+              <div className="mb-10 flex flex-col items-center">
+                <div className="inline-flex items-center gap-4 px-6 py-3 bg-white/[0.03] border border-white/10 rounded-2xl mb-8 hover:bg-white/[0.06] transition-all group cursor-default">
                   <div className="relative">
-                    <div className="absolute -inset-2 bg-white/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
+                    <div className="absolute -inset-2 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
                     <img src="/snow_logo.webp" alt="SNOW" className="relative w-12 h-12 md:w-16 md:h-16 object-contain" />
                   </div>
-                  <span className="text-2xl md:text-4xl font-black text-white uppercase tracking-[0.2em] italic" style={{ fontFamily: "'Tajawal', sans-serif" }}>SNOW</span>
+                  <div className="flex flex-col items-start">
+                    <span className="text-xl md:text-3xl font-black text-white uppercase tracking-widest italic leading-none">SNOW</span>
+                    <span className="text-[8px] text-white/30 uppercase tracking-[0.4em] font-black mt-1">Founding Designer</span>
+                  </div>
+                </div>
+                
+                <div className="relative group mb-10">
+                  <div className="absolute -inset-10 bg-white/5 rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition duration-1000" />
+                  <img src="/logo.webp" alt="Pixel Design" className="relative w-40 h-40 md:w-52 md:h-52 object-contain animate-float drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]" />
+                </div>
+
+                <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic mb-4 leading-none">
+                  Pixel <span className="text-white/10">Design</span>
+                </h1>
+                <AnimatedTagline />
+              </div>
+
+              {/* Stats Grid */}
+              <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
+                <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
+                  <span className="block text-2xl md:text-3xl font-black">{stats?.memberCount || 2000}+</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Community</span>
+                </div>
+                <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
+                  <span className="block text-2xl md:text-3xl font-black">{displayReviews.length || stats?.totalReviews || 200}+</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Satisfied</span>
                 </div>
               </div>
-              <div className="inline-block mb-8 relative group">
-                <div className="absolute -inset-8 bg-white/10 rounded-full blur-[60px] opacity-20 group-hover:opacity-40 transition duration-1000"></div>
-                <div className="absolute -inset-4 bg-gradient-to-r from-transparent via-white/5 to-transparent rounded-full blur-2xl opacity-30"></div>
-                <img src="/logo.webp" alt="Logo" className="relative w-40 h-40 md:w-56 md:h-56 object-contain animate-float drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]" />
-              </div>
-              <h1 className="text-6xl md:text-8xl font-black tracking-tighter uppercase italic mb-8 leading-none" style={{ fontFamily: "'Tajawal', sans-serif" }}>Pixel <span className="text-white/20">Design</span></h1>
-              <AnimatedTagline />
-              <div className="flex flex-wrap justify-center gap-8 md:gap-12 mt-8">
-                <div className="flex flex-col items-center">
-                  <span className="text-3xl md:text-4xl font-black" style={{ fontFamily: "'Tajawal', sans-serif" }}>{stats?.memberCount || 2000}+</span>
-                  <span className="text-white/40 text-[12px] uppercase tracking-[0.3em] font-bold">Members</span>
+
+              {/* Partners/Services */}
+              <div className="mt-16 w-full max-w-xl">
+                <div className="flex items-center justify-center gap-3 mb-6">
+                  <Sparkles className="w-4 h-4 text-white/20" />
+                  <span className="text-[9px] text-white/20 uppercase tracking-[0.5em] font-black">Trusted Partners</span>
+                  <Sparkles className="w-4 h-4 text-white/20" />
                 </div>
-                <div className="w-px h-12 bg-white/10 hidden md:block"></div>
-                <div className="flex flex-col items-center">
-                  <span className="text-3xl md:text-4xl font-black" style={{ fontFamily: "'Tajawal', sans-serif" }}>{displayReviews.length || stats?.totalReviews || 200}+</span>
-                  <span className="text-white/40 text-[12px] uppercase tracking-[0.3em] font-bold">Reviews</span>
-                </div>
-              </div>
-              <div className="mt-24 w-full max-w-2xl">
-                <div className="grid grid-cols-2 md:grid-cols-3 gap-4 opacity-50 hover:opacity-100 transition-opacity">
+                <div className="grid grid-cols-3 md:grid-cols-6 gap-3 opacity-40 hover:opacity-100 transition-opacity">
                   {partners.slice(0, 6).map(p => (
-                    <div key={p.id} className="p-4 bg-white/[0.02] border border-white/5 rounded-2xl flex flex-col items-center text-center">
-                      {p.image && <img src={p.image} className="w-10 h-10 rounded-full grayscale mb-2" />}
-                      <span className="text-[10px] font-bold uppercase tracking-widest truncate w-full" style={{ fontFamily: "'Tajawal', sans-serif" }}>{p.name}</span>
+                    <div key={p.id} className="aspect-square p-3 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-center group hover:bg-white/5 transition-all">
+                      {p.image ? (
+                        <img src={p.image} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all" alt={p.name} />
+                      ) : (
+                        <span className="text-[8px] font-bold text-center uppercase leading-tight">{p.name}</span>
+                      )}
                     </div>
                   ))}
                 </div>
               </div>
-            </div>
+            </section>
           </div>
 
-          <aside className="lg:w-[400px] lg:sticky lg:top-24 self-start order-3">
-            <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-8 shadow-2xl shadow-black">
-              <div className="flex items-center gap-3 mb-8 border-b border-white/10 pb-6">
-                <div className="bg-white/10 p-2 rounded-xl"><MessageSquare className="w-6 h-6 text-white" /></div>
-                <div>
-                  <h2 className="text-lg font-black uppercase tracking-tighter italic text-white" style={{ fontFamily: "'Tajawal', sans-serif" }}>أحدث التقييمات</h2>
-                  <p className="text-[10px] text-white/30 uppercase tracking-[0.2em] font-bold">Customer Reviews</p>
+          {/* Right Sidebar: Reviews Section (The specific requested place) */}
+          <aside className="lg:col-span-3 order-3">
+            <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-6 md:p-8 shadow-2xl shadow-black backdrop-blur-xl sticky top-24 ring-1 ring-white/5">
+              <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6">
+                <div className="flex items-center gap-3">
+                  <div className="bg-white/10 p-2.5 rounded-2xl text-white shadow-lg"><MessageSquare className="w-5 h-5" /></div>
+                  <div className="flex flex-col">
+                    <h2 className="text-lg font-black uppercase tracking-tighter italic leading-none">أحدث التقييمات</h2>
+                    <p className="text-[9px] text-white/30 uppercase tracking-[0.2em] font-bold mt-1">Customer Reviews</p>
+                  </div>
                 </div>
               </div>
-              <div className="max-h-[800px] overflow-y-auto pr-2 space-y-6 custom-scrollbar">
+
+              <div className="max-h-[70vh] overflow-y-auto pr-3 space-y-6 custom-scrollbar relative">
                 {displayReviews.length > 0 ? (
-                  displayReviews.map(r => (
-                    <div key={r.id} className="group relative overflow-hidden rounded-[1.5rem] border border-white/5 bg-black/40 transition-all duration-500 hover:border-white/20 hover:scale-[1.02] hover:shadow-[0_0_30px_rgba(255,255,255,0.05)]">
+                  displayReviews.map((r, idx) => (
+                    <div key={r.id} className="group relative overflow-hidden rounded-3xl border border-white/5 bg-black/40 transition-all duration-500 hover:border-white/20 hover:bg-black/60 hover:scale-[1.02] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]">
                       {r.image && (
-                        <div className="aspect-auto w-full relative overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity z-10"></div>
-                          <img src={r.image} className="w-full h-auto object-contain grayscale-[0.3] transition-all duration-700 group-hover:grayscale-0 group-hover:scale-105" loading="lazy" />
+                        <div className="relative aspect-auto w-full overflow-hidden">
+                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity z-10" />
+                          <img src={r.image} className="w-full h-auto object-contain grayscale-[0.2] transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110" loading="lazy" />
                         </div>
                       )}
-                      {/* Review info: author name, stars, and content */}
-                      <div className="p-5 bg-gradient-to-t from-black via-black/90 to-black/40 relative z-20">
-                        <div className="flex items-center justify-between gap-3 mb-3">
+                      
+                      <div className="p-5 relative z-20">
+                        <div className="flex items-center justify-between gap-3 mb-4">
                           <div className="flex items-center gap-3 min-w-0">
-                            {r.authorAvatar && (
-                              <div className="relative">
-                                <div className="absolute -inset-1 bg-white/20 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity"></div>
-                                <img src={r.authorAvatar} alt={r.authorName} className="relative w-8 h-8 rounded-full border border-white/20 shadow-xl" />
-                              </div>
-                            )}
+                            <div className="relative flex-shrink-0">
+                              <div className="absolute -inset-1.5 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
+                              {r.authorAvatar ? (
+                                <img src={r.authorAvatar} alt={r.authorName} className="relative w-9 h-9 rounded-full border border-white/20 object-cover shadow-xl" />
+                              ) : (
+                                <div className="relative w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black uppercase">{r.authorName[0]}</div>
+                              )}
+                            </div>
                             <div className="flex flex-col min-w-0">
-                              <span className="text-[12px] font-black text-white uppercase tracking-tight truncate" style={{ fontFamily: "'Tajawal', sans-serif" }}>{r.authorName}</span>
-                              <span className="text-[9px] text-white/40 uppercase tracking-[0.2em] font-black" style={{ fontFamily: "'Tajawal', sans-serif" }}>اليوزر نيم</span>
+                              <span className="text-[12px] font-black text-white uppercase tracking-tight truncate leading-none mb-1">{r.authorName}</span>
+                              <span className="text-[8px] text-white/30 uppercase tracking-widest font-black">اليوزر نيم</span>
                             </div>
                           </div>
-                          <div className="flex-shrink-0 bg-white/[0.03] px-2 py-1.5 rounded-xl border border-white/5 shadow-inner">
+                          <div className="flex-shrink-0 bg-white/5 px-2.5 py-1.5 rounded-xl border border-white/5 shadow-inner">
                             <StarRating rating={r.rating} />
                           </div>
                         </div>
+
                         {r.content && r.content !== "تقييم Pixel Design" && (
-                          <div className="relative mt-3">
-                            <div className="absolute -left-3 top-0 bottom-0 w-[2px] bg-gradient-to-b from-white/40 via-white/10 to-transparent"></div>
-                            <p className="text-[12px] text-white/80 italic leading-relaxed pl-4" style={{ fontFamily: "'Tajawal', sans-serif" }}>"{r.content}"</p>
+                          <div className="relative pt-3 border-t border-white/5">
+                            <div className="absolute left-0 top-3 w-1 h-1 bg-white/20 rounded-full" />
+                            <p className="text-[11px] text-white/60 italic leading-relaxed pl-4 font-medium line-clamp-4 group-hover:text-white/80 transition-colors">
+                              "{r.content}"
+                            </p>
                           </div>
                         )}
+                      </div>
+                      
+                      {/* Decorative corner element */}
+                      <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                        <div className="w-4 h-4 border-t border-r border-white/20 rounded-tr-lg" />
                       </div>
                     </div>
                   ))
                 ) : (
-                  <div className="p-12 border border-white/5 border-dashed rounded-[1.5rem] text-center">
-                    <MessageSquare className="w-12 h-12 text-white/10 mx-auto mb-4" />
-                    <p className="text-[10px] font-bold text-white/10 uppercase tracking-[0.2em]" style={{ fontFamily: "'Tajawal', sans-serif" }}>No Reviews Yet</p>
+                  <div className="flex flex-col items-center justify-center py-24 border border-white/5 border-dashed rounded-[2.5rem] bg-white/[0.01]">
+                    <div className="relative mb-6">
+                      <div className="absolute inset-0 bg-white/5 rounded-full blur-2xl animate-pulse" />
+                      <MessageSquare className="relative w-12 h-12 text-white/5" />
+                    </div>
+                    <p className="text-[10px] font-black text-white/10 uppercase tracking-[0.4em]">No Reviews Yet</p>
+                    <div className="mt-4 w-8 h-[1px] bg-white/5" />
                   </div>
                 )}
               </div>
             </div>
           </aside>
-        </div>
+        </main>
+
         <Footer />
       </div>
+
       <style>{`
-        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-15px); } }
-        .animate-float { animation: float 5s ease-in-out infinite; }
-        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes float { 0%, 100% { transform: translateY(0px); } 50% { transform: translateY(-12px); } }
+        .animate-float { animation: float 6s ease-in-out infinite; }
         @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
-        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.01); }
+        .custom-scrollbar::-webkit-scrollbar { width: 3px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
         .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: rgba(255, 255, 255, 0.1); }
       `}</style>
