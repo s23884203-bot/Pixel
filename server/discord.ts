@@ -86,7 +86,7 @@ export async function fetchDiscordReviews(limit = 100): Promise<DiscordMessage[]
     let lastId: string | null = null;
     
     // Fetch multiple pages to get more than 100 reviews
-    for (let i = 0; i < 3; i++) { // Fetch up to 300 messages
+    for (let i = 0; i < 10; i++) { // Fetch up to 1000 messages for full history
         const url = `${DISCORD_API_BASE}/channels/${REVIEWS_CHANNEL_ID}/messages?limit=100${lastId ? `&before=${lastId}` : ''}`;
         const response = await fetch(url, {
             headers: {
