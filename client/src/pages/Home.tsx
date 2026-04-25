@@ -33,34 +33,30 @@ interface FeaturedClient {
 }
 
 const AnimatedTagline = () => {
-  const [displayText, setDisplayText] = useState("");
-  const fullText = "من خيالك… للواقع";
-  
-  useEffect(() => {
-    let index = 0;
-    const interval = setInterval(() => {
-      if (index <= fullText.length) {
-        setDisplayText(fullText.slice(0, index));
-        index++;
-      } else {
-        index = 0; // Loop the animation
-      }
-    }, 150);
-    
-    return () => clearInterval(interval);
-  }, []);
-  
   return (
-    <div className="text-center mt-8 mb-12">
-      <div className="relative inline-block">
-        <div className="absolute -inset-1 bg-gradient-to-r from-white/0 via-white/20 to-white/0 blur-lg opacity-50 animate-pulse"></div>
-        <p className="relative text-2xl md:text-4xl font-black text-white tracking-tighter italic uppercase min-h-[3rem] flex items-center gap-3 drop-shadow-[0_0_15px_rgba(255,255,255,0.3)]">
-          <span className="text-3xl md:text-5xl animate-bounce">📌</span>
-          <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white/80 to-white/50">
-            {displayText}
-          </span>
-          <span className="w-1 h-8 md:h-12 bg-white animate-pulse rounded-full ml-1"></span>
-        </p>
+    <div className="text-center mt-10 mb-16">
+      <div className="relative inline-flex flex-col items-center">
+        {/* Decorative background glow */}
+        <div className="absolute -inset-10 bg-white/5 blur-[100px] rounded-full"></div>
+        
+        <div className="relative flex items-center gap-4 px-8 py-4 bg-white/[0.02] border border-white/10 rounded-2xl backdrop-blur-sm group hover:border-white/20 transition-all duration-700">
+          <span className="text-4xl md:text-6xl animate-bounce drop-shadow-[0_0_15px_rgba(255,255,255,0.5)]">📌</span>
+          
+          <div className="flex flex-col items-start">
+            <h2 className="text-3xl md:text-6xl font-black italic tracking-[ -0.05em] uppercase leading-none">
+              <span className="bg-clip-text text-transparent bg-gradient-to-r from-white via-white/90 to-white/40 animate-pulse">
+                من خيالك
+              </span>
+              <span className="mx-3 text-white/20">...</span>
+              <span className="text-white drop-shadow-[0_0_20px_rgba(255,255,255,0.3)]">
+                للواقع
+              </span>
+            </h2>
+            <div className="w-full h-1 mt-2 bg-gradient-to-r from-transparent via-white/20 to-transparent rounded-full overflow-hidden">
+              <div className="w-full h-full bg-white/40 -translate-x-full animate-[shimmer_3s_infinite]"></div>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   );
@@ -258,6 +254,7 @@ export default function Home() {
         .animate-float { animation: float 5s ease-in-out infinite; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
         .animate-fadeIn { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes shimmer { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: rgba(255, 255, 255, 0.01); }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: rgba(255, 255, 255, 0.05); border-radius: 10px; }
