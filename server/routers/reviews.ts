@@ -14,22 +14,30 @@ export const reviewsRouter = router({
       
       const discordReviews = messages
         .filter(m => {
-          const hasContent = m.content && m.content.trim().length > 0;
-          const hasEmbeds = m.embeds && m.embeds.length > 0;
+          // The bot sends images as attachments. We want messages from the bot or that have attachments in the reviews channel.
           const hasAttachments = m.attachments && m.attachments.length > 0;
-          return hasContent || hasEmbeds || hasAttachments;
+          const hasEmbeds = m.embeds && m.embeds.length > 0;
+          return hasAttachments || hasEmbeds;
         })
         .map(m => {
           let content = m.content || "";
+          
+          // If the bot uses embeds for details
           if (m.embeds && m.embeds.length > 0) {
             content = m.embeds[0].description || m.embeds[0].title || content;
           }
           
           let image = null;
+          // Priority: Attachments (the bot's generated canvas image)
           if (m.attachments && m.attachments.length > 0) {
             image = m.attachments[0].url;
           } else if (m.embeds && m.embeds.length > 0 && m.embeds[0].image) {
             image = m.embeds[0].image.url;
+          }
+
+          // If it's a rating image, we don't want to show the "rating.png" filename as content
+          if (!content.trim() || content.toLowerCase().includes("rating.png")) {
+            content = ""; // Let the UI handle empty content by only showing the image
           }
 
           return {
@@ -47,15 +55,17 @@ export const reviewsRouter = router({
           };
         });
 
-      // Merge and remove duplicates based on image or content
+      // Merge and remove duplicates based on image URL
       const allReviews = [...dbReviews, ...discordReviews];
-      const uniqueReviews = Array.from(new Map(allReviews.map(r => [r.image || r.content, r])).values());
+      const uniqueReviews = Array.from(new Map(allReviews.map(r => [r.image, r])).values())
+        .filter(r => r.image) // Ensure we only show reviews that have an image
+        .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       return uniqueReviews;
     } catch (error) {
       console.error("Error in list reviews:", error);
       const dbReviews = await getAllReviews();
-      return dbReviews;
+      return dbReviews.filter(r => r.image).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     }
   }),
 
