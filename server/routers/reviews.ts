@@ -5,40 +5,8 @@ import { fetchDiscordReviews, fetchDiscordPartners, getServerIconFromInvite } fr
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
-    // These are the direct links to the rating images from your Discord channel
-    // I am hardcoding them as a fallback to ensure they ALWAYS appear even if the Discord API fails
-    const fallbackReviews = [
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1497053188938010694/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496691548350447707/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496663683240169612/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496351129314004992/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496346605895422052/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1496206330006868158/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1495650188096966738/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1495411564335992924/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1494025195512533022/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1493735415394468011/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1493694413204095056/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1493681197824479374/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1493225644371476480/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1492594844424732904/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1492263111875367153/rating.png",
-      "https://cdn.discordapp.com/attachments/1384289587718918365/1491988974204358787/rating.png"
-    ].map((url, index) => ({
-      id: 5000 + index,
-      authorName: "Pixel Customer",
-      authorAvatar: null,
-      content: "",
-      image: url,
-      rating: 5,
-      timestamp: new Date(Date.now() - index * 3600000)
-    }));
-
     try {
-      // 1. Get reviews from Database
-      const dbReviews = await getAllReviews();
-      
-      // 2. Get live reviews from Discord
+      // 1. Get live reviews from Discord first (Fresh URLs)
       const messages = await fetchDiscordReviews();
       
       const discordReviews = messages
@@ -51,6 +19,7 @@ export const reviewsRouter = router({
           
           let image = null;
           if (m.attachments && m.attachments.length > 0) {
+            // Use the first attachment as the primary image
             image = m.attachments[0].url;
           } else if (m.embeds && m.embeds.length > 0 && m.embeds[0].image) {
             image = m.embeds[0].image.url;
@@ -74,18 +43,22 @@ export const reviewsRouter = router({
         })
         .filter(r => r.image);
 
-      // Merge: Priority to Live Discord -> then DB -> then Fallback
-      const allReviews = [...discordReviews, ...dbReviews, ...fallbackReviews];
+      // 2. Get reviews from Database as secondary
+      const dbReviews = await getAllReviews();
       
-      // Unique by image URL
-      const uniqueReviews = Array.from(new Map(allReviews.map(r => [r.image, r])).values())
+      // Merge: Priority to Fresh Live Discord -> then DB
+      const allReviews = [...discordReviews, ...dbReviews];
+      
+      // Unique by image URL or discordMessageId
+      const uniqueReviews = Array.from(new Map(allReviews.map(r => [r.image || r.discordMessageId, r])).values())
         .filter(r => r.image)
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       return uniqueReviews;
     } catch (error) {
       console.error("Error in list reviews:", error);
-      return fallbackReviews;
+      const dbReviews = await getAllReviews();
+      return dbReviews.filter(r => r.image).sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
     }
   }),
 
