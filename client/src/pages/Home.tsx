@@ -34,84 +34,948 @@ interface FeaturedClient {
 // التقييمات اليدوية لضمان الظهور الفوري
 const MANUAL_REVIEWS: Review[] = [
   {
-    id: "m1",
-    authorName: "Aymn !",
-    content: "ي شيخ افضل مصمم والله",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-04-24"
+    "id": "manual_0",
+    "authorName": "Aymn !",
+    "content": "ي شيخ افضل مصمم والله",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-24"
   },
   {
-    id: "m2",
-    authorName: "_3mx",
-    content: "الأفضل",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-04-23"
+    "id": "manual_1",
+    "authorName": "_3mx",
+    "content": "الأفضل",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-23"
   },
   {
-    id: "m3",
-    authorName: "7mood !",
-    content: "الله يوفقك من نجاح لنجاح الافضل دايما",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-04-23"
+    "id": "manual_2",
+    "authorName": "7mood !",
+    "content": "الله يوفقك من نجاح لنجاح الافضل دايما",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-23"
   },
   {
-    id: "m4",
-    authorName: "66 !",
-    content: "تعبت وأنا أمدحه و الله المتجر",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-04-22"
+    "id": "manual_3",
+    "authorName": "66 !",
+    "content": "تعبت وأنا أمدحه و الله المتجر",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-22"
   },
   {
-    id: "m5",
-    authorName: "y7d",
-    content: "والله متجر جامد",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-04-22"
+    "id": "manual_4",
+    "authorName": "y7d",
+    "content": "والله متجر جامد",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-22"
   },
   {
-    id: "m6",
-    authorName: "Ahmed 23",
-    content: "أولاً نشكر المتجر على الرد السريع والخدمة المميزة عن باقي المتاجر ونشكر Snow على حسن التعامل والأسلوب ونسأل الله أن يوفقكم وينجحكم وين ما رحتموا",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-04-20"
+    "id": "manual_5",
+    "authorName": "!",
+    "content": "تبي شي مميز ؟ تبي تصميم يميزك عن الكل تعامل مع ﮼ ﮼ ﮼ سنو سرعة وفن الله عليك بس يانسنو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-21"
   },
   {
-    id: "m7",
-    authorName: "slom !",
-    content: "شغل فاخر و اتمنى يستمر و الاسعار حلوه جدا الله يوفقك يا سنو",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-04-15"
+    "id": "manual_6",
+    "authorName": "M7D",
+    "content": "الافضل",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-20"
   },
   {
-    id: "m8",
-    authorName: "Look",
-    content: "استمر بالأفضل وفالك التوفيق شغلك عالمي",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-04-14"
+    "id": "manual_7",
+    "authorName": "JustMtss",
+    "content": "افضل متجر",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-20"
   },
   {
-    id: "m9",
-    authorName: "Saylr !",
-    content: "شغل تاريخي والله ويعطيك لمسه بالبس ويطلعه بشكل خرافي أشكرك على الشغل الجبار ذا",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-04-13"
+    "id": "manual_8",
+    "authorName": "Ahmed 23",
+    "content": "أولاً نشكر المتجر على الرد السريع والخدمة المميزة عن باقي المتاجر ونشكر Snow على حسن التعامل والأسلوب ونسأل الله أن يوفقكم وينجحكم وين ما رحتموا",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-20"
   },
   {
-    id: "m10",
-    authorName: "Smadi",
-    content: "فوق التقييم سئو لو قيمته 100000 رح تظلمه والله قوت",
-    rating: 5,
-    authorAvatar: null,
-    timestamp: "2026-03-26"
+    "id": "manual_9",
+    "authorName": "S L T",
+    "content": "تاريخي",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-19"
+  },
+  {
+    "id": "manual_10",
+    "authorName": "slom !",
+    "content": "شغل فاخر و اتمنى يستمر و الاسعار حلوه جدا الله يوفقك يا سنو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-15"
+  },
+  {
+    "id": "manual_11",
+    "authorName": "! Palm",
+    "content": "والله شغل غير متوقع جبار",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-14"
+  },
+  {
+    "id": "manual_12",
+    "authorName": "oFLaGx !",
+    "content": "متجر من افضل المتاجر وهذا الشي الكل يتفق عليه - من ناحية ملابس جوده ولا أروع - من ناحية تعامل و رد يدون عليك بأسرع وقت - متجر يغنيك عن المتاجر الثانية باختصار ...",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-14"
+  },
+  {
+    "id": "manual_13",
+    "authorName": "Look",
+    "content": "استمر بالأفضل وفالك التوفيق شغلك عالمي",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-14"
+  },
+  {
+    "id": "manual_14",
+    "authorName": "qmusab",
+    "content": "يا شيخ اذا مو افضل مصمم والله انك الافضل",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-14"
+  },
+  {
+    "id": "manual_15",
+    "authorName": "3!",
+    "content": "الله يعطيه العافية ما قصر معي استاذ سنو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-13"
+  },
+  {
+    "id": "manual_16",
+    "authorName": "Saylr !",
+    "content": "شغل تاريخي والله ويعطيك لمسه بالبس ويطلعه بشكل خرافي أشكرك على الشغل الجبار ذا",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-13"
+  },
+  {
+    "id": "manual_17",
+    "authorName": "66 !",
+    "content": "أفضل مصمم وتآلف",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-12"
+  },
+  {
+    "id": "manual_18",
+    "authorName": "_Almutiri",
+    "content": "توب ما شاء الله",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-12"
+  },
+  {
+    "id": "manual_19",
+    "authorName": "Toxic !",
+    "content": "ولش البس مرا حلو صراحتا عجبتني شغلك",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-12"
+  },
+  {
+    "id": "manual_20",
+    "authorName": "Crystal1zed",
+    "content": "رههييييه تبارك الرحمن على الشغل والله تستحق الانتظار!!",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-11"
+  },
+  {
+    "id": "manual_21",
+    "authorName": "s25",
+    "content": "مبدع",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-11"
+  },
+  {
+    "id": "manual_22",
+    "authorName": "Rakan",
+    "content": "تاريخيي",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-10"
+  },
+  {
+    "id": "manual_23",
+    "authorName": "2YN",
+    "content": "ماعرف كيف اعبر لان والله اذا مو الافضل انا ما افهم شي",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-10"
+  },
+  {
+    "id": "manual_24",
+    "authorName": "c8m8",
+    "content": "تالارريخي",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-10"
+  },
+  {
+    "id": "manual_25",
+    "authorName": "YAZ",
+    "content": "شي من الآخر",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-10"
+  },
+  {
+    "id": "manual_26",
+    "authorName": "THR !",
+    "content": "اقسم بالله شغل ولا يعلى عليه ومن افضل المتاجر والله",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-10"
+  },
+  {
+    "id": "manual_27",
+    "authorName": "PRIMEBASIL",
+    "content": "شغّل توب التوب لو اشكرهم من اليوم ل بكرا ما اوفي بحقهم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-10"
+  },
+  {
+    "id": "manual_28",
+    "authorName": "No Way Back",
+    "content": "شكرا على المجهود الفخم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-09"
+  },
+  {
+    "id": "manual_29",
+    "authorName": "وزير الترجسية",
+    "content": "شغل نظيف",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-09"
+  },
+  {
+    "id": "manual_30",
+    "authorName": "Subaie",
+    "content": "شكراً على المجهود الفخم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-08"
+  },
+  {
+    "id": "manual_31",
+    "authorName": "محمد",
+    "content": "معلم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-08"
+  },
+  {
+    "id": "manual_32",
+    "authorName": "3LLO",
+    "content": "تاريخي مايخذلك فالتصميم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-07"
+  },
+  {
+    "id": "manual_33",
+    "authorName": "Allbraa",
+    "content": "شغل تاريخي ما قصر سنو شغّل جبّار",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-07"
+  },
+  {
+    "id": "manual_34",
+    "authorName": "ABO MsfR",
+    "content": "القوت",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-05"
+  },
+  {
+    "id": "manual_35",
+    "authorName": "T0xlc",
+    "content": "فنان و انصح الجميع ان سـنو يكون خياره الاول",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-04"
+  },
+  {
+    "id": "manual_36",
+    "authorName": "R1der !",
+    "content": "مشاءالله شغل عالمي وتعامل طيب الله يوفقهم يارب",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-02"
+  },
+  {
+    "id": "manual_37",
+    "authorName": "Mount",
+    "content": "الله يعطيهم العافيه شغل ولا اروع ما شاءالله عليهم وتعدا الشي الي توقعت",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-02"
+  },
+  {
+    "id": "manual_38",
+    "authorName": "Neon",
+    "content": "شكرا وثاني شي هذا العمل لا يقيم فوق التقييم وثالث شي اشكر اخوي snow",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-01"
+  },
+  {
+    "id": "manual_39",
+    "authorName": "المغامدي",
+    "content": "والله من أفضل الأشخاص الي تعاملت معهم عسل بشكل مو طبيعي اما من ناحية رد سريع و اما من ناحية شغل جبار لاتدور غير سنو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-04-01"
+  },
+  {
+    "id": "manual_40",
+    "authorName": "Neon",
+    "content": "الشغل حلو والاحلى الكيوت الي سواه لان ما بقى واحد من عندي ما مدح شغله SNOW",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-30"
+  },
+  {
+    "id": "manual_41",
+    "authorName": "Allbraa",
+    "content": "شغل جامد و سنو مبدع ولا يقصر معكم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-27"
+  },
+  {
+    "id": "manual_42",
+    "authorName": "غير واضح",
+    "content": "والله العظيم افضل متجر و يعطيك العافيه على الشغل الجامد",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-27"
+  },
+  {
+    "id": "manual_43",
+    "authorName": "Neon",
+    "content": "يوووووهه يا مجنون يامجنونن وششش ش ذا الابداع ياخي يالة",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-27"
+  },
+  {
+    "id": "manual_44",
+    "authorName": "echo",
+    "content": "سنو قوت المجال ، تعامل و انتباه عالي لتقديم الجوده المطلوبه ، انصح و بشده تجريب السنو لانه مايخيب الظن . شكرا جزيلا",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-26"
+  },
+  {
+    "id": "manual_45",
+    "authorName": "Smadi",
+    "content": "فوق التقييم سئو لو قيمته 100000 رح تظلمه والله قوت",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-26"
+  },
+  {
+    "id": "manual_46",
+    "authorName": "MightyDexTar",
+    "content": "المعروف لايعرف القوت سئو ملك التصاميم تعامل جامد وبأي وقت تلقاء موجود آيفوني ياسنو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-26"
+  },
+  {
+    "id": "manual_47",
+    "authorName": "Abu Da7m !",
+    "content": "شغل مشرف لأسم المتجر اشكرك SNOW",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-26"
+  },
+  {
+    "id": "manual_48",
+    "authorName": "@ieleven_11",
+    "content": "تعامل رهيب و سريع و شكل إبداعي و سعر ممتاز",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-25"
+  },
+  {
+    "id": "manual_49",
+    "authorName": "Abu Nasser",
+    "content": "توسيييبببب والله",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-25"
+  },
+  {
+    "id": "manual_50",
+    "authorName": "H",
+    "content": "كلمة حق تُقال والله العظيم انه افضل سيرفر لتصميم الملابس من ناحية سرعة سريعين ف التسليم من ناحية تفاصيل ف هم مجانين ما شاء الله ، الله يوفقكم و لنا تعاملات ثانية بإذن الله",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-25"
+  },
+  {
+    "id": "manual_51",
+    "authorName": "Venom !",
+    "content": "والله مدري وش اقول وش اخلي ماشاءالله عليه شغل جبارر بشكل لايوصف سنوف التوب",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-22"
+  },
+  {
+    "id": "manual_52",
+    "authorName": "AK",
+    "content": "فاخر من الآخر",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-22"
+  },
+  {
+    "id": "manual_53",
+    "authorName": "BR8",
+    "content": "ياخي والله العظيم انك مبدع بشكل والله العظيم يعطيك العافية يا حب",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-21"
+  },
+  {
+    "id": "manual_54",
+    "authorName": "Subaie",
+    "content": "افضل مصمم ملابس في تاريخ فايف ام الله يوفقك في حالك",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-21"
+  },
+  {
+    "id": "manual_55",
+    "authorName": "3LLO",
+    "content": "كل مره يسوينا تصميم افضل من الثاني مافيقدر معنا",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-21"
+  },
+  {
+    "id": "manual_56",
+    "authorName": "Twix !",
+    "content": "ما شاء الله عليه ذي 5 مره اتعامل معه ولا مره خذلني بتصميم البس الافضل في معنى الكلمه",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-19"
+  },
+  {
+    "id": "manual_57",
+    "authorName": "kai",
+    "content": "القوت والله",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-18"
+  },
+  {
+    "id": "manual_58",
+    "authorName": "يم",
+    "content": "10/10",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-14"
+  },
+  {
+    "id": "manual_59",
+    "authorName": ".66 |",
+    "content": "و الله أفضل متجر سرعة وتنفيذ",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-13"
+  },
+  {
+    "id": "manual_60",
+    "authorName": "JustM8",
+    "content": "أفضل متجر اشتغلت وياه لتصميم و مب اول مرا ولا آخر مرا و جعل ربي يوفقهم و يسعدهم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-12"
+  },
+  {
+    "id": "manual_61",
+    "authorName": "KinGvtc",
+    "content": "الله يوفقك و ما قصرت و يعطيك العافيه على الشغل الجبار",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-11"
+  },
+  {
+    "id": "manual_62",
+    "authorName": "66",
+    "content": "اقسم بالله أفضل متجر",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-10"
+  },
+  {
+    "id": "manual_63",
+    "authorName": "Neon",
+    "content": "تحياتي ل اهل مصر و تحديد ل سيو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-09"
+  },
+  {
+    "id": "manual_64",
+    "authorName": "7mood !",
+    "content": "افضل واحد سنو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-09"
+  },
+  {
+    "id": "manual_65",
+    "authorName": "MT3B",
+    "content": "البكج جامد و الشغل خلص بسرعه 10/10",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-07"
+  },
+  {
+    "id": "manual_66",
+    "authorName": "Fotex",
+    "content": "عالمي والله",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-02"
+  },
+  {
+    "id": "manual_67",
+    "authorName": "LAM",
+    "content": "للامانه شغل ممتاز يعطيمكم العافيه",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-03-02"
+  },
+  {
+    "id": "manual_68",
+    "authorName": "3nzi",
+    "content": "الأفضل سيو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-28"
+  },
+  {
+    "id": "manual_69",
+    "authorName": "R I P",
+    "content": "مبدع سيو شغل جبّار",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-25"
+  },
+  {
+    "id": "manual_70",
+    "authorName": "محمد",
+    "content": "ما قصر سنو الصراحه شغل جبار",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-24"
+  },
+  {
+    "id": "manual_71",
+    "authorName": "vMsk !",
+    "content": "1000000000000000000000000000/10 والله الأفضل سنو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-24"
+  },
+  {
+    "id": "manual_72",
+    "authorName": "غير واضح الاسم",
+    "content": "شغل جبار و نظيف وسريع 100/100",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-20"
+  },
+  {
+    "id": "manual_73",
+    "authorName": "L7",
+    "content": "مبدع",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-20"
+  },
+  {
+    "id": "manual_74",
+    "authorName": "!",
+    "content": "ماقصر الرجال وتصميمه جبااااارررررر",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-20"
+  },
+  {
+    "id": "manual_75",
+    "authorName": "3MAR",
+    "content": "10/10 ما راح افكر اصمم غير عند snow",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-18"
+  },
+  {
+    "id": "manual_76",
+    "authorName": "Red",
+    "content": "الافضل",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-17"
+  },
+  {
+    "id": "manual_77",
+    "authorName": "osuet !",
+    "content": "والله الافضل ابو سنووووووووو",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-16"
+  },
+  {
+    "id": "manual_78",
+    "authorName": "T0xlc",
+    "content": "والله افضل مصمم قد تعاملت معه و شفت تصميما. انصح الجميع انه يكون Pixel خياره الاول",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-15"
+  },
+  {
+    "id": "manual_79",
+    "authorName": "C2!",
+    "content": "سنووو او تويب",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-11"
+  },
+  {
+    "id": "manual_80",
+    "authorName": "!",
+    "content": "سنو ذا بيست فور ايفرررر",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-08"
+  },
+  {
+    "id": "manual_81",
+    "authorName": "nxpapillon",
+    "content": "عم المجال سنو .. تعامل وسعر وشغل جبّار",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-01"
+  },
+  {
+    "id": "manual_82",
+    "authorName": "Mubarak 2",
+    "content": "البكج جامد ومو اول مره بتعامل معهم ماقصروا معي 100/100",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-01"
+  },
+  {
+    "id": "manual_83",
+    "authorName": "mnsory !",
+    "content": "ماقصر في التصميم جودة ممتازة + مبدع وأسلوبه عسل الرجال + والله الشغل جبار يعطيه العافيه",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-01"
+  },
+  {
+    "id": "manual_84",
+    "authorName": "!",
+    "content": "ياخي ورب الكعبة انك جامد بشكل الله لا يضرك و يعطيك العافيه على الشغل الجاااامد",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-02-01"
+  },
+  {
+    "id": "manual_85",
+    "authorName": "Brave Fighter",
+    "content": "ما قصرت يا سئو ليس ال mercy no جامددددد",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-30"
+  },
+  {
+    "id": "manual_86",
+    "authorName": "Neon",
+    "content": "والله العظيم انك مبدع بشكل الله لا يضرك والله ابدعت يا الشيبييخ",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-30"
+  },
+  {
+    "id": "manual_87",
+    "authorName": "3li",
+    "content": "ما قصرت يا سنو قسم بالله انك مبدع وما اول مره اتعامل معك",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-29"
+  },
+  {
+    "id": "manual_88",
+    "authorName": "Oo",
+    "content": "شغل جامددد وشخص عسل ولا يقصر معكم ان شاء الله 100/100",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-28"
+  },
+  {
+    "id": "manual_89",
+    "authorName": "Haz",
+    "content": "السرعة والشغل جامد والله شكرا SNOW راضين أنتم الرضاء",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-27"
+  },
+  {
+    "id": "manual_90",
+    "authorName": "BR8",
+    "content": "والله الشغل ابداأاع والله ماقصرت",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-27"
+  },
+  {
+    "id": "manual_91",
+    "authorName": "AbuKhalid",
+    "content": "والله عالمي ذا الادمي ما تقدر توفيه بكم كلمه قوة شغله جبّار 10/10",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-25"
+  },
+  {
+    "id": "manual_92",
+    "authorName": "BSKOT!",
+    "content": "انسان عسل والله يوفقه يارب تصميمه جامد 10/10",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-24"
+  },
+  {
+    "id": "manual_93",
+    "authorName": "9w4_",
+    "content": "100/100",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-24"
+  },
+  {
+    "id": "manual_94",
+    "authorName": "3li",
+    "content": "ماهي اول ولا اخر مرة اتعامل مع سنو ما قصرت والله يرزقك من حيث لا تحتسب",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-23"
+  },
+  {
+    "id": "manual_95",
+    "authorName": "Abood !",
+    "content": "100/100 والله ماقصر اسلوب + سعر على جودهههه",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-21"
+  },
+  {
+    "id": "manual_96",
+    "authorName": "XM7",
+    "content": "100/100",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-20"
+  },
+  {
+    "id": "manual_97",
+    "authorName": "AbuTurki",
+    "content": "شغل جبار واحترافي سريع 100/100",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-18"
+  },
+  {
+    "id": "manual_98",
+    "authorName": "kai",
+    "content": "توب و الباقي فوتوشوب وربي ديممم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-18"
+  },
+  {
+    "id": "manual_99",
+    "authorName": "musabmmw",
+    "content": "1000/10 شغل جبار واسطوري وماشاء الله تبارك الله خلص الشغل في وقت قياسي",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-16"
+  },
+  {
+    "id": "manual_100",
+    "authorName": "Bander",
+    "content": "ماشاء الله",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-16"
+  },
+  {
+    "id": "manual_101",
+    "authorName": "oxL",
+    "content": "100/100 ما شاء الله والله الشغل جبار بشكل ما تتخيلونه انصحكم قسم بالله انكم تشتروون منه",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-15"
+  },
+  {
+    "id": "manual_102",
+    "authorName": "Bader",
+    "content": "الشغل فنانين و السرعه سريعن مرر 10/10",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-12"
+  },
+  {
+    "id": "manual_103",
+    "authorName": "iMo3a !",
+    "content": "شغل بيرفكت و سريع 10/10",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-11"
+  },
+  {
+    "id": "manual_104",
+    "authorName": "Oo",
+    "content": "شغله جبار وسريع 10/100",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-09"
+  },
+  {
+    "id": "manual_105",
+    "authorName": "ABOSAAD",
+    "content": "اطلق شخص ابو سونو و افضل مصمم ممكن يمر عليكم والله و افنان 10/10",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-09"
+  },
+  {
+    "id": "manual_106",
+    "authorName": "فهد",
+    "content": "افضل متجر ما شاء الله تعامل حلو و جوده عاليه جدا انصح الجميع بالتعامل معه شكرا لكم جميعا بتوفيق ..",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-09"
+  },
+  {
+    "id": "manual_107",
+    "authorName": "7ano0o",
+    "content": "ماقصرت يابعدي شاكرين لك ذوق 10/10",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-08"
+  },
+  {
+    "id": "manual_108",
+    "authorName": "Oliver !",
+    "content": "سنون توب و الباقي فوتوشوب",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-08"
+  },
+  {
+    "id": "manual_109",
+    "authorName": "Turki",
+    "content": "شغل تاريخي وغير مستغرب من سيو متقافي في عمله وشغله الله يعطيه العافيه",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-08"
+  },
+  {
+    "id": "manual_110",
+    "authorName": "Viukinsér",
+    "content": "10/10 شغل جبار وسريع ابيض وجه",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-06"
+  },
+  {
+    "id": "manual_111",
+    "authorName": "!",
+    "content": "10/10 والله شغل جبااار يعطيك العافيه",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-06"
+  },
+  {
+    "id": "manual_112",
+    "authorName": "Look",
+    "content": "10/10 سريع وشغل تاريخي",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-06"
+  },
+  {
+    "id": "manual_113",
+    "authorName": "R7_506",
+    "content": "10/10 ماقصر الشيخ SNOW رد سريع وسرعه في التسليم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-05"
+  },
+  {
+    "id": "manual_114",
+    "authorName": "Sweet",
+    "content": "شغل ممتاز وشهادتي غيه مجروحه شريك النجاح",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-04"
+  },
+  {
+    "id": "manual_115",
+    "authorName": "Saud",
+    "content": "10/10 ماشاء الله شغل احترافي وسرعه بالرد والتعامل",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-03"
+  },
+  {
+    "id": "manual_116",
+    "authorName": "7mood !",
+    "content": "كل الشكر للشيخ SNOW ماقصر شغل جبّار وسرعه وتعامل",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-02"
+  },
+  {
+    "id": "manual_117",
+    "authorName": "Neon",
+    "content": "10/10 شغل احترافي وفن ويعطي اقتراحات جامده افضل مصمم",
+    "rating": 5,
+    "authorAvatar": null,
+    "timestamp": "2026-01-02"
   }
 ];
 
