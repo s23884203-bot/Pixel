@@ -41,13 +41,13 @@ export const reviewsRouter = router({
               {
                 role: "user",
                 content: [
-                  { type: "text", text: "Analyze this review image and extract: 1. Username, 2. Content, 3. Rating (1-5). Return JSON." },
+                  { type: "text", text: "Analyze this review image and extract: 1. The username of the reviewer. 2. The text content of the review. 3. The star rating (1-5). Return strictly as JSON." },
                   { type: "image_url", image_url: { url: imageUrl } }
                 ]
               }
             ],
             outputSchema: {
-              name: "extract",
+              name: "extract_review",
               schema: {
                 type: "object",
                 properties: {
@@ -61,25 +61,44 @@ export const reviewsRouter = router({
           });
 
           let aiContent = aiResult.choices[0].message.content as string;
-          if (aiContent.includes("```json")) aiContent = aiContent.split("```json")[1].split("```")[0].trim();
-          else if (aiContent.includes("```")) aiContent = aiContent.split("```")[1].split("```")[0].trim();
+          // Clean up markdown if present
+          if (aiContent.includes("```json")) {
+            aiContent = aiContent.split("```json")[1].split("```")[0].trim();
+          } else if (aiContent.includes("```")) {
+            aiContent = aiContent.split("```")[1].split("```")[0].trim();
+          }
           
           const extracted = JSON.parse(aiContent);
+          console.log(`${LOG_PREFIX} AI Extracted for ${m.id}:`, extracted);
+
           const newReview = {
             discordMessageId: m.id,
             discordUserId: m.author.id,
             authorName: extracted.username || m.author.global_name || m.author.username,
             authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
-            content: extracted.content || extracted.review_text || "تقييم Pixel Design",
+            content: extracted.content || "تقييم Pixel Design",
             image: imageUrl,
-            rating: extracted.rating || extracted.star_rating || 5,
+            rating: extracted.rating || 5,
             timestamp: new Date(m.timestamp),
           };
 
           await createReview(newReview);
           finalReviews.push(newReview);
+          console.log(`${LOG_PREFIX} Successfully saved review ${m.id} to DB.`);
         } catch (e) {
           console.error(`${LOG_PREFIX} AI Error for ${m.id}:`, e);
+          // Fallback to avoid missing the review entirely
+          const fallback = {
+            discordMessageId: m.id,
+            discordUserId: m.author.id,
+            authorName: m.author.global_name || m.author.username,
+            authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
+            content: "تقييم جديد (جاري المعالجة)",
+            image: imageUrl,
+            rating: 5,
+            timestamp: new Date(m.timestamp),
+          };
+          finalReviews.push(fallback);
         }
       }
 
