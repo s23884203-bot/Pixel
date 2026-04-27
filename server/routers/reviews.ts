@@ -2,24 +2,25 @@ import { Router } from "express";
 import { db } from "../db";
 import { reviews } from "@shared/schema";
 import { desc } from "drizzle-orm";
-import { syncDiscordReviews } from "../discord"; // تأكد من استيراد دالة المزامنة
+import { syncDiscordReviews } from "../discord";
 
 const router = Router();
 
-// [PIXEL-DEBUG-SYSTEM] راوت جلب التقييمات مع المزامنة التلقائية
+// [PIXEL-DEBUG-SYSTEM] جلب التقييمات مع مزامنة فورية
 router.get("/", async (_req, res) => {
   try {
-    console.log("[PIXEL-DEBUG-SYSTEM] جاري فحص ديسكورد عن تقييمات جديدة...");
+    console.log("[PIXEL-DEBUG-SYSTEM] تم رصد دخول للموقع، جاري فحص ديسكورد...");
     
-    // تشغيل المزامنة فوراً
+    // تشغيل المزامنة لجلب الجديد قبل عرض البيانات
     await syncDiscordReviews(); 
 
-    // جلب كل التقييمات من MySQL بعد المزامنة
+    // جلب كافة التقييمات (اليدوية والقادمة من ديسكورد) مرتبة من الأحدث
     const allReviews = await db.select().from(reviews).orderBy(desc(reviews.createdAt));
     
     res.json(allReviews);
   } catch (error) {
-    console.error("[PIXEL-DEBUG-SYSTEM] فشلت المزامنة، يتم عرض المخزن حالياً:", error);
+    console.error("[PIXEL-DEBUG-SYSTEM] فشل في المزامنة التلقائية، يتم عرض البيانات المخزنة:", error);
+    // في حال فشل الاتصال بديسكورد، نعرض الموجود في القاعدة لضمان استمرارية الموقع
     const existingReviews = await db.select().from(reviews).orderBy(desc(reviews.createdAt));
     res.json(existingReviews);
   }
