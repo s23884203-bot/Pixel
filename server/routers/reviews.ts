@@ -6,48 +6,65 @@ import { invokeLLM } from "../_core/llm";
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
-    const LOG_PREFIX = "[PIXEL-SYNC-SYSTEM]";
+    const LOG_PREFIX = "[PIXEL-DEBUG-SYSTEM]";
+    console.log(`${LOG_PREFIX} >>> STARTING SYNC PROCESS <<<`);
     
     try {
-      // 1. Get existing reviews from DB first for immediate response
+      // 1. Get DB reviews
       const dbReviews = await getAllReviews();
+      console.log(`${LOG_PREFIX} Found ${dbReviews.length} reviews in Database.`);
       const dbMap = new Map(dbReviews.map(r => [r.discordMessageId, r]));
 
-      // 2. Fetch live from Discord
+      // 2. Fetch from Discord
+      console.log(`${LOG_PREFIX} Fetching from Discord channel 1384289587718918365...`);
       const messages = await fetchDiscordReviews();
+      console.log(`${LOG_PREFIX} Discord returned ${messages.length} messages.`);
       
       const finalReviews = [];
       let newProcessedCount = 0;
       
       for (const m of messages) {
-        if (!m.attachments || m.attachments.length === 0) continue;
+        console.log(`${LOG_PREFIX} Checking Message ID: ${m.id} | Author: ${m.author.username}`);
+        
+        if (!m.attachments || m.attachments.length === 0) {
+          console.log(`${LOG_PREFIX} Message ${m.id} skipped: No attachments.`);
+          continue;
+        }
         
         const imageUrl = m.attachments[0].url;
-        if (imageUrl.toLowerCase().includes("line.png") || imageUrl.toLowerCase().includes("pixel_design_lein")) continue;
+        console.log(`${LOG_PREFIX} Message ${m.id} has attachment: ${imageUrl}`);
+
+        if (imageUrl.toLowerCase().includes("line.png") || imageUrl.toLowerCase().includes("pixel_design_lein")) {
+          console.log(`${LOG_PREFIX} Message ${m.id} skipped: It's a separator line.`);
+          continue;
+        }
 
         if (dbMap.has(m.id)) {
+          console.log(`${LOG_PREFIX} Message ${m.id} already in DB. Updating URL.`);
           const existing = dbMap.get(m.id)!;
-          existing.image = imageUrl; // Update temporary URL
+          existing.image = imageUrl;
           finalReviews.push(existing);
           continue;
         }
 
-        // Process new review with AI
-        console.log(`${LOG_PREFIX} Processing new review ${m.id}...`);
+        // NEW REVIEW DETECTED
+        console.log(`${LOG_PREFIX} !!! NEW REVIEW DETECTED !!! ID: ${m.id}`);
         newProcessedCount++;
+        
         try {
+          console.log(`${LOG_PREFIX} Calling AI to analyze image for ${m.id}...`);
           const aiResult = await invokeLLM({
             messages: [
               {
                 role: "user",
                 content: [
-                  { type: "text", text: "Analyze this review image and extract: 1. The username of the reviewer. 2. The text content of the review. 3. The star rating (1-5). Return strictly as JSON." },
+                  { type: "text", text: "Extract: 1. Username, 2. Review Text, 3. Rating (1-5). Return JSON." },
                   { type: "image_url", image_url: { url: imageUrl } }
                 ]
               }
             ],
             outputSchema: {
-              name: "extract_review",
+              name: "extract",
               schema: {
                 type: "object",
                 properties: {
@@ -61,15 +78,13 @@ export const reviewsRouter = router({
           });
 
           let aiContent = aiResult.choices[0].message.content as string;
-          // Clean up markdown if present
-          if (aiContent.includes("```json")) {
-            aiContent = aiContent.split("```json")[1].split("```")[0].trim();
-          } else if (aiContent.includes("```")) {
-            aiContent = aiContent.split("```")[1].split("```")[0].trim();
-          }
+          console.log(`${LOG_PREFIX} AI Raw Response for ${m.id}: ${aiContent}`);
+
+          if (aiContent.includes("```json")) aiContent = aiContent.split("```json")[1].split("```")[0].trim();
+          else if (aiContent.includes("```")) aiContent = aiContent.split("```")[1].split("```")[0].trim();
           
           const extracted = JSON.parse(aiContent);
-          console.log(`${LOG_PREFIX} AI Extracted for ${m.id}:`, extracted);
+          console.log(`${LOG_PREFIX} AI Parsed for ${m.id}:`, extracted);
 
           const newReview = {
             discordMessageId: m.id,
@@ -84,10 +99,10 @@ export const reviewsRouter = router({
 
           await createReview(newReview);
           finalReviews.push(newReview);
-          console.log(`${LOG_PREFIX} Successfully saved review ${m.id} to DB.`);
+          console.log(`${LOG_PREFIX} Successfully saved new review ${m.id} to DB.`);
         } catch (e) {
-          console.error(`${LOG_PREFIX} AI Error for ${m.id}:`, e);
-          // Fallback to avoid missing the review entirely
+          console.error(`${LOG_PREFIX} ERROR processing ${m.id} with AI:`, e);
+          // Fallback
           const fallback = {
             discordMessageId: m.id,
             discordUserId: m.author.id,
@@ -107,11 +122,14 @@ export const reviewsRouter = router({
       dbReviews.forEach(r => finalMap.set(r.discordMessageId, r));
       finalReviews.forEach(r => finalMap.set(r.discordMessageId, r));
 
-      return Array.from(finalMap.values())
+      const result = Array.from(finalMap.values())
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+      console.log(`${LOG_PREFIX} >>> SYNC FINISHED. Total: ${result.length} | New: ${newProcessedCount} <<<`);
+      return result;
         
     } catch (error) {
-      console.error(`${LOG_PREFIX} Sync error:`, error);
+      console.error(`${LOG_PREFIX} CRITICAL ERROR in sync:`, error);
       return await getAllReviews();
     }
   }),
