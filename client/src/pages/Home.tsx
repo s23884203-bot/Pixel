@@ -1219,46 +1219,38 @@ export default function Home() {
               <div className="flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar relative">
                 {displayReviews.length > 0 ? (
                   displayReviews.map((r, idx) => (
-                    <div key={r.id} className="group relative overflow-hidden rounded-3xl border border-white/5 bg-black/40 transition-all duration-500 hover:border-white/20 hover:bg-black/60 hover:scale-[1.02] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]">
-                      {r.image && (
-                        <div className="relative aspect-auto w-full overflow-hidden">
-                          <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent opacity-60 group-hover:opacity-40 transition-opacity z-10" />
-                          <img src={r.image} className="w-full h-auto object-contain grayscale-[0.2] transition-all duration-1000 group-hover:grayscale-0 group-hover:scale-110" loading="lazy" />
-                        </div>
-                      )}
-                      
-                      <div className="p-5 relative z-20">
-                        <div className="flex items-center justify-between gap-3 mb-4">
-                          <div className="flex items-center gap-3 min-w-0">
-                            <div className="relative flex-shrink-0">
-                              <div className="absolute -inset-1.5 bg-white/10 rounded-full blur-md opacity-0 group-hover:opacity-100 transition-opacity" />
-                              {r.authorAvatar ? (
-                                <img src={r.authorAvatar} alt={r.authorName} className="relative w-9 h-9 rounded-full border border-white/20 object-cover shadow-xl" />
-                              ) : (
-                                <div className="relative w-9 h-9 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[10px] font-black uppercase tracking-tighter">
-                                  {r.authorName.charAt(0)}
-                                </div>
-                              )}
-                            </div>
-                            <div className="flex flex-col min-w-0">
-                              <span className="text-[12px] font-black text-white uppercase tracking-tight truncate leading-none mb-1">{r.authorName}</span>
-                              <span className="text-[8px] text-white/30 uppercase tracking-widest font-black">اليوزر نيم</span>
-                            </div>
-                          </div>
-                          <div className="flex-shrink-0 bg-white/5 px-2.5 py-1.5 rounded-xl border border-white/5 shadow-inner">
-                            <StarRating rating={r.rating} />
-                          </div>
-                        </div>
-
-                        {r.content && r.content !== "تقييم Pixel Design" && (
-                          <div className="relative pt-3 border-t border-white/5">
-                            <div className="absolute left-0 top-3 w-1 h-1 bg-white/20 rounded-full" />
-                            <p className="text-[11px] text-white/60 italic leading-relaxed pl-4 font-medium line-clamp-4 group-hover:text-white/80 transition-colors">
-                              "{r.content}"
-                            </p>
-                          </div>
-                        )}
-                      </div>
+	                    <div key={r.id} className="group relative overflow-hidden rounded-[2rem] border border-white/5 bg-white/[0.02] transition-all duration-500 hover:border-white/10 hover:bg-white/[0.04] hover:scale-[1.02]">
+	                      <div className="p-6 relative z-20">
+	                        <div className="flex items-center justify-between gap-3 mb-6">
+	                          <div className="flex-shrink-0 bg-black/20 px-3 py-2 rounded-xl border border-white/5 shadow-inner">
+	                            <StarRating rating={r.rating} />
+	                          </div>
+	                          
+	                          <div className="flex items-center gap-3 min-w-0 text-right">
+	                            <div className="flex flex-col min-w-0">
+	                              <span className="text-[13px] font-black text-white uppercase tracking-tight truncate leading-none mb-1 italic">{r.authorName}</span>
+	                              <span className="text-[8px] text-white/20 uppercase tracking-widest font-bold">اليوزر نيم</span>
+	                            </div>
+	                            <div className="relative flex-shrink-0">
+	                              {r.authorAvatar ? (
+	                                <img src={r.authorAvatar} alt={r.authorName} className="w-10 h-10 rounded-full border border-white/10 object-cover" />
+	                              ) : (
+	                                <div className="w-10 h-10 rounded-full bg-white/5 border border-white/10 flex items-center justify-center text-[11px] font-black uppercase italic">
+	                                  {r.authorName.charAt(0)}
+	                                </div>
+	                              )}
+	                            </div>
+	                          </div>
+	                        </div>
+	
+	                        {r.content && (
+	                          <div className="relative pt-4 border-t border-white/5 text-right">
+	                            <p className="text-[11px] text-white/50 leading-relaxed font-medium italic">
+	                              "{r.content}"
+	                            </p>
+	                          </div>
+	                        )}
+	                      </div>
                       
                       <div className="absolute top-0 right-0 p-2 opacity-0 group-hover:opacity-100 transition-opacity">
                         <div className="w-4 h-4 border-t border-r border-white/20 rounded-tr-lg" />
