@@ -89,11 +89,11 @@ export const reviewsRouter = router({
           const newReview = {
             discordMessageId: m.id,
             discordUserId: m.author.id,
-            authorName: extracted.username || m.author.global_name || m.author.username,
+            authorName: extracted.username || extracted.authorName || m.author.global_name || m.author.username,
             authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
-            content: extracted.content || "تقييم Pixel Design",
+            content: extracted.content || extracted.review_text || "تقييم Pixel Design",
             image: imageUrl,
-            rating: extracted.rating || 5,
+            rating: extracted.rating || extracted.star_rating || 5,
             timestamp: new Date(m.timestamp),
           };
 
