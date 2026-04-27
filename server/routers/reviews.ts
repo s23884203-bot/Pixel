@@ -2,63 +2,107 @@ import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
 import { getAllReviews, createReview, getReviewByDiscordId } from "../db";
 import { fetchDiscordReviews, fetchDiscordPartners } from "../discord";
+import { invokeLLM } from "../_core/llm";
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
     try {
-      // 1. Fetch live from Discord (Fresh URLs)
+      // 1. Fetch live from Discord
       const messages = await fetchDiscordReviews();
       
-      const discordReviews = messages
-        .filter(m => m.attachments && m.attachments.length > 0)
-        .map(m => {
-	          const image = m.attachments[0].url;
-	          // Filter out lines or non-rating images
-	          // We keep images that are likely ratings (like rating.png) and exclude separators (line.png)
-	          if (image.toLowerCase().includes("line.png") || image.toLowerCase().includes("pixel_design_lein")) return null;
-
-	          // If the author is the bot or a generic name, we can use a better display name
-	          let authorName = m.author.global_name || m.author.username;
-	          if (authorName === "Reviews" || authorName === "Neon") {
-	            authorName = "Pixel Design Customer";
-	          }
-
-	          return {
-	            id: parseInt(m.id.slice(-8)) || Math.floor(Math.random() * 1000000),
-	            discordMessageId: m.id,
-	            discordUserId: m.author.id,
-	            authorName: authorName,
-	            authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
-	            content: "",
-	            image: image,
-	            rating: 5,
-	            timestamp: new Date(m.timestamp),
-	          };
-        })
-        .filter(r => r !== null);
-
-      // 2. Get from DB
+      // 2. Get existing reviews from DB to avoid re-processing
       const dbReviews = await getAllReviews();
+      const dbMap = new Map(dbReviews.map(r => [r.discordMessageId, r]));
+
+      const discordReviews = [];
       
-      // Merge and unique by discordMessageId or image
-      // We prioritize Discord live data for the same message ID to get fresh URLs
+      for (const m of messages) {
+        if (!m.attachments || m.attachments.length === 0) continue;
+        
+        const imageUrl = m.attachments[0].url;
+        if (imageUrl.toLowerCase().includes("line.png") || imageUrl.toLowerCase().includes("pixel_design_lein")) continue;
+
+        // If already in DB and has content, use it
+        if (dbMap.has(m.id)) {
+          const existing = dbMap.get(m.id)!;
+          // Update image URL just in case it expired
+          existing.image = imageUrl;
+          discordReviews.push(existing);
+          continue;
+        }
+
+        // If not in DB, use AI to extract info from image
+        try {
+          console.log(`Analyzing image for review ${m.id}...`);
+          const aiResult = await invokeLLM({
+            messages: [
+              {
+                role: "user",
+                content: [
+                  { type: "text", text: "Extract the following information from this review image: 1. Username of the reviewer, 2. The review text/content, 3. Star rating (number 1-5). Return as JSON." },
+                  { type: "image_url", image_url: { url: imageUrl } }
+                ]
+              }
+            ],
+            outputSchema: {
+              name: "extract_review",
+              schema: {
+                type: "object",
+                properties: {
+                  username: { type: "string" },
+                  content: { type: "string" },
+                  rating: { type: "number" }
+                },
+                required: ["username", "content", "rating"]
+              }
+            }
+          });
+
+          const extracted = JSON.parse(aiResult.choices[0].message.content as string);
+          
+          const newReview = {
+            discordMessageId: m.id,
+            discordUserId: m.author.id,
+            authorName: extracted.username || m.author.global_name || m.author.username,
+            authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
+            content: extracted.content || "",
+            image: imageUrl,
+            rating: extracted.rating || 5,
+            timestamp: new Date(m.timestamp),
+          };
+
+          // Save to DB so we don't call AI again for this message
+          await createReview(newReview);
+          discordReviews.push(newReview);
+        } catch (aiError) {
+          console.error(`AI Analysis failed for ${m.id}:`, aiError);
+          // Fallback to basic info if AI fails
+          discordReviews.push({
+            id: parseInt(m.id.slice(-8)) || Math.floor(Math.random() * 1000000),
+            discordMessageId: m.id,
+            discordUserId: m.author.id,
+            authorName: m.author.global_name || m.author.username,
+            authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
+            content: "",
+            image: imageUrl,
+            rating: 5,
+            timestamp: new Date(m.timestamp),
+          });
+        }
+      }
+
+      // Merge and unique
       const reviewsMap = new Map();
-      
-      // Add DB reviews first
       dbReviews.forEach(r => {
         if (r.discordMessageId) reviewsMap.set(r.discordMessageId, r);
-        else if (r.image) reviewsMap.set(r.image, r);
       });
-      
-      // Overwrite/Add with fresh Discord reviews
       discordReviews.forEach(r => {
         reviewsMap.set(r.discordMessageId, r);
       });
 
-      const uniqueReviews = Array.from(reviewsMap.values())
+      return Array.from(reviewsMap.values())
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-
-      return uniqueReviews;
+        
     } catch (error) {
       console.error("Error in list reviews:", error);
       return await getAllReviews();
