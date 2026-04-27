@@ -20,10 +20,13 @@ export const reviewsRouter = router({
       const messages = await fetchDiscordReviews();
       console.log(`${LOG_PREFIX} Discord returned ${messages.length} messages.`);
       
+      // Ensure we process newest first
+      const sortedMessages = [...messages].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      
       const finalReviews = [];
       let newProcessedCount = 0;
       
-      for (const m of messages) {
+      for (const m of sortedMessages) {
         console.log(`${LOG_PREFIX} Checking Message ID: ${m.id} | Author: ${m.author.username}`);
         
         if (!m.attachments || m.attachments.length === 0) {
