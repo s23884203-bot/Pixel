@@ -1,7 +1,20 @@
 import { ENV } from "./env";
 import OpenAI from "openai";
 
-const client = new OpenAI();
+// Initialize client lazily to prevent crash if API key is missing during startup
+let _client: OpenAI | null = null;
+
+function getClient() {
+  const apiKey = process.env.OPENAI_API_KEY || ENV.forgeApiKey;
+  if (!apiKey) return null;
+  
+  if (!_client) {
+    _client = new OpenAI({
+      apiKey: apiKey,
+    });
+  }
+  return _client;
+}
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
@@ -173,104 +186,12 @@ const normalizeMessage = (message: Message) => {
   };
 };
 
-const normalizeToolChoice = (
-  toolChoice: ToolChoice | undefined,
-  tools: Tool[] | undefined
-): "none" | "auto" | ToolChoiceExplicit | undefined => {
-  if (!toolChoice) return undefined;
-
-  if (toolChoice === "none" || toolChoice === "auto") {
-    return toolChoice;
-  }
-
-  if (toolChoice === "required") {
-    if (!tools || tools.length === 0) {
-      throw new Error(
-        "tool_choice 'required' was provided but no tools were configured"
-      );
-    }
-
-    if (tools.length > 1) {
-      throw new Error(
-        "tool_choice 'required' needs a single tool or specify the tool name explicitly"
-      );
-    }
-
-    return {
-      type: "function",
-      function: { name: tools[0].function.name },
-    };
-  }
-
-  if ("name" in toolChoice) {
-    return {
-      type: "function",
-      function: { name: toolChoice.name },
-    };
-  }
-
-  return toolChoice;
-};
-
-const resolveApiUrl = () =>
-  ENV.forgeApiUrl && ENV.forgeApiUrl.trim().length > 0
-    ? `${ENV.forgeApiUrl.replace(/\/$/, "")}/v1/chat/completions`
-    : "https://forge.manus.im/v1/chat/completions";
-
-const assertApiKey = () => {
-  // Use system provided API key if available
-  const apiKey = process.env.OPENAI_API_KEY || ENV.forgeApiKey;
-  if (!apiKey) {
-    throw new Error("AI API Key is not configured. Please set OPENAI_API_KEY.");
-  }
-};
-
-const normalizeResponseFormat = ({
-  responseFormat,
-  response_format,
-  outputSchema,
-  output_schema,
-}: {
-  responseFormat?: ResponseFormat;
-  response_format?: ResponseFormat;
-  outputSchema?: OutputSchema;
-  output_schema?: OutputSchema;
-}):
-  | { type: "json_schema"; json_schema: JsonSchema }
-  | { type: "text" }
-  | { type: "json_object" }
-  | undefined => {
-  const explicitFormat = responseFormat || response_format;
-  if (explicitFormat) {
-    if (
-      explicitFormat.type === "json_schema" &&
-      !explicitFormat.json_schema?.schema
-    ) {
-      throw new Error(
-        "responseFormat json_schema requires a defined schema object"
-      );
-    }
-    return explicitFormat;
-  }
-
-  const schema = outputSchema || output_schema;
-  if (!schema) return undefined;
-
-  if (!schema.name || !schema.schema) {
-    throw new Error("outputSchema requires both name and schema");
-  }
-
-  return {
-    type: "json_schema",
-    json_schema: {
-      name: schema.name,
-      schema: schema.schema,
-      ...(typeof schema.strict === "boolean" ? { strict: schema.strict } : {}),
-    },
-  };
-};
-
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
+  const client = getClient();
+  if (!client) {
+    throw new Error("OpenAI API Key is not configured. Please set OPENAI_API_KEY.");
+  }
+
   const {
     messages,
     outputSchema,
