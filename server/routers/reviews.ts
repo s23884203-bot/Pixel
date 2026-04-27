@@ -12,21 +12,28 @@ export const reviewsRouter = router({
       const discordReviews = messages
         .filter(m => m.attachments && m.attachments.length > 0)
         .map(m => {
-          const image = m.attachments[0].url;
-          // Filter out lines or non-rating images if possible, but keep all for now as requested
-          if (image.includes("Pixel_Design_lein") || image.includes("line.png")) return null;
+	          const image = m.attachments[0].url;
+	          // Filter out lines or non-rating images
+	          // We keep images that are likely ratings (like rating.png) and exclude separators (line.png)
+	          if (image.toLowerCase().includes("line.png") || image.toLowerCase().includes("pixel_design_lein")) return null;
 
-          return {
-            id: parseInt(m.id.slice(-8)) || Math.floor(Math.random() * 1000000),
-            discordMessageId: m.id,
-            discordUserId: m.author.id,
-            authorName: m.author.global_name || m.author.username,
-            authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
-            content: "",
-            image: image,
-            rating: 5,
-            timestamp: new Date(m.timestamp),
-          };
+	          // If the author is the bot or a generic name, we can use a better display name
+	          let authorName = m.author.global_name || m.author.username;
+	          if (authorName === "Reviews" || authorName === "Neon") {
+	            authorName = "Pixel Design Customer";
+	          }
+
+	          return {
+	            id: parseInt(m.id.slice(-8)) || Math.floor(Math.random() * 1000000),
+	            discordMessageId: m.id,
+	            discordUserId: m.author.id,
+	            authorName: authorName,
+	            authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
+	            content: "",
+	            image: image,
+	            rating: 5,
+	            timestamp: new Date(m.timestamp),
+	          };
         })
         .filter(r => r !== null);
 
