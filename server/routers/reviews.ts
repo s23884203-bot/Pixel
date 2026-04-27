@@ -33,9 +33,22 @@ export const reviewsRouter = router({
       // 2. Get from DB
       const dbReviews = await getAllReviews();
       
-      // Merge and unique by image
-      const allReviews = [...discordReviews, ...dbReviews];
-      const uniqueReviews = Array.from(new Map(allReviews.map(r => [r.image, r])).values())
+      // Merge and unique by discordMessageId or image
+      // We prioritize Discord live data for the same message ID to get fresh URLs
+      const reviewsMap = new Map();
+      
+      // Add DB reviews first
+      dbReviews.forEach(r => {
+        if (r.discordMessageId) reviewsMap.set(r.discordMessageId, r);
+        else if (r.image) reviewsMap.set(r.image, r);
+      });
+      
+      // Overwrite/Add with fresh Discord reviews
+      discordReviews.forEach(r => {
+        reviewsMap.set(r.discordMessageId, r);
+      });
+
+      const uniqueReviews = Array.from(reviewsMap.values())
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
       return uniqueReviews;

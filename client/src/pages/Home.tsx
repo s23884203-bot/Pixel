@@ -1034,11 +1034,23 @@ export default function Home() {
 
   useEffect(() => {
     if (reviewsData && reviewsData.length > 0) {
+      // التقييمات القادمة من السيرفر (ديسكورد + قاعدة البيانات)
       const sorted = [...reviewsData].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
-      // دمج التقييمات اليدوية مع تقييمات قاعدة البيانات
-      const merged = [...MANUAL_REVIEWS, ...sorted];
-      const unique = Array.from(new Map(merged.map(r => [r.content + r.authorName, r])).values());
-      setDisplayReviews(unique as Review[]);
+      
+      // دمج التقييمات اليدوية مع تقييمات السيرفر
+      // نضع تقييمات السيرفر في البداية لتظهر الأحدث أولاً
+      const merged = [...sorted, ...MANUAL_REVIEWS];
+      
+      // منع التكرار بناءً على المحتوى واسم الكاتب، أو المعرف الفريد
+      const uniqueMap = new Map();
+      merged.forEach(r => {
+        const key = r.discordMessageId || (r.content + r.authorName);
+        if (!uniqueMap.has(key)) {
+          uniqueMap.set(key, r);
+        }
+      });
+      
+      setDisplayReviews(Array.from(uniqueMap.values()) as Review[]);
     }
   }, [reviewsData]);
 
