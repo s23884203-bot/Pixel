@@ -90,26 +90,43 @@ export async function getUserByOpenId(openId: string) {
 }
 
 export async function getAllReviews() {
-  const db = await getDb();
-  if (!db) return [];
-  return db.select().from(reviews).orderBy((r) => r.timestamp);
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    return await db.select().from(reviews).orderBy((r) => r.timestamp);
+  } catch (error) {
+    console.error("[Database] Failed to get all reviews:", error);
+    return [];
+  }
 }
 
 export async function getReviewByDiscordId(discordMessageId: string) {
-  const db = await getDb();
-  if (!db) return undefined;
-  const result = await db
-    .select()
-    .from(reviews)
-    .where(eq(reviews.discordMessageId, discordMessageId))
-    .limit(1);
-  return result.length > 0 ? result[0] : undefined;
+  try {
+    const db = await getDb();
+    if (!db) return undefined;
+    const result = await db
+      .select()
+      .from(reviews)
+      .where(eq(reviews.discordMessageId, discordMessageId))
+      .limit(1);
+    return result.length > 0 ? result[0] : undefined;
+  } catch (error) {
+    console.error("[Database] Failed to get review by discord ID:", error);
+    return undefined;
+  }
 }
 
 export async function createReview(review: InsertReview) {
-  const db = await getDb();
-  if (!db) throw new Error("Database not available");
-  await db.insert(reviews).values(review);
+  try {
+    const db = await getDb();
+    if (!db) {
+      console.warn("[Database] Cannot create review: database not available");
+      return;
+    }
+    await db.insert(reviews).values(review);
+  } catch (error) {
+    console.error("[Database] Failed to create review:", error);
+  }
 }
 
 export async function deleteReview(discordMessageId: string) {
