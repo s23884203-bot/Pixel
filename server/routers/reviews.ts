@@ -73,17 +73,25 @@ export const reviewsRouter = router({
             }
           });
 
-          const extracted = JSON.parse(aiResult.choices[0].message.content as string);
-          console.log(`${LOG_PREFIX} AI Extraction successful for ${m.id}: User=${extracted.username}, Rating=${extracted.rating}`);
+          let content = aiResult.choices[0].message.content as string;
+          // Clean up markdown if present
+          if (content.includes("```json")) {
+            content = content.split("```json")[1].split("```")[0].trim();
+          } else if (content.includes("```")) {
+            content = content.split("```")[1].split("```")[0].trim();
+          }
+          
+          const extracted = JSON.parse(content);
+          console.log(`${LOG_PREFIX} [AI-SUCCESS] Extracted for ${m.id}: User="${extracted.username}", Rating=${extracted.rating || extracted.star_rating} stars.`);
           
           const newReview = {
             discordMessageId: m.id,
             discordUserId: m.author.id,
             authorName: extracted.username || m.author.global_name || m.author.username,
             authorAvatar: m.author.avatar ? `https://cdn.discordapp.com/avatars/${m.author.id}/${m.author.avatar}.png` : null,
-            content: extracted.content || "تقييم Pixel Design",
+            content: extracted.content || extracted.review_text || "تقييم Pixel Design",
             image: imageUrl,
-            rating: extracted.rating || 5,
+            rating: extracted.rating || extracted.star_rating || 5,
             timestamp: new Date(m.timestamp),
           };
 

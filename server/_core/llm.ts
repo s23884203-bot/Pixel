@@ -1,4 +1,7 @@
 import { ENV } from "./env";
+import OpenAI from "openai";
+
+const client = new OpenAI();
 
 export type Role = "system" | "user" | "assistant" | "tool" | "function";
 
@@ -215,8 +218,10 @@ const resolveApiUrl = () =>
     : "https://forge.manus.im/v1/chat/completions";
 
 const assertApiKey = () => {
-  if (!ENV.forgeApiKey) {
-    throw new Error("OPENAI_API_KEY is not configured");
+  // Use system provided API key if available
+  const apiKey = process.env.OPENAI_API_KEY || ENV.forgeApiKey;
+  if (!apiKey) {
+    throw new Error("AI API Key is not configured. Please set OPENAI_API_KEY.");
   }
 };
 
@@ -266,67 +271,29 @@ const normalizeResponseFormat = ({
 };
 
 export async function invokeLLM(params: InvokeParams): Promise<InvokeResult> {
-  assertApiKey();
-
   const {
     messages,
-    tools,
-    toolChoice,
-    tool_choice,
     outputSchema,
     output_schema,
     responseFormat,
     response_format,
   } = params;
 
-  const payload: Record<string, unknown> = {
+  const normalizedMessages = messages.map(normalizeMessage) as any[];
+  const schema = outputSchema || output_schema;
+  
+  const response = await client.chat.completions.create({
     model: "gemini-2.5-flash",
-    messages: messages.map(normalizeMessage),
-  };
-
-  if (tools && tools.length > 0) {
-    payload.tools = tools;
-  }
-
-  const normalizedToolChoice = normalizeToolChoice(
-    toolChoice || tool_choice,
-    tools
-  );
-  if (normalizedToolChoice) {
-    payload.tool_choice = normalizedToolChoice;
-  }
-
-  payload.max_tokens = 32768
-  payload.thinking = {
-    "budget_tokens": 128
-  }
-
-  const normalizedResponseFormat = normalizeResponseFormat({
-    responseFormat,
-    response_format,
-    outputSchema,
-    output_schema,
+    messages: normalizedMessages,
+    response_format: schema ? {
+      type: "json_schema",
+      json_schema: {
+        name: schema.name,
+        schema: schema.schema as any,
+        strict: true
+      }
+    } : (responseFormat || response_format) as any,
   });
 
-  if (normalizedResponseFormat) {
-    payload.response_format = normalizedResponseFormat;
-  }
-
-  const response = await fetch(resolveApiUrl(), {
-    method: "POST",
-    headers: {
-      "content-type": "application/json",
-      authorization: `Bearer ${ENV.forgeApiKey}`,
-    },
-    body: JSON.stringify(payload),
-  });
-
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(
-      `LLM invoke failed: ${response.status} ${response.statusText} – ${errorText}`
-    );
-  }
-
-  return (await response.json()) as InvokeResult;
+  return response as any;
 }
