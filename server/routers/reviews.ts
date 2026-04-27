@@ -6,46 +6,51 @@ import { invokeLLM } from "../_core/llm";
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
-    const LOG_PREFIX = "[PIXEL-SYNC]";
-    console.log(`${LOG_PREFIX} Starting fresh sync from Discord...`);
+    const LOG_PREFIX = "[PIXEL-SYNC-SYSTEM]";
+    console.log(`${LOG_PREFIX} >>> Starting Legendary Sync Process...`);
     
     try {
-      // 1. Fetch live from Discord (Refresh)
+      // 1. Fresh Fetch from Discord
+      console.log(`${LOG_PREFIX} Fetching latest messages from Discord channel 1384289587718918365...`);
       const messages = await fetchDiscordReviews();
-      console.log(`${LOG_PREFIX} Fetched ${messages.length} messages from Discord.`);
+      console.log(`${LOG_PREFIX} Successfully fetched ${messages.length} messages.`);
       
       // 2. Get existing reviews from DB
       const dbReviews = await getAllReviews();
       const dbMap = new Map(dbReviews.map(r => [r.discordMessageId, r]));
-      console.log(`${LOG_PREFIX} Found ${dbReviews.length} reviews in database.`);
+      console.log(`${LOG_PREFIX} Current database contains ${dbReviews.length} reviews.`);
 
       const finalReviews = [];
       let newProcessedCount = 0;
+      let skippedCount = 0;
       
       for (const m of messages) {
-        // Skip if no attachments
+        // Validation: Must have attachments
         if (!m.attachments || m.attachments.length === 0) {
+          skippedCount++;
           continue;
         }
         
         const imageUrl = m.attachments[0].url;
         
-        // Skip separators
+        // Validation: Skip separators (line.png)
         if (imageUrl.toLowerCase().includes("line.png") || imageUrl.toLowerCase().includes("pixel_design_lein")) {
+          skippedCount++;
           continue;
         }
 
-        // Check if already processed
+        // Check if already in DB
         if (dbMap.has(m.id)) {
           const existing = dbMap.get(m.id)!;
-          // Always update image URL as Discord URLs expire
+          // Update image URL (Discord URLs are temporary)
           existing.image = imageUrl;
           finalReviews.push(existing);
           continue;
         }
 
         // NEW REVIEW DETECTED!
-        console.log(`${LOG_PREFIX} New review detected! ID: ${m.id}. Starting AI extraction...`);
+        console.log(`${LOG_PREFIX} [NEW REVIEW] Found unregistered review! ID: ${m.id}.`);
+        console.log(`${LOG_PREFIX} [AI-OCR] Starting intelligent extraction from image: ${imageUrl}`);
         newProcessedCount++;
 
         try {
@@ -54,13 +59,13 @@ export const reviewsRouter = router({
               {
                 role: "user",
                 content: [
-                  { type: "text", text: "Extract the following information from this review image: 1. Username of the reviewer, 2. The review text/content, 3. Star rating (number 1-5). Return as JSON." },
+                  { type: "text", text: "Analyze this review image and extract: 1. The username of the person who wrote the review. 2. The exact text content of the review. 3. The star rating (1 to 5). Return the result strictly as a JSON object." },
                   { type: "image_url", image_url: { url: imageUrl } }
                 ]
               }
             ],
             outputSchema: {
-              name: "extract_review",
+              name: "extract_review_data",
               schema: {
                 type: "object",
                 properties: {
@@ -98,11 +103,11 @@ export const reviewsRouter = router({
           // Save to DB
           await createReview(newReview);
           finalReviews.push(newReview);
-          console.log(`${LOG_PREFIX} Saved new review ${m.id} to database.`);
+          console.log(`${LOG_PREFIX} [DB-SAVE] Review ${m.id} successfully saved to database.`);
         } catch (aiError) {
-          console.error(`${LOG_PREFIX} AI Analysis failed for ${m.id}:`, aiError);
+          console.error(`${LOG_PREFIX} [AI-ERROR] Failed to process image for ${m.id}:`, aiError);
           // Fallback
-          const fallbackReview = {
+          const fallback = {
             discordMessageId: m.id,
             discordUserId: m.author.id,
             authorName: m.author.global_name || m.author.username,
@@ -112,11 +117,11 @@ export const reviewsRouter = router({
             rating: 5,
             timestamp: new Date(m.timestamp),
           };
-          finalReviews.push(fallbackReview);
+          finalReviews.push(fallback);
         }
       }
 
-      // Final merge to ensure we don't miss anything from DB that might not be in the latest 100 Discord messages
+      // Final merge with DB to ensure full history
       const finalMap = new Map();
       dbReviews.forEach(r => finalMap.set(r.discordMessageId, r));
       finalReviews.forEach(r => finalMap.set(r.discordMessageId, r));
@@ -124,11 +129,13 @@ export const reviewsRouter = router({
       const result = Array.from(finalMap.values())
         .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
-      console.log(`${LOG_PREFIX} Sync complete. Total reviews to display: ${result.length}. New processed: ${newProcessedCount}`);
+      console.log(`${LOG_PREFIX} >>> Sync Process Finished!`);
+      console.log(`${LOG_PREFIX} Summary: Total Displayed=${result.length}, New Processed=${newProcessedCount}, Skipped=${skippedCount}.`);
+      
       return result;
         
     } catch (error) {
-      console.error(`${LOG_PREFIX} Critical error in sync:`, error);
+      console.error(`${LOG_PREFIX} [CRITICAL-ERROR] Sync failed:`, error);
       return await getAllReviews();
     }
   }),
@@ -175,12 +182,6 @@ export const reviewsRouter = router({
       { id: "m6", name: "2MZX", username: "2mzx", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/2mzx", platform: 'kick' },
       { id: "m7", name: "L1T", username: "l1t", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/l1t", platform: 'discord' },
       { id: "m8", name: "VE", username: "ve", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/ve", platform: 'discord' },
-      { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/CMP", platform: 'discord' },
-      { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/s1s", platform: 'discord' },
-    ];
-  }),
-});
-"ve", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/ve", platform: 'discord' },
       { id: "m9", name: "CMP", username: "cmp", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/CMP", platform: 'discord' },
       { id: "m10", name: "S1S", username: "s1s", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/s1s", platform: 'discord' },
     ];
