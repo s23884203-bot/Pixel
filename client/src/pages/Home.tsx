@@ -1034,23 +1034,31 @@ export default function Home() {
 
   useEffect(() => {
     if (reviewsData && reviewsData.length > 0) {
-      // التقييمات القادمة من السيرفر (ديسكورد + قاعدة البيانات)
-      const sorted = [...reviewsData].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      // 1. Combine all reviews
+      const merged = [...reviewsData, ...MANUAL_REVIEWS];
       
-      // دمج التقييمات اليدوية مع تقييمات السيرفر
-      // نضع تقييمات السيرفر في البداية لتظهر الأحدث أولاً
-      const merged = [...sorted, ...MANUAL_REVIEWS];
-      
-      // منع التكرار بناءً على المحتوى واسم الكاتب، أو المعرف الفريد
+      // 2. Remove duplicates (Prefer server reviews over manual if same content/author)
       const uniqueMap = new Map();
       merged.forEach(r => {
-        const key = r.discordMessageId || (r.content + r.authorName);
+        // Use a key that identifies the same review content
+        const key = (r.content + r.authorName).trim().toLowerCase();
+        
         if (!uniqueMap.has(key)) {
           uniqueMap.set(key, r);
+        } else {
+          // If we already have it, prefer the one with a discordMessageId (real sync)
+          const existing = uniqueMap.get(key);
+          if (!existing.discordMessageId && r.discordMessageId) {
+            uniqueMap.set(key, r);
+          }
         }
       });
       
-      setDisplayReviews(Array.from(uniqueMap.values()) as Review[]);
+      // 3. Sort by timestamp (Newest first)
+      const final = Array.from(uniqueMap.values()) as Review[];
+      final.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+      
+      setDisplayReviews(final);
     }
   }, [reviewsData]);
 
