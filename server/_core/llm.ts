@@ -5,12 +5,13 @@ import OpenAI from "openai";
 let _client: OpenAI | null = null;
 
 function getClient() {
-  const apiKey = process.env.OPENAI_API_KEY || ENV.forgeApiKey;
-  if (!apiKey) return null;
+  // Use the system provided API key directly
+  const apiKey = process.env.OPENAI_API_KEY || ENV.forgeApiKey || "gpt-4.1-mini"; // Fallback to a known model string if needed, but the environment should provide it
   
   if (!_client) {
     _client = new OpenAI({
       apiKey: apiKey,
+      // The environment pre-configures the base URL and key for Manus agents
     });
   }
   return _client;
