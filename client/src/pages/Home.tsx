@@ -1173,11 +1173,11 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
                   <span className="block text-2xl md:text-3xl font-black">{stats?.memberCount || 2000}+</span>
-                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Reviews</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Members</span>
                 </div>
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
                   <span className="block text-2xl md:text-3xl font-black">200+</span>
-                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Members</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Reviews</span>
                 </div>
               </div>
 
@@ -1224,7 +1224,7 @@ export default function Home() {
                             </div>
                             <div className="flex flex-col min-w-0">
                               <span className="text-[12px] font-black text-white uppercase tracking-tight truncate leading-none mb-1">{r.authorName}</span>
-                              <span className="text-[8px] text-white/30 uppercase tracking-widest font-black">اليوزر نيم</span>
+                              <span className="text-[8px] text-white/30 uppercase tracking-widest font-black">------</span>
                             </div>
                           </div>
                           <div className="flex-shrink-0 bg-white/5 px-2.5 py-1.5 rounded-xl border border-white/5 shadow-inner">
