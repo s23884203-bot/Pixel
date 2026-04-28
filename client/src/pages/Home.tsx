@@ -43,8 +43,9 @@ const MANUAL_REVIEWS: Review[] = [
   }
 ];
 
-// مصفوفة وهمية للعرض أثناء التحميل
-const SKELETON_REVIEWS = Array(5).fill(0).map((_, i) => ({ id: `skeleton-${i}` }));
+// مصفوفات وهمية للعرض أثناء التحميل
+const SKELETON_REVIEWS = Array(5).fill(0).map((_, i) => ({ id: `skeleton-rev-${i}` }));
+const SKELETON_CLIENTS = Array(6).fill(0).map((_, i) => ({ id: `skeleton-cli-${i}` }));
 
 const AnimatedTagline = () => {
   return (
@@ -92,7 +93,7 @@ export default function Home() {
     refetchInterval: 300000
   });
   const { data: partnerMessages } = trpc.reviews.partners.useQuery();
-  const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
+  const { data: featuredClientsData, isLoading: clientsLoading } = trpc.reviews.featuredClients.useQuery();
   const { data: stats } = trpc.reviews.getStats.useQuery();
 
   const [displayReviews, setDisplayReviews] = useState<Review[]>(MANUAL_REVIEWS);
@@ -122,7 +123,8 @@ export default function Home() {
     if (featuredClientsData) setFeaturedClients(featuredClientsData as FeaturedClient[]);
   }, [featuredClientsData]);
 
-  const isLoading = reviewsLoading && displayReviews.length === MANUAL_REVIEWS.length;
+  const isReviewsLoading = reviewsLoading && displayReviews.length === MANUAL_REVIEWS.length;
+  const isClientsLoading = clientsLoading && featuredClients.length === 0;
 
   const PlatformIcon = ({ platform, icon }: { platform: 'discord' | 'kick', icon?: string | null }) => {
     const [imgError, setImgError] = useState(false);
@@ -170,6 +172,7 @@ export default function Home() {
         </nav>
 
         <main className="max-w-[1600px] mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 pt-12 pb-24 flex-1">
+          {/* Left Sidebar: Featured Clients */}
           <aside className="lg:col-span-3 space-y-6 order-2 lg:order-1">
             <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 backdrop-blur-md sticky top-24">
               <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
@@ -180,20 +183,33 @@ export default function Home() {
                 </div>
               </div>
               <div className="space-y-3 max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                {featuredClients.map(client => (
-                  <a key={client.id} href={client.inviteLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] hover:border-white/10 transition-all group">
-                    <div className="flex-shrink-0 group-hover:scale-110 transition-transform"><PlatformIcon platform={client.platform} icon={client.serverIcon} /></div>
-                    <div className="flex-1 min-w-0">
-                      <h3 className="font-black text-xs truncate uppercase italic">{client.name}</h3>
-                      <span className="text-[8px] text-white/20 uppercase tracking-widest font-bold">{client.platform}</span>
+                {isClientsLoading ? (
+                  SKELETON_CLIENTS.map((s) => (
+                    <div key={s.id} className="flex items-center gap-4 p-4 bg-white/[0.01] border border-white/5 rounded-2xl animate-pulse">
+                      <div className="w-8 h-8 rounded-full bg-white/5" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-2 w-16 bg-white/5 rounded" />
+                        <div className="h-1.5 w-8 bg-white/5 rounded" />
+                      </div>
                     </div>
-                    <div className="text-white/20 group-hover:text-white transition-colors"><ExternalLink className="w-3 h-3" /></div>
-                  </a>
-                ))}
+                  ))
+                ) : (
+                  featuredClients.map(client => (
+                    <a key={client.id} href={client.inviteLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] hover:border-white/10 transition-all group">
+                      <div className="flex-shrink-0 group-hover:scale-110 transition-transform"><PlatformIcon platform={client.platform} icon={client.serverIcon} /></div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-black text-xs truncate uppercase italic">{client.name}</h3>
+                        <span className="text-[8px] text-white/20 uppercase tracking-widest font-bold">{client.platform}</span>
+                      </div>
+                      <div className="text-white/20 group-hover:text-white transition-colors"><ExternalLink className="w-3 h-3" /></div>
+                    </a>
+                  ))
+                )}
               </div>
             </div>
           </aside>
 
+          {/* Center Content: Hero & Stats */}
           <div className="lg:col-span-6 space-y-16 order-1 lg:order-2 flex flex-col items-center">
             <section className="text-center w-full pt-10">
               <div className="mb-10 flex flex-col items-center">
@@ -235,6 +251,7 @@ export default function Home() {
             </section>
           </div>
 
+          {/* Right Sidebar: Reviews Section */}
           <aside className="lg:col-span-3 order-3">
             <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-6 md:p-8 shadow-2xl shadow-black backdrop-blur-xl sticky top-24 ring-1 ring-white/5 h-[80vh] flex flex-col">
               <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6 flex-shrink-0">
@@ -248,8 +265,7 @@ export default function Home() {
               </div>
 
               <div className="flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar relative">
-                {/* إذا كان يحمل، اعرض القوائم الوهمية، وإلا اعرض البيانات الحقيقية */}
-                {isLoading ? (
+                {isReviewsLoading ? (
                   SKELETON_REVIEWS.map((s) => (
                     <div key={s.id} className="p-5 rounded-3xl border border-white/5 bg-white/[0.01] animate-pulse">
                       <div className="flex items-center gap-3 mb-4">
