@@ -1224,7 +1224,7 @@ export default function Home() {
                             </div>
                             <div className="flex flex-col min-w-0">
                               <span className="text-[12px] font-black text-white uppercase tracking-tight truncate leading-none mb-1">{r.authorName}</span>
-                              <span className="text-[8px] text-white/30 uppercase tracking-widest font-black">------</span>
+                              <span className="text-[8px] text-white/30 uppercase tracking-widest font-black">-----------</span>
                             </div>
                           </div>
                           <div className="flex-shrink-0 bg-white/5 px-2.5 py-1.5 rounded-xl border border-white/5 shadow-inner">
