@@ -1181,25 +1181,7 @@ export default function Home() {
                 </div>
               </div>
 
-              {/* Partners/Services */}
-              <div className="mt-16 w-full max-w-xl">
-                <div className="flex items-center justify-center gap-3 mb-6">
-                  <Sparkles className="w-4 h-4 text-white/20" />
-                  <span className="text-[9px] text-white/20 uppercase tracking-[0.5em] font-black">Trusted Partners</span>
-                  <Sparkles className="w-4 h-4 text-white/20" />
-                </div>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-3 opacity-40 hover:opacity-100 transition-opacity">
-                  {partners.slice(0, 6).map(p => (
-                    <div key={p.id} className="aspect-square p-3 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-center group hover:bg-white/5 transition-all">
-                      {p.image ? (
-                        <img src={p.image} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all" alt={p.name} />
-                      ) : (
-                        <span className="text-[8px] font-bold text-center uppercase leading-tight">{p.name}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+
             </section>
           </div>
 
