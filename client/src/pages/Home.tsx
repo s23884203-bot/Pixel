@@ -11,6 +11,7 @@ interface Review {
   authorName: string;
   authorAvatar?: string | null;
   timestamp: string | Date;
+  discordMessageId?: string; // أضفتها هنا للتوافق مع منطق الفلترة
 }
 
 interface Partner {
@@ -80,22 +81,18 @@ export default function Home() {
   const { data: featuredClientsData } = trpc.reviews.featuredClients.useQuery();
   const { data: stats } = trpc.reviews.getStats.useQuery();
 
-  const [displayReviews, setDisplayReviews] = useState<Review[]>(MANUAL_REVIEWS);
+  const [displayReviews, setDisplayReviews] = useState<Review[]>([]);
   const [partners, setPartners] = useState<Partner[]>([]);
   const [featuredClients, setFeaturedClients] = useState<FeaturedClient[]>([]);
 
   useEffect(() => {
     if (reviewsData && reviewsData.length > 0) {
-      // التقييمات القادمة من السيرفر (ديسكورد + قاعدة البيانات)
+      // ترتيب التقييمات القادمة من السيرفر فقط حسب الأحدث
       const sorted = [...reviewsData].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
       
-      // دمج التقييمات اليدوية مع تقييمات السيرفر
-      // نضع تقييمات السيرفر في البداية لتظهر الأحدث أولاً
-      const merged = [...sorted, ...MANUAL_REVIEWS];
-      
-      // منع التكرار بناءً على المحتوى واسم الكاتب، أو المعرف الفريد
+      // إزالة التكرار بناءً على معرف ديسكورد أو المحتوى
       const uniqueMap = new Map();
-      merged.forEach(r => {
+      sorted.forEach(r => {
         const key = r.discordMessageId || (r.content + r.authorName);
         if (!uniqueMap.has(key)) {
           uniqueMap.set(key, r);
@@ -114,7 +111,7 @@ export default function Home() {
     if (featuredClientsData) setFeaturedClients(featuredClientsData as FeaturedClient[]);
   }, [featuredClientsData]);
 
-  const isLoading = reviewsLoading && displayReviews.length === MANUAL_REVIEWS.length;
+  const isLoading = reviewsLoading;
 
   const PlatformIcon = ({ platform, icon }: { platform: 'discord' | 'kick', icon?: string | null }) => {
     const [imgError, setImgError] = useState(false);
@@ -136,7 +133,6 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-[#050505] text-white selection:bg-white selection:text-black flex flex-col" style={{ fontFamily: "'Tajawal', sans-serif" }}>
-      {/* Background Effects */}
       <div className="fixed inset-0 z-0 overflow-hidden pointer-events-none">
         <div className="absolute inset-0 opacity-10 bg-[url('/bg.webp')] bg-cover bg-center grayscale" />
         <div className="absolute top-0 left-1/4 w-[500px] h-[500px] bg-white/5 rounded-full blur-[120px]" />
@@ -145,7 +141,6 @@ export default function Home() {
       </div>
 
       <div className="relative z-10 flex flex-col flex-1">
-        {/* Navbar */}
         <nav className="border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-50">
           <div className="max-w-[1400px] mx-auto px-6 py-4 flex justify-between items-center">
             <div className="text-xl font-black tracking-tighter uppercase italic flex items-center gap-2">
@@ -163,10 +158,7 @@ export default function Home() {
           </div>
         </nav>
 
-        {/* Main Content Grid */}
         <main className="max-w-[1600px] mx-auto px-6 w-full grid grid-cols-1 lg:grid-cols-12 gap-8 pt-12 pb-24 flex-1">
-          
-          {/* Left Sidebar: Featured Clients */}
           <aside className="lg:col-span-3 space-y-6 order-2 lg:order-1">
             <div className="bg-white/[0.02] border border-white/5 rounded-[2rem] p-6 backdrop-blur-md sticky top-24">
               <div className="flex items-center gap-3 mb-6 border-b border-white/5 pb-4">
@@ -191,9 +183,7 @@ export default function Home() {
             </div>
           </aside>
 
-          {/* Center Content: Hero & Stats */}
           <div className="lg:col-span-6 space-y-16 order-1 lg:order-2 flex flex-col items-center">
-            {/* Hero Section */}
             <section className="text-center w-full pt-10">
               <div className="mb-10 flex flex-col items-center">
                 <div className="inline-flex items-center gap-4 px-6 py-3 bg-white/[0.03] border border-white/10 rounded-2xl mb-8 hover:bg-white/[0.06] transition-all group cursor-default shadow-2xl backdrop-blur-md">
@@ -221,7 +211,6 @@ export default function Home() {
                 <AnimatedTagline />
               </div>
 
-              {/* Stats Grid */}
               <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
                   <span className="block text-2xl md:text-3xl font-black">{stats?.memberCount || 2000}+</span>
@@ -232,12 +221,9 @@ export default function Home() {
                   <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Members</span>
                 </div>
               </div>
-
-
             </section>
           </div>
 
-          {/* Right Sidebar: Reviews Section (The specific requested place) */}
           <aside className="lg:col-span-3 order-3">
             <div className="bg-white/[0.03] border border-white/10 rounded-[2.5rem] p-6 md:p-8 shadow-2xl shadow-black backdrop-blur-xl sticky top-24 ring-1 ring-white/5 h-[80vh] flex flex-col">
               <div className="flex items-center justify-between mb-8 border-b border-white/10 pb-6 flex-shrink-0">
@@ -252,7 +238,7 @@ export default function Home() {
 
               <div className="flex-1 overflow-y-auto pr-3 space-y-6 custom-scrollbar relative">
                 {displayReviews.length > 0 ? (
-                  displayReviews.map((r, idx) => (
+                  displayReviews.map((r) => (
                     <div key={r.id} className="group relative overflow-hidden rounded-3xl border border-white/5 bg-black/40 transition-all duration-500 hover:border-white/20 hover:bg-black/60 hover:scale-[1.02] hover:shadow-[0_20px_40px_-15px_rgba(0,0,0,0.5)]">
                       {r.image && (
                         <div className="relative aspect-auto w-full overflow-hidden">
@@ -276,7 +262,7 @@ export default function Home() {
                             </div>
                             <div className="flex flex-col min-w-0">
                               <span className="text-[12px] font-black text-white uppercase tracking-tight truncate leading-none mb-1">{r.authorName}</span>
-                              <span className="text-[8px] text-white/30 uppercase tracking-widest font-black">اليوزر نيم</span>
+                              <span className="text-[8px] text-white/30 uppercase tracking-widest font-black">المستخدم</span>
                             </div>
                           </div>
                           <div className="flex-shrink-0 bg-white/5 px-2.5 py-1.5 rounded-xl border border-white/5 shadow-inner">
