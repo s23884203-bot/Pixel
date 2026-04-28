@@ -31,17 +31,6 @@ interface FeaturedClient {
   platform: 'discord' | 'kick';
 }
 
-const MANUAL_REVIEWS: Review[] = [
-  {
-    "id": "^",
-    "authorName": "^",
-    "content": "^",
-    "rating": 5,
-    "authorAvatar": null,
-    "timestamp": "^"
-  }
-];
-
 const AnimatedTagline = () => {
   return (
     <div className="text-center mt-6 mb-12">
