@@ -229,7 +229,7 @@ export default function Home() {
                 
                 <div className="relative group mb-10">
                   <div className="absolute -inset-10 bg-white/5 rounded-full blur-[80px] opacity-20 group-hover:opacity-40 transition duration-1000" />
-                  <img src="/logo.webp" alt="Pixel Design" className="relative w-40 h-40 md:w-52 md:h-52 object-contain animate-float drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]" />
+                  <img src="/logo.webp" alt="Pixel Design " className="relative w-40 h-40 md:w-52 md:h-52 object-contain animate-float drop-shadow-[0_0_40px_rgba(255,255,255,0.1)]" />
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic mb-4 leading-none">
@@ -241,11 +241,11 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
                   <span className="block text-2xl md:text-3xl font-black">{stats?.memberCount || 2000}+</span>
-                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Reviews</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Members</span>
                 </div>
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
                   <span className="block text-2xl md:text-3xl font-black">200+</span>
-                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Members</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Reviews</span>
                 </div>
               </div>
             </section>
