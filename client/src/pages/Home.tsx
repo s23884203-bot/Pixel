@@ -33,12 +33,12 @@ interface FeaturedClient {
 
 const MANUAL_REVIEWS: Review[] = [
   {
-    "id": "manual_117",
-    "authorName": "Neon",
-    "content": "10/10 شغل احترافي وفن ويعطي اقتراحات جامده افضل مصمم",
+    "id": "^",
+    "authorName": "^",
+    "content": "^",
     "rating": 5,
     "authorAvatar": null,
-    "timestamp": "2026-01-02"
+    "timestamp": "^"
   }
 ];
 
@@ -227,7 +227,7 @@ export default function Home() {
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic mb-4 leading-none">
-                  Pixel <span className="text-white/10">Design</span>
+                  Pixel <span className="bg-gradient-to-r from-white via-gray-300 to-gray-500 bg-clip-text text-transparent">Design</span>
                 </h1>
                 <AnimatedTagline />
               </div>
@@ -236,33 +236,15 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
                   <span className="block text-2xl md:text-3xl font-black">{stats?.memberCount || 2000}+</span>
-                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Community</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Reviews</span>
                 </div>
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
                   <span className="block text-2xl md:text-3xl font-black">200+</span>
-                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Satisfied</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Members</span>
                 </div>
               </div>
 
-              {/* Partners/Services */}
-              <div className="mt-16 w-full max-w-xl">
-                <div className="flex items-center justify-center gap-3 mb-6">
-                  <Sparkles className="w-4 h-4 text-white/20" />
-                  <span className="text-[9px] text-white/20 uppercase tracking-[0.5em] font-black">Trusted Partners</span>
-                  <Sparkles className="w-4 h-4 text-white/20" />
-                </div>
-                <div className="grid grid-cols-3 md:grid-cols-6 gap-3 opacity-40 hover:opacity-100 transition-opacity">
-                  {partners.slice(0, 6).map(p => (
-                    <div key={p.id} className="aspect-square p-3 bg-white/[0.02] border border-white/5 rounded-2xl flex items-center justify-center group hover:bg-white/5 transition-all">
-                      {p.image ? (
-                        <img src={p.image} className="w-full h-full object-contain grayscale group-hover:grayscale-0 transition-all" alt={p.name} />
-                      ) : (
-                        <span className="text-[8px] font-bold text-center uppercase leading-tight">{p.name}</span>
-                      )}
-                    </div>
-                  ))}
-                </div>
-              </div>
+
             </section>
           </div>
 
