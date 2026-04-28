@@ -1164,7 +1164,7 @@ export default function Home() {
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic mb-4 leading-none">
-                  Pixel <span className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Design</span>
+                  Pixel <span className="bg-gradient-to-r from-white via-gray-300 to-gray-500 bg-clip-text text-transparent">Design</span>
                 </h1>
                 <AnimatedTagline />
               </div>
@@ -1173,11 +1173,11 @@ export default function Home() {
               <div className="grid grid-cols-2 gap-4 max-w-md mx-auto">
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
                   <span className="block text-2xl md:text-3xl font-black">{stats?.memberCount || 2000}+</span>
-                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Community</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Reviews</span>
                 </div>
                 <div className="p-6 bg-white/[0.02] border border-white/5 rounded-3xl backdrop-blur-sm">
                   <span className="block text-2xl md:text-3xl font-black">200+</span>
-                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Satisfied</span>
+                  <span className="text-[9px] text-white/30 uppercase tracking-[0.3em] font-black">Members</span>
                 </div>
               </div>
 
