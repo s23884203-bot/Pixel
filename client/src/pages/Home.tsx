@@ -1164,7 +1164,7 @@ export default function Home() {
                 </div>
 
                 <h1 className="text-5xl md:text-7xl font-black tracking-tighter uppercase italic mb-4 leading-none">
-                  Pixel <span className="text-white/10">Design</span>
+                  Pixel <span className="bg-gradient-to-r from-white to-gray-400 bg-clip-text text-transparent">Design</span>
                 </h1>
                 <AnimatedTagline />
               </div>
