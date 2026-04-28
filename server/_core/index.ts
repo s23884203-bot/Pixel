@@ -36,6 +36,11 @@ async function startServer() {
   app.use(express.urlencoded({ limit: "50mb", extended: true }));
   registerStorageProxy(app);
   registerOAuthRoutes(app);
+  
+  // REST API for reviews
+  const { reviewsRouter } = await import("../routers/reviews");
+  app.use("/api/reviews", reviewsRouter);
+
   // tRPC API
   app.use(
     "/api/trpc",

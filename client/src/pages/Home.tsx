@@ -5,6 +5,11 @@ import { Star } from "lucide-react";
 export default function Home() {
   const { data: reviews, isLoading } = useQuery<Review[]>({
     queryKey: ["/api/reviews"],
+    queryFn: async () => {
+      const res = await fetch("/api/reviews");
+      if (!res.ok) throw new Error("Failed to fetch reviews");
+      return res.json();
+    }
   });
 
   if (isLoading) {
@@ -24,7 +29,7 @@ export default function Home() {
             {/* الهيدر: الاسم يمين والنجوم يسار */}
             <div className="flex justify-between items-center mb-4 flex-row-reverse">
               <div className="text-right">
-                <h3 className="text-white font-bold text-lg">{review.username}</h3>
+                <h3 className="text-white font-bold text-lg">{review.authorName}</h3>
               </div>
               
               <div className="flex gap-0.5" style={{ direction: 'ltr' }}>
