@@ -12,7 +12,7 @@ export default function Footer() {
             <span className="text-white">Alpha dev</span>
           </p>
           <p className="text-white/20 text-[10px]">
-            © 2026 Pixel Design. All rights reserved.
+            © 2026 Alpha Dev. All rights reserved.
           </p>
         </div>
       </div>
