@@ -164,7 +164,7 @@ export default function Home() {
         <nav className="border-b border-white/5 bg-black/40 backdrop-blur-2xl sticky top-0 z-50">
           <div className="max-w-[1400px] mx-auto px-6 py-4 flex justify-between items-center">
             <div className="text-xl font-black tracking-tighter uppercase italic flex items-center gap-2">
-              <div className="w-8 h-8 bg-white rounded-lg flex items-center justify-center text-black not-italic text-sm">P</div>
+              <img src="/logo.webp" alt="Pixel Design Logo" className="w-8 h-8 rounded-lg object-cover" />
               Pixel Design
             </div>
             <div className="flex items-center gap-3">
