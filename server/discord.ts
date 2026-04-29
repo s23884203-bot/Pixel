@@ -191,6 +191,130 @@ export async function getServerIconFromInvite(inviteCode: string): Promise<strin
   }
 }
 
+export type FeaturedClientPlatform = "discord" | "kick";
+
+const DISCORD_FALLBACK_ICON = "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico";
+const KICK_FALLBACK_ICON = "https://kick.com/favicon.ico";
+const CLIENT_ICON_CACHE_TTL = 1000 * 60 * 60 * 6;
+const clientIconCache = new Map<string, { icon: string | null; cachedAt: number }>();
+
+function getCachedClientIcon(cacheKey: string): string | null | undefined {
+  const cached = clientIconCache.get(cacheKey);
+  if (!cached) return undefined;
+
+  if (Date.now() - cached.cachedAt > CLIENT_ICON_CACHE_TTL) {
+    clientIconCache.delete(cacheKey);
+    return undefined;
+  }
+
+  return cached.icon;
+}
+
+function setCachedClientIcon(cacheKey: string, icon: string | null) {
+  clientIconCache.set(cacheKey, { icon, cachedAt: Date.now() });
+}
+
+export function detectFeaturedClientPlatform(link: string): FeaturedClientPlatform {
+  const normalized = link.toLowerCase();
+  if (normalized.includes("kick.com")) return "kick";
+  return "discord";
+}
+
+export function extractDiscordInviteCode(link: string): string | null {
+  const trimmed = link.trim();
+  const withoutQuery = trimmed.split(/[?#]/)[0];
+  const match = withoutQuery.match(/(?:discord\.gg\/|discord(?:app)?\.com\/invite\/)([a-zA-Z0-9-]+)/i);
+
+  if (match?.[1]) return match[1];
+
+  if (/^[a-zA-Z0-9-]+$/.test(trimmed)) return trimmed;
+
+  return null;
+}
+
+function extractKickChannelName(link: string): string | null {
+  try {
+    const url = new URL(link);
+    if (!url.hostname.toLowerCase().includes("kick.com")) return null;
+
+    const [channel] = url.pathname.split("/").filter(Boolean);
+    return channel || null;
+  } catch {
+    const match = link.match(/kick\.com\/([^/?#]+)/i);
+    return match?.[1] || null;
+  }
+}
+
+function extractMetaImage(html: string): string | null {
+  const patterns = [
+    /<meta[^>]+property=["']og:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+property=["']og:image["'][^>]*>/i,
+    /<meta[^>]+name=["']twitter:image["'][^>]+content=["']([^"']+)["'][^>]*>/i,
+    /<meta[^>]+content=["']([^"']+)["'][^>]+name=["']twitter:image["'][^>]*>/i,
+  ];
+
+  for (const pattern of patterns) {
+    const match = html.match(pattern);
+    if (match?.[1]) return match[1].replace(/&amp;/g, "&");
+  }
+
+  return null;
+}
+
+async function getKickAvatarFromLink(link: string): Promise<string | null> {
+  const channelName = extractKickChannelName(link);
+  if (!channelName) return null;
+
+  const cacheKey = `kick:${channelName.toLowerCase()}`;
+  const cached = getCachedClientIcon(cacheKey);
+  if (cached !== undefined) return cached;
+
+  try {
+    const response = await fetch(`https://kick.com/${channelName}`, {
+      headers: {
+        "User-Agent": "Mozilla/5.0 PixelDesignBot/1.0 (+https://salla.sa/pixel.design)",
+        Accept: "text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8",
+      },
+    });
+
+    if (!response.ok) {
+      setCachedClientIcon(cacheKey, null);
+      return null;
+    }
+
+    const html = await response.text();
+    const image = extractMetaImage(html);
+    setCachedClientIcon(cacheKey, image);
+    return image;
+  } catch (error) {
+    console.error(`Error resolving Kick avatar for ${link}:`, error);
+    setCachedClientIcon(cacheKey, null);
+    return null;
+  }
+}
+
+export function getFeaturedClientFallbackIcon(platform: FeaturedClientPlatform) {
+  return platform === "kick" ? KICK_FALLBACK_ICON : DISCORD_FALLBACK_ICON;
+}
+
+export async function resolveFeaturedClientIcon(link: string, platform = detectFeaturedClientPlatform(link)): Promise<string> {
+  const cacheKey = `${platform}:${link.toLowerCase()}`;
+  const cached = getCachedClientIcon(cacheKey);
+  if (cached !== undefined) return cached || getFeaturedClientFallbackIcon(platform);
+
+  let icon: string | null = null;
+
+  if (platform === "discord") {
+    const inviteCode = extractDiscordInviteCode(link);
+    icon = inviteCode ? await getServerIconFromInvite(inviteCode) : null;
+  } else {
+    icon = await getKickAvatarFromLink(link);
+  }
+
+  setCachedClientIcon(cacheKey, icon);
+  return icon || getFeaturedClientFallbackIcon(platform);
+}
+
 export async function syncReviewsFromDiscord(): Promise<number> {
   try {
     const { createReview, getReviewByDiscordId } = await import("./db");

@@ -126,18 +126,25 @@ export default function Home() {
   const isReviewsLoading = reviewsLoading && displayReviews.length === MANUAL_REVIEWS.length;
   const isClientsLoading = clientsLoading && featuredClients.length === 0;
 
-  const PlatformIcon = ({ platform, icon }: { platform: 'discord' | 'kick', icon?: string | null }) => {
+  const PlatformIcon = ({ platform, icon, name }: { platform: 'discord' | 'kick', icon?: string | null, name: string }) => {
     const [imgError, setImgError] = useState(false);
     if (icon && !imgError) {
       return (
-        <div className="w-8 h-8 rounded-full overflow-hidden border border-white/10 bg-black">
-          <img src={icon} alt={platform} className="w-full h-full object-cover" onError={() => setImgError(true)} />
+        <div className="relative w-10 h-10 rounded-2xl overflow-hidden border border-white/15 bg-black shadow-[0_0_25px_rgba(255,255,255,0.08)] ring-1 ring-white/5">
+          <img
+            src={icon}
+            alt={`${name} avatar`}
+            className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+            referrerPolicy="no-referrer"
+            onError={() => setImgError(true)}
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-black/25 to-transparent" />
         </div>
       );
     }
     return (
-      <div className={`w-8 h-8 rounded-full flex items-center justify-center border border-black ${platform === 'kick' ? 'bg-[#53fc18]' : 'bg-[#5865F2] p-1.5'}`}>
-        {platform === 'kick' ? <span className="text-[10px] font-black text-black">K</span> : 
+      <div className={`w-10 h-10 rounded-2xl flex items-center justify-center border border-white/10 shadow-[0_0_25px_rgba(255,255,255,0.06)] ${platform === 'kick' ? 'bg-[#53fc18]' : 'bg-[#5865F2] p-2'}`}>
+        {platform === 'kick' ? <span className="text-[13px] font-black text-black">K</span> : 
           <svg viewBox="0 0 127.14 96.36" fill="white" className="w-full h-full"><path d="M107.7,8.07A105.15,105.15,0,0,0,81.47,0a72.06,72.06,0,0,0-3.36,6.83A97.68,97.68,0,0,0,49,6.83,72.37,72.37,0,0,0,45.64,0,105.89,105.89,0,0,0,19.39,8.09C2.71,32.65-1.82,56.6.48,80.21a105.73,105.73,0,0,0,32.22,16.15,77.7,77.7,0,0,0,7.34-11.86,68.11,68.11,0,0,1-11.85-5.65c.99-.71,1.96-1.46,2.89-2.22a74.87,74.87,0,0,0,65.35,0c.93.76,1.9,1.51,2.89,2.22a68.4,68.4,0,0,1-11.85,5.65,77,77,0,0,0,7.34,11.86,105.55,105.55,0,0,0,32.25-16.15C129.58,52.13,125.4,28.38,107.7,8.07ZM42.45,65.69C36.18,65.69,31,60,31,53s5.12-12.67,11.45-12.67S54,46,54,53,48.83,65.69,42.45,65.69Zm42.24,0C78.41,65.69,73.25,60,73.25,53s5.12-12.67,11.44-12.67S96.2,46,96.2,53,91.05,65.69,84.69,65.69Z"/></svg>
         }
       </div>
@@ -196,10 +203,10 @@ export default function Home() {
                 ) : (
                   featuredClients.map(client => (
                     <a key={client.id} href={client.inviteLink} target="_blank" rel="noopener noreferrer" className="flex items-center gap-4 p-4 bg-white/[0.02] border border-white/5 rounded-2xl hover:bg-white/[0.05] hover:border-white/10 transition-all group">
-                      <div className="flex-shrink-0 group-hover:scale-110 transition-transform"><PlatformIcon platform={client.platform} icon={client.serverIcon} /></div>
+                      <div className="flex-shrink-0 group-hover:scale-110 transition-transform"><PlatformIcon platform={client.platform} icon={client.serverIcon || client.avatar} name={client.name} /></div>
                       <div className="flex-1 min-w-0">
                         <h3 className="font-black text-xs truncate uppercase italic">{client.name}</h3>
-                        <span className="text-[8px] text-white/20 uppercase tracking-widest font-bold">{client.platform}</span>
+                        <span className="text-[8px] text-white/25 uppercase tracking-widest font-bold">{client.platform} • Auto Avatar</span>
                       </div>
                       <div className="text-white/20 group-hover:text-white transition-colors"><ExternalLink className="w-3 h-3" /></div>
                     </a>

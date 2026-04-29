@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { publicProcedure, router } from "../_core/trpc";
 import { getAllReviews, createReview, getReviewByDiscordId } from "../db";
-import { fetchDiscordReviews, fetchDiscordPartners } from "../discord";
+import { detectFeaturedClientPlatform, fetchDiscordReviews, fetchDiscordPartners, resolveFeaturedClientIcon } from "../discord";
 
 export const reviewsRouter = router({
   list: publicProcedure.query(async () => {
@@ -90,20 +90,33 @@ export const reviewsRouter = router({
   }),
 
   featuredClients: publicProcedure.query(async () => {
-    const DISCORD_ICON = "https://discord.com/assets/847541504914fd33810e70a0ea73177e.ico";
-    return [
-      { id: "m1", name: "Triggers", username: "Triggers", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/trg", platform: 'discord' },
-      { id: "m2", name: "D7MX", username: "D7MX", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/d7mx", platform: 'kick' },
-      { id: "m3", name: "LosTown Cfw", username: "LosTown Cfw", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/l1t", platform: 'discord' },
-      { id: "m4", name: "iAzuz", username: "iAzuz", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/iazuz", platform: 'kick' },
-      { id: "m5", name: "ShotFire", username: "ShotFire", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/sff", platform: 'discord' },
-      { id: "m6", name: "iHIMO", username: "iHIMO", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/ihimo", platform: 'kick' },
-      { id: "m7", name: "𝐕𝐄𝐋𝐕𝐄𝐓 𝐑𝐏", username: "𝐕𝐄𝐋𝐕𝐄𝐓 𝐑𝐏", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/ve", platform: 'discord' },
-      { id: "m8", name: "ii3li", username: "ii3li", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/ii3li", platform: 'kick' },
-      { id: "m94", name: "Champion PVP", username: "Champion PVP", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/CMP", platform: 'discord' },
-      { id: "m10", name: "2mzx", username: "2mzx", avatar: null, serverIcon: "https://kick.com/favicon.ico", inviteLink: "https://kick.com/2mzx", platform: 'kick' },
-      { id: "m11", name: "Street Fight", username: "Street Fight", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/s1s", platform: 'discord' },
-      { id: "m12", name: "ShotFire", username: "ShotFire", avatar: null, serverIcon: DISCORD_ICON, inviteLink: "https://discord.gg/sff", platform: 'discord' },
+    const clients = [
+      { id: "m1", name: "Triggers", username: "Triggers", inviteLink: "https://discord.gg/trg" },
+      { id: "m2", name: "D7MX", username: "D7MX", inviteLink: "https://kick.com/d7mx" },
+      { id: "m3", name: "LosTown Cfw", username: "LosTown Cfw", inviteLink: "https://discord.gg/l1t" },
+      { id: "m4", name: "iAzuz", username: "iAzuz", inviteLink: "https://kick.com/iazuz" },
+      { id: "m5", name: "ShotFire", username: "ShotFire", inviteLink: "https://discord.gg/sff" },
+      { id: "m6", name: "iHIMO", username: "iHIMO", inviteLink: "https://kick.com/ihimo" },
+      { id: "m7", name: "𝐕𝐄𝐋𝐕𝐄𝐓 𝐑𝐏", username: "𝐕𝐄𝐋𝐕𝐄𝐓 𝐑𝐏", inviteLink: "https://discord.gg/ve" },
+      { id: "m8", name: "ii3li", username: "ii3li", inviteLink: "https://kick.com/ii3li" },
+      { id: "m94", name: "Champion PVP", username: "Champion PVP", inviteLink: "https://discord.gg/CMP" },
+      { id: "m10", name: "2mzx", username: "2mzx", inviteLink: "https://kick.com/2mzx" },
+      { id: "m11", name: "Street Fight", username: "Street Fight", inviteLink: "https://discord.gg/s1s" },
+      { id: "m12", name: "ShotFire", username: "ShotFire", inviteLink: "https://discord.gg/sff" },
     ];
+
+    return await Promise.all(
+      clients.map(async client => {
+        const platform = detectFeaturedClientPlatform(client.inviteLink);
+        const serverIcon = await resolveFeaturedClientIcon(client.inviteLink, platform);
+
+        return {
+          ...client,
+          avatar: serverIcon,
+          serverIcon,
+          platform,
+        };
+      })
+    );
   }),
 });
